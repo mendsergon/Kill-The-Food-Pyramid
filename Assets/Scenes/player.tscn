@@ -316,7 +316,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Swing_2",
-"speed": 20.0
+"speed": 15.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
@@ -330,7 +330,7 @@ position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_w3t24")
 animation = &"Swing_2"
 autoplay = "Idle"
-frame_progress = 0.600046
+frame_progress = 0.66678
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -7)
