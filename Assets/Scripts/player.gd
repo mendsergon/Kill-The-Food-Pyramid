@@ -1,14 +1,14 @@
 extends CharacterBody2D
 
-# Defining constants
+# Constants
 const SPEED = 150.0
 const JUMP_VELOCITY = -300.0
 const DASH_SPEED = 800.0
 const DASH_DURATION = 0.25
 const DASH_COOLDOWN = 0.5
-const ATTACK_DURATION = 0.2  # 4 frames at 20 FPS
+const ATTACK_DURATION = 0.3  
 
-# Get gravity from project settings
+# Gravity
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
@@ -23,7 +23,7 @@ var jump_after_dash := false
 
 # Input variables
 var input_direction := 0.0
-var move_direction := 1.0  # Default facing right
+var move_direction := 1.0  
 
 # Combat variables
 var is_attacking := false
@@ -35,9 +35,8 @@ func _physics_process(delta: float) -> void:
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			is_attacking = false
-			animated_sprite_2d.play("Idle")
 
-	# Get input direction (only if not attacking or dashing)
+	# Get input direction 
 	input_direction = Input.get_axis("move_left", "move_right")
 	if not is_dashing and not is_attacking and input_direction != 0.0:
 		move_direction = sign(input_direction)
@@ -54,7 +53,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("melee") and is_on_floor() and not is_dashing and not is_attacking:
 		start_attack()
 
-	# Dash logic (EXACTLY as you had it)
+	# Dash logic 
 	if is_dashing:
 		velocity.x = move_direction * DASH_SPEED
 		velocity.y = 0.0  # Lock vertical movement during dash
@@ -76,7 +75,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("jump") and is_on_floor() and not is_attacking:
 			velocity.y = JUMP_VELOCITY
 
-		# Normal horizontal movement (no sliding on release)
+		# Normal horizontal movement 
 		if not is_attacking:
 			if input_direction != 0.0:
 				velocity.x = input_direction * SPEED
@@ -110,7 +109,6 @@ func start_dash():
 func start_attack():
 	is_attacking = true
 	attack_timer = ATTACK_DURATION
-	animated_sprite_2d.play("Swing_1")
 	velocity.x = 0  # Stop horizontal movement during attack
 
 func update_dash_cooldown(delta: float):
@@ -121,7 +119,7 @@ func update_dash_cooldown(delta: float):
 
 func update_animations():
 	if is_attacking:
-		return  # Let the attack animation play through
+		animated_sprite_2d.play("Swing_1")
 	elif is_dashing:
 		animated_sprite_2d.play("Dash")
 	elif not is_on_floor():
