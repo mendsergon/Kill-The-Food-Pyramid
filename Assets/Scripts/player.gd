@@ -3,8 +3,8 @@ extends CharacterBody2D
 # Defining constants for speeds, durations, and cooldowns
 const SPEED = 150.0
 const JUMP_VELOCITY = -300.0
-const DASH_SPEED = 400.0
-const DASH_DURATION = 0.5
+const DASH_SPEED = 800.0
+const DASH_DURATION = 0.25
 const DASH_COOLDOWN = 0.5
 
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
