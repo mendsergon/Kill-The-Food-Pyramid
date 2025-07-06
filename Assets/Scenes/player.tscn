@@ -251,7 +251,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Swing_1",
-"speed": 10.0
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -274,7 +274,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"Swing_2",
-"speed": 10.0
+"speed": 20.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
@@ -286,8 +286,9 @@ script = ExtResource("1_7dd06")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_w3t24")
-animation = &"Dash"
+animation = &"Swing_1"
 autoplay = "Idle"
+frame_progress = 0.583483
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -7)
