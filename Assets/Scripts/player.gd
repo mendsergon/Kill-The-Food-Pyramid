@@ -74,10 +74,14 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking:
 		start_dash()
 
-	# Normal ground attack
-	if Input.is_action_just_pressed("melee") and is_on_floor() and not is_dashing and not is_attacking:
+	# Normal attack (ground or air)
+	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
 		start_attack()
 		current_attack_animation = "Swing_1"
+		# Lock vertical movement during air attacks
+		if not is_on_floor():
+			velocity.y = 0
+			no_gravity_timer = ATTACK_DURATION
 
 	### --- DASH PHYSICS --- ###
 	if is_dashing:
