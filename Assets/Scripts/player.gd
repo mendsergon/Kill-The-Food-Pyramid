@@ -133,7 +133,11 @@ func _physics_process(delta: float) -> void:
 	update_animations()
 
 	### --- SPRITE ORIENTATION --- ###
-	animated_sprite_2d.flip_h = move_direction < 0
+	# Flip sprite: during dash use movement direction; otherwise use cursor position
+	if is_dashing:
+		animated_sprite_2d.flip_h = move_direction < 0   # Face dash direction
+	else:
+		animated_sprite_2d.flip_h = (get_global_mouse_position().x < global_position.x)  # Face cursor
 
 ### --- DASH INITIALIZATION --- ###
 func start_dash():
@@ -142,6 +146,11 @@ func start_dash():
 	can_dash = false
 	ground_touched_since_dash = false
 	velocity.y = 0.0
+	# If no input, dash toward cursor direction
+	if input_direction == 0:
+		var aim_dir = sign(get_global_mouse_position().x - global_position.x)
+		if aim_dir != 0:
+			move_direction = aim_dir
 	# Reset action queue
 	jump_after_dash = false
 	attack_after_dash = false
