@@ -10,3 +10,6 @@ script = ExtResource("1_67bkn")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(4, 0)
 texture = ExtResource("2_u2vy2")
+
+[node name="Marker2D" type="Marker2D" parent="."]
+position = Vector2(10.6667, -1.33333)
