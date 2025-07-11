@@ -1,0 +1,56 @@
+[gd_scene load_steps=8 format=3 uid="uid://cblsyvnaj77bb"]
+
+[ext_resource type="Texture2D" uid="uid://cjpsao3m3la83" path="res://Assets/Sprites/Cyber Cat/CC-000.png" id="1_3bn5i"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2y8am"]
+atlas = ExtResource("1_3bn5i")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u6qys"]
+atlas = ExtResource("1_3bn5i")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g4wj2"]
+atlas = ExtResource("1_3bn5i")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qm4nf"]
+atlas = ExtResource("1_3bn5i")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_b35qe"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2y8am")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u6qys")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g4wj2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qm4nf")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3bn5i"]
+size = Vector2(20, 23)
+
+[node name="Cyber Cat" type="CharacterBody2D"]
+position = Vector2(-1, -14)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1, -1)
+sprite_frames = SubResource("SpriteFrames_b35qe")
+animation = &"Idle"
+autoplay = "Idle"
+frame_progress = 0.734677
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_3bn5i")

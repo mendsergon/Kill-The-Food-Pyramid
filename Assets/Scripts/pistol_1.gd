@@ -7,7 +7,7 @@ const BULLET = preload("res://Assets/Scenes/bullet_1.tscn") # Bullet scene refer
 @onready var muzzle: Marker2D = $Marker2D                  # Muzzle position for bullet spawn
 
 ### --- AIMING SYSTEM --- ###
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# Rotate to face the global mouse position
 	look_at(get_global_mouse_position())
 	

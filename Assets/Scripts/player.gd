@@ -17,7 +17,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravit
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
-@onready var pistol_1: Node2D = $"Pistol 1"                            # Pistol node
+@onready var pistol_1: Node2D = $"Pistol 1" # Pistol node
 
 ### --- MOVEMENT STATE --- ###
 var is_dashing := false                 # True during dash

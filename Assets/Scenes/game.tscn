@@ -1,13 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://bpbg1hrm0jn1k"]
+[gd_scene load_steps=4 format=3 uid="uid://bpbg1hrm0jn1k"]
 
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="1_nbu75"]
+[ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/Scenes/cyber_cat.tscn" id="2_pfbgl"]
 
 [sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_nbu75"]
 
 [node name="Game" type="Node2D"]
-
-[node name="Player" parent="." instance=ExtResource("1_nbu75")]
-position = Vector2(14, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(14, -8)
@@ -17,3 +15,9 @@ zoom = Vector2(4, 4)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 shape = SubResource("WorldBoundaryShape2D_nbu75")
+
+[node name="Cyber Cat" parent="." instance=ExtResource("2_pfbgl")]
+position = Vector2(61, -11)
+
+[node name="Player" parent="." instance=ExtResource("1_nbu75")]
+position = Vector2(14, 0)
