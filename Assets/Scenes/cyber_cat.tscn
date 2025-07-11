@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cblsyvnaj77bb"]
+[gd_scene load_steps=9 format=3 uid="uid://cblsyvnaj77bb"]
 
 [ext_resource type="Texture2D" uid="uid://cjpsao3m3la83" path="res://Assets/Sprites/Cyber Cat/CC-000.png" id="1_3bn5i"]
+
+[sub_resource type="GDScript" id="GDScript_3bn5i"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2y8am"]
 atlas = ExtResource("1_3bn5i")
@@ -45,6 +47,7 @@ size = Vector2(20, 23)
 position = Vector2(-1, -14)
 collision_layer = 4
 collision_mask = 7
+script = SubResource("GDScript_3bn5i")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(1, -1)

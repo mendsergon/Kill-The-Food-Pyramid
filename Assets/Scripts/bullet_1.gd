@@ -1,4 +1,4 @@
-extends Node2D
+extends Area2D
 
 @onready var ray_cast_2d: RayCast2D = $RayCast2D  # Raycast to detect collisions manually
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://dr0o1vrv8l7kq"]
+[gd_scene load_steps=46 format=3 uid="uid://dr0o1vrv8l7kq"]
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Sprites/Player/Player.png" id="1_6cd4h"]
 [ext_resource type="Script" uid="uid://bj0l1ulpnxuq8" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
@@ -120,10 +120,6 @@ region = Rect2(1408, 0, 64, 16)
 atlas = ExtResource("1_6cd4h")
 region = Rect2(1472, 0, 64, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vjh5i"]
-atlas = ExtResource("1_6cd4h")
-region = Rect2(1536, 0, 64, 16)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_tx0dr"]
 atlas = ExtResource("1_6cd4h")
 region = Rect2(1600, 0, 64, 16)
@@ -135,6 +131,10 @@ region = Rect2(1664, 0, 64, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_r5ifs"]
 atlas = ExtResource("1_6cd4h")
 region = Rect2(1728, 0, 64, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vjh5i"]
+atlas = ExtResource("1_6cd4h")
+region = Rect2(1536, 0, 64, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ggw7w"]
 atlas = ExtResource("1_6cd4h")
@@ -281,9 +281,6 @@ animations = [{
 "texture": SubResource("AtlasTexture_mdvb1")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_vjh5i")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_tx0dr")
 }, {
 "duration": 1.0,
@@ -291,6 +288,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_r5ifs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vjh5i")
 }],
 "loop": true,
 "name": &"Swing_1",
@@ -323,6 +323,9 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
 radius = 4.12311
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_38rej"]
+size = Vector2(32, 16)
+
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 133
 script = ExtResource("1_7dd06")
@@ -330,9 +333,10 @@ script = ExtResource("1_7dd06")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_w3t24")
-animation = &"Idle"
+animation = &"Swing_1"
 autoplay = "Idle"
-frame_progress = 0.948707
+frame = 6
+frame_progress = 0.992071
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -7)
@@ -340,3 +344,11 @@ shape = SubResource("CircleShape2D_c3tg1")
 
 [node name="Pistol 1" parent="." instance=ExtResource("3_38rej")]
 position = Vector2(0, -6)
+
+[node name="MeleeArea2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeArea2D"]
+position = Vector2(16, -8)
+shape = SubResource("RectangleShape2D_38rej")
