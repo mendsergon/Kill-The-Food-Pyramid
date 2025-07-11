@@ -324,6 +324,7 @@ animations = [{
 radius = 4.12311
 
 [node name="Player" type="CharacterBody2D"]
+collision_mask = 133
 script = ExtResource("1_7dd06")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
