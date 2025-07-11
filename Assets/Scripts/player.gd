@@ -17,6 +17,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravit
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
+@onready var pistol_1: Node2D = $"Pistol 1"                            # Pistol node
 
 ### --- MOVEMENT STATE --- ###
 var is_dashing := false                 # True during dash
@@ -138,6 +139,17 @@ func _physics_process(delta: float) -> void:
 		animated_sprite_2d.flip_h = move_direction < 0   # Face dash direction
 	else:
 		animated_sprite_2d.flip_h = (get_global_mouse_position().x < global_position.x)  # Face cursor
+
+	### --- WEAPON STATE --- ###
+	# Hide and disable pistol during dash or melee
+	if is_dashing or is_attacking:
+		pistol_1.visible = false
+		pistol_1.set_process(false)
+		pistol_1.set_process_input(false)
+	else:
+		pistol_1.visible = true
+		pistol_1.set_process(true)
+		pistol_1.set_process_input(true)
 
 ### --- DASH INITIALIZATION --- ###
 func start_dash():
