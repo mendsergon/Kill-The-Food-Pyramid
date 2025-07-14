@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c8j62akipuxc6"]
 
 [ext_resource type="Texture2D" uid="uid://blpid62b5v4lo" path="res://Assets/Sprites/Weapons/Bullet 1.png" id="1_a8x02"]
-[ext_resource type="Script" uid="uid://d2t8slqyfb4cy" path="res://Assets/Scripts/bullet_1.gd" id="1_cgxvw"]
+[ext_resource type="Script" path="res://Assets/Scripts/bullet_1.gd" id="1_cgxvw"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cgxvw"]
 radius = 3.16228

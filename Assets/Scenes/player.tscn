@@ -1,7 +1,7 @@
 [gd_scene load_steps=46 format=3 uid="uid://dr0o1vrv8l7kq"]
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Sprites/Player/Player.png" id="1_6cd4h"]
-[ext_resource type="Script" uid="uid://bj0l1ulpnxuq8" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
+[ext_resource type="Script" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
 [ext_resource type="PackedScene" uid="uid://c6eum3n2mgjdb" path="res://Assets/Scenes/pistol_1.tscn" id="3_38rej"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ecf78"]

@@ -18,6 +18,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravit
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
 @onready var pistol_1: Node2D = $"Pistol 1" # Pistol node
+@onready var melee_area: Area2D = $MeleeArea2D # Melee hit area
 
 ### --- MOVEMENT STATE --- ###
 var is_dashing := false                 # True during dash
@@ -37,7 +38,13 @@ var move_direction := 1.0               # Facing direction
 ### --- COMBAT STATE --- ###
 var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
-var current_attack_animation := ""      # "Swing_1" or "Swing_2"
+var current_attack_animation := ""     # "Swing_1" or "Swing_2"
+
+func _ready() -> void:
+	# Disable melee area until needed
+	melee_area.monitoring = false
+	melee_area.visible = false
+	melee_area.connect("body_entered", Callable(self, "_on_melee_area_body_entered"))
 
 func _physics_process(delta: float) -> void:
 	### --- TIMER MANAGEMENT --- ###
@@ -47,7 +54,10 @@ func _physics_process(delta: float) -> void:
 		if attack_timer <= 0.0:
 			is_attacking = false
 			current_attack_animation = ""
-	
+			# Disable melee hit detection
+			melee_area.monitoring = false
+			melee_area.visible = false
+
 	# Handle zero-gravity period
 	if no_gravity_timer > 0.0:
 		no_gravity_timer -= delta
@@ -65,7 +75,6 @@ func _physics_process(delta: float) -> void:
 		# Queue jump if pressed first (ground only)
 		if Input.is_action_just_pressed("jump") and is_on_floor() and not attack_after_dash:
 			jump_after_dash = true
-		
 		# Queue attack if pressed first (any state)
 		if Input.is_action_just_pressed("melee") and not jump_after_dash:
 			attack_after_dash = true
@@ -79,6 +88,8 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
 		start_attack()
 		current_attack_animation = "Swing_1"
+		# Enable melee area
+		_enable_melee()
 		# Lock vertical movement during air attacks
 		if not is_on_floor():
 			velocity.y = 0
@@ -102,6 +113,7 @@ func _physics_process(delta: float) -> void:
 			elif attack_after_dash:
 				start_attack()
 				current_attack_animation = "Swing_2"
+				_enable_melee()
 				no_gravity_timer = POST_ATTACK_NO_GRAVITY
 				attack_after_dash = false
 
@@ -133,12 +145,18 @@ func _physics_process(delta: float) -> void:
 	### --- ANIMATION SYSTEM --- ###
 	update_animations()
 
-	### --- SPRITE ORIENTATION --- ###
-	# Flip sprite: during dash use movement direction; otherwise use cursor position
+	### --- SPRITE & MELEE ORIENTATION --- ###
+	# Determine horizontal aim direction (left/right only)
+	var aim_dir = sign(get_global_mouse_position().x - global_position.x)
+	if aim_dir == 0:
+		aim_dir = move_direction
+	# Flip sprite
 	if is_dashing:
-		animated_sprite_2d.flip_h = move_direction < 0   # Face dash direction
+		animated_sprite_2d.flip_h = move_direction < 0
 	else:
-		animated_sprite_2d.flip_h = (get_global_mouse_position().x < global_position.x)  # Face cursor
+		animated_sprite_2d.flip_h = aim_dir < 0
+	# Flip melee area
+	melee_area.scale.x = aim_dir
 
 	### --- WEAPON STATE --- ###
 	# Hide and disable pistol during dash or melee
@@ -160,9 +178,9 @@ func start_dash():
 	velocity.y = 0.0
 	# If no input, dash toward cursor direction
 	if input_direction == 0:
-		var aim_dir = sign(get_global_mouse_position().x - global_position.x)
-		if aim_dir != 0:
-			move_direction = aim_dir
+		var dir = sign(get_global_mouse_position().x - global_position.x)
+		if dir != 0:
+			move_direction = dir
 	# Reset action queue
 	jump_after_dash = false
 	attack_after_dash = false
@@ -173,16 +191,23 @@ func start_attack():
 	attack_timer = ATTACK_DURATION
 	velocity.x = 0 # Freeze horizontal movement
 
+### --- ENABLE MELEE AREA & DEBUG --- ###
+func _enable_melee():
+	melee_area.monitoring = true
+	melee_area.visible = true
+
+func _on_melee_area_body_entered(body: Node) -> void:
+	print("Melee hit:", body.name)
+
 ### --- DASH COOLDOWN --- ###
-func update_dash_cooldown(delta: float):
+func update_dash_cooldown(delta: float) -> void:
 	if dash_cooldown_timer > 0.0 and ground_touched_since_dash:
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		if dash_cooldown_timer == 0.0:
 			can_dash = true
 
 ### --- ANIMATION CONTROLLER --- ###
-func update_animations():
-	# Priority system:
+func update_animations() -> void:
 	if is_attacking and current_attack_animation != "":
 		animated_sprite_2d.play(current_attack_animation)
 	elif is_dashing:

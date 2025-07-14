@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="RoboPlat"
-run/main_scene="uid://bpbg1hrm0jn1k"
-config/features=PackedStringArray("4.4", "Forward Plus")
+run/main_scene="res://Assets/Scenes/game.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="uid://byxvv6a3aouy7"
 
 [input]
