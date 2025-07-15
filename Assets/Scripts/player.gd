@@ -3,7 +3,7 @@ extends CharacterBody2D
 ### --- CORE CONSTANTS --- ###
 # Movement
 const SPEED = 150.0                     # Normal movement speed
-const JUMP_VELOCITY = -260.0           # Upward force when jumping
+const JUMP_VELOCITY = -230.0           # Upward force when jumping
 # Dash
 const DASH_SPEED = 800.0               # Horizontal dash velocity
 const DASH_DURATION = 0.25             # Time dash lasts 

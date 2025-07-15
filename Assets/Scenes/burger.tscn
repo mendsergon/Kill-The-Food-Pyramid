@@ -1,6 +1,7 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpaq54jiqc41b"]
+[gd_scene load_steps=17 format=3 uid="uid://cpaq54jiqc41b"]
 
 [ext_resource type="Texture2D" uid="uid://ds8o73o64ppxy" path="res://Assets/Sprites/Burger/burger_spritesheet.png" id="1_v0fd3"]
+[ext_resource type="Script" path="res://Assets/Scripts/burger.gd" id="1_x8nvj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nv2io"]
 atlas = ExtResource("1_v0fd3")
@@ -105,6 +106,7 @@ size = Vector2(19, 19)
 [node name="Burger" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 7
+script = ExtResource("1_x8nvj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(16, -17)
