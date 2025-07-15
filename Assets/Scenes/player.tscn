@@ -320,8 +320,9 @@ animations = [{
 "speed": 15.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_c3tg1"]
-radius = 4.12311
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_15psk"]
+radius = 4.0
+height = 16.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_38rej"]
 size = Vector2(32, 16)
@@ -337,8 +338,8 @@ animation = &"Idle"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -7)
-shape = SubResource("CircleShape2D_c3tg1")
+position = Vector2(0, -8)
+shape = SubResource("CapsuleShape2D_15psk")
 
 [node name="Pistol 1" parent="." instance=ExtResource("3_38rej")]
 position = Vector2(0, -6)
