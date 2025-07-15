@@ -5,15 +5,18 @@ extends CharacterBody2D
 const SPEED = 150.0                     # Normal movement speed
 const JUMP_VELOCITY = -230.0           # Upward force when jumping
 # Dash
-const DASH_SPEED = 800.0               # Horizontal dash velocity
+const DASH_SPEED = 450.0               # Horizontal dash velocity
 const DASH_DURATION = 0.25             # Time dash lasts 
 const DASH_COOLDOWN = 0.5              # Delay between dashes
 # Combat
 const ATTACK_DURATION = 0.3            # How long attack locks movement  
 const POST_ATTACK_NO_GRAVITY = 0.3     # Zero-gravity after aerial attacks
-# Jump tuning
+# Jump tunings
 const JUMP_HOLD_GRAVITY = 400.0        # Reduced gravity when jump held
 const FALL_GRAVITY_MULTIPLIER = 1.5    # Faster falling when descending
+# Collision
+const IGNORE_LAYER_3_MASK = ~(1 << 2)  # Mask to ignore layer 3 (bit 2)
+const LAYER_3_MASK = (1 << 2)          # Mask only layer 3 (bit 2)
 
 ### --- PHYSICS --- ###
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravity value
@@ -42,13 +45,20 @@ var is_jump_button_held := false        # Jump button held state
 ### --- COMBAT STATE --- ###
 var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
-var current_attack_animation := ""     # "Swing_1" or "Swing_2"
+var current_attack_animation := ""      # "Swing_1" or "Swing_2"
+
+### --- COLLISION MASK STATE --- ###
+var original_collision_mask := 0        # Stores default collision mask
+var original_collision_layer := 0       # Stores default collision layer  
 
 func _ready() -> void:
 	# Disable melee area until needed
 	melee_area.monitoring = false
 	melee_area.visible = false
 	melee_area.connect("body_entered", Callable(self, "_on_melee_area_body_entered"))
+	# Store initial collision mask and layer
+	original_collision_mask = collision_mask
+	original_collision_layer = collision_layer   
 
 func _physics_process(delta: float) -> void:
 	### --- TIMER MANAGEMENT --- ###
@@ -105,13 +115,15 @@ func _physics_process(delta: float) -> void:
 	if is_dashing:
 		velocity.x = move_direction * DASH_SPEED
 		velocity.y = 0.0 # Cancel gravity
-		
+
 		# End dash when timer expires
 		dash_timer -= delta
 		if dash_timer <= 0.0:
 			is_dashing = false
 			dash_cooldown_timer = DASH_COOLDOWN
-			
+			collision_mask = original_collision_mask            # Restore full collisions
+			collision_layer = original_collision_layer          # ← Restore original layer
+
 			# Execute whichever action was queued first
 			if jump_after_dash and is_on_floor():
 				velocity.y = JUMP_VELOCITY
@@ -188,6 +200,9 @@ func start_dash():
 	can_dash = false
 	ground_touched_since_dash = false
 	velocity.y = 0.0
+	collision_mask &= IGNORE_LAYER_3_MASK         # Ignore layer 3 during dash
+	collision_layer = LAYER_3_MASK                # ← Change to ghost layer during dash
+
 	# If no input, dash toward cursor direction
 	if input_direction == 0:
 		var dir = sign(get_global_mouse_position().x - global_position.x)
