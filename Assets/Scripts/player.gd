@@ -3,14 +3,17 @@ extends CharacterBody2D
 ### --- CORE CONSTANTS --- ###
 # Movement
 const SPEED = 150.0                     # Normal movement speed
-const JUMP_VELOCITY = -300.0            # Upward force when jumping
+const JUMP_VELOCITY = -260.0           # Upward force when jumping
 # Dash
-const DASH_SPEED = 800.0                # Horizontal dash velocity
-const DASH_DURATION = 0.25              # Time dash lasts 
-const DASH_COOLDOWN = 0.5               # Delay between dashes
+const DASH_SPEED = 800.0               # Horizontal dash velocity
+const DASH_DURATION = 0.25             # Time dash lasts 
+const DASH_COOLDOWN = 0.5              # Delay between dashes
 # Combat
-const ATTACK_DURATION = 0.3             # How long attack locks movement  
-const POST_ATTACK_NO_GRAVITY = 0.3      # Zero-gravity after aerial attacks
+const ATTACK_DURATION = 0.3            # How long attack locks movement  
+const POST_ATTACK_NO_GRAVITY = 0.3     # Zero-gravity after aerial attacks
+# Jump tuning
+const JUMP_HOLD_GRAVITY = 400.0        # Reduced gravity when jump held
+const FALL_GRAVITY_MULTIPLIER = 1.5    # Faster falling when descending
 
 ### --- PHYSICS --- ###
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravity value
@@ -34,6 +37,7 @@ var no_gravity_timer := 0.0             # Zero-gravity countdown
 ### --- INPUT TRACKING --- ###
 var input_direction := 0.0              # Raw input 
 var move_direction := 1.0               # Facing direction
+var is_jump_button_held := false        # Jump button held state
 
 ### --- COMBAT STATE --- ###
 var is_attacking := false               # During attack animation
@@ -65,7 +69,9 @@ func _physics_process(delta: float) -> void:
 	### --- INPUT PROCESSING --- ###
 	# Get horizontal input
 	input_direction = Input.get_axis("move_left", "move_right")
-	
+	# Track jump hold
+	is_jump_button_held = Input.is_action_pressed("jump")
+
 	# Update facing direction when able
 	if not is_dashing and not is_attacking and input_direction != 0.0:
 		move_direction = sign(input_direction)
@@ -119,9 +125,15 @@ func _physics_process(delta: float) -> void:
 
 	### --- REGULAR MOVEMENT --- ###
 	else:
-		# Apply gravity when applicable
+		# Dynamic gravity for jump/fall
 		if not is_on_floor() and no_gravity_timer <= 0.0:
-			velocity.y += gravity * delta
+			if velocity.y < 0: # Going up
+				if is_jump_button_held:
+					velocity.y += JUMP_HOLD_GRAVITY * delta # Light gravity while holding
+				else:
+					velocity.y += gravity * delta # Full gravity if released early
+			else:
+				velocity.y += gravity * FALL_GRAVITY_MULTIPLIER * delta # Faster fall
 
 		# Standard jump
 		if Input.is_action_just_pressed("jump") and is_on_floor() and not is_attacking:
