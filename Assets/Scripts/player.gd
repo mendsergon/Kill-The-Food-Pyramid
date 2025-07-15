@@ -230,3 +230,4 @@ func update_animations() -> void:
 		animated_sprite_2d.play("Run")
 	else:
 		animated_sprite_2d.play("Idle")
+#test
