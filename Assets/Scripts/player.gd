@@ -3,23 +3,15 @@ extends CharacterBody2D
 ### --- CORE CONSTANTS --- ###
 # Movement
 const SPEED = 150.0                     # Normal movement speed
-const JUMP_VELOCITY = -230.0           # Upward force when jumping
 # Dash
-const DASH_SPEED = 450.0               # Horizontal dash velocity
-const DASH_DURATION = 0.25             # Time dash lasts 
-const DASH_COOLDOWN = 0.5              # Delay between dashes
+const DASH_SPEED = 450.0                # Dash velocity
+const DASH_DURATION = 0.25              # Time dash lasts 
+const DASH_COOLDOWN = 0.5               # Delay between dashes
 # Combat
-const ATTACK_DURATION = 0.3            # How long attack locks movement  
-const POST_ATTACK_NO_GRAVITY = 0.3     # Zero-gravity after aerial attacks
-# Jump tunings
-const JUMP_HOLD_GRAVITY = 400.0        # Reduced gravity when jump held
-const FALL_GRAVITY_MULTIPLIER = 1.5    # Faster falling when descending
+const ATTACK_DURATION = 0.3             # How long attack locks movement  
 # Collision
-const IGNORE_LAYER_3_MASK = ~(1 << 2)  # Mask to ignore layer 3 (bit 2)
-const LAYER_3_MASK = (1 << 2)          # Mask only layer 3 (bit 2)
-
-### --- PHYSICS --- ###
-var gravity = ProjectSettings.get_setting("physics/2d/default_gravity") # Gravity value
+const IGNORE_LAYER_3_MASK = ~(1 << 2)   # Mask to ignore layer 3 (bit 2)
+const LAYER_3_MASK = (1 << 2)           # Mask only layer 3 (bit 2)
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
@@ -31,21 +23,17 @@ var is_dashing := false                 # True during dash
 var dash_timer := 0.0                   # Counts down dash duration
 var dash_cooldown_timer := 0.0          # Time until next dash
 var can_dash := true                    # Dash available
-var ground_touched_since_dash := true   # Reset when landing
 # Queued actions
-var jump_after_dash := false            # Jump after dash ends
 var attack_after_dash := false          # Attack after dash ends
-var no_gravity_timer := 0.0             # Zero-gravity countdown
 
 ### --- INPUT TRACKING --- ###
-var input_direction := 0.0              # Raw input 
-var move_direction := 1.0               # Facing direction
-var is_jump_button_held := false        # Jump button held state
+var move_direction := Vector2.ZERO      # Combined movement input
+var aim_direction := Vector2.RIGHT      # Current mouse aim direction
 
 ### --- COMBAT STATE --- ###
 var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
-var current_attack_animation := ""      # "Swing_1" or "Swing_2"
+var current_attack_animation := ""      # Attack animation name
 
 ### --- COLLISION MASK STATE --- ###
 var original_collision_mask := 0        # Stores default collision mask
@@ -58,9 +46,16 @@ func _ready() -> void:
 	melee_area.connect("body_entered", Callable(self, "_on_melee_area_body_entered"))
 	# Store initial collision mask and layer
 	original_collision_mask = collision_mask
-	original_collision_layer = collision_layer   
+	original_collision_layer = collision_layer
 
 func _physics_process(delta: float) -> void:
+	### --- INPUT PROCESSING --- ###
+	# Get combined movement input (4-directional)
+	move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	
+	# Get mouse position for aiming
+	_update_aim_direction()
+	
 	### --- TIMER MANAGEMENT --- ###
 	# Handle attack duration
 	if is_attacking:
@@ -72,115 +67,48 @@ func _physics_process(delta: float) -> void:
 			melee_area.monitoring = false
 			melee_area.visible = false
 
-	# Handle zero-gravity period
-	if no_gravity_timer > 0.0:
-		no_gravity_timer -= delta
-
-	### --- INPUT PROCESSING --- ###
-	# Get horizontal input
-	input_direction = Input.get_axis("move_left", "move_right")
-	# Track jump hold
-	is_jump_button_held = Input.is_action_pressed("jump")
-
-	# Update facing direction when able
-	if not is_dashing and not is_attacking and input_direction != 0.0:
-		move_direction = sign(input_direction)
-
-	### --- DASH ACTION QUEUEING --- ###
-	if is_dashing:
-		# Queue jump if pressed first (ground only)
-		if Input.is_action_just_pressed("jump") and is_on_floor() and not attack_after_dash:
-			jump_after_dash = true
-		# Queue attack if pressed first (any state)
-		if Input.is_action_just_pressed("melee") and not jump_after_dash:
-			attack_after_dash = true
-
 	### --- ACTION INITIATION --- ###
 	# Start dash if available
 	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking:
 		start_dash()
 
-	# Normal attack (ground or air)
+	# Normal attack
 	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
 		start_attack()
 		current_attack_animation = "Swing_1"
-		# Enable melee area
 		_enable_melee()
-		# Lock vertical movement during air attacks
-		if not is_on_floor():
-			velocity.y = 0
-			no_gravity_timer = ATTACK_DURATION
 
 	### --- DASH PHYSICS --- ###
 	if is_dashing:
-		velocity.x = move_direction * DASH_SPEED
-		velocity.y = 0.0 # Cancel gravity
-
 		# End dash when timer expires
 		dash_timer -= delta
 		if dash_timer <= 0.0:
 			is_dashing = false
 			dash_cooldown_timer = DASH_COOLDOWN
-			collision_mask = original_collision_mask            # Restore full collisions
-			collision_layer = original_collision_layer          # ← Restore original layer
-
-			# Execute whichever action was queued first
-			if jump_after_dash and is_on_floor():
-				velocity.y = JUMP_VELOCITY
-				jump_after_dash = false
-			elif attack_after_dash:
+			collision_mask = original_collision_mask  # Restore collisions
+			collision_layer = original_collision_layer
+			
+			# Execute queued attack
+			if attack_after_dash:
 				start_attack()
 				current_attack_animation = "Swing_2"
 				_enable_melee()
-				no_gravity_timer = POST_ATTACK_NO_GRAVITY
 				attack_after_dash = false
 
 	### --- REGULAR MOVEMENT --- ###
 	else:
-		# Dynamic gravity for jump/fall
-		if not is_on_floor() and no_gravity_timer <= 0.0:
-			if velocity.y < 0: # Going up
-				if is_jump_button_held:
-					velocity.y += JUMP_HOLD_GRAVITY * delta # Light gravity while holding
-				else:
-					velocity.y += gravity * delta # Full gravity if released early
-			else:
-				velocity.y += gravity * FALL_GRAVITY_MULTIPLIER * delta # Faster fall
-
-		# Standard jump
-		if Input.is_action_just_pressed("jump") and is_on_floor() and not is_attacking:
-			velocity.y = JUMP_VELOCITY
-
-		# Horizontal movement
+		# Apply movement if not attacking
 		if not is_attacking:
-			velocity.x = input_direction * SPEED if input_direction != 0.0 else 0.0
+			velocity = move_direction * SPEED
 
 	### --- PHYSICS UPDATE --- ###
 	move_and_slide()
-
-	### --- GROUND STATE --- ###
-	if is_on_floor():
-		ground_touched_since_dash = true
-		no_gravity_timer = 0.0 # Cancel zero-gravity
 
 	### --- DASH RECHARGE --- ###
 	update_dash_cooldown(delta)
 
 	### --- ANIMATION SYSTEM --- ###
 	update_animations()
-
-	### --- SPRITE & MELEE ORIENTATION --- ###
-	# Determine horizontal aim direction (left/right only)
-	var aim_dir = sign(get_global_mouse_position().x - global_position.x)
-	if aim_dir == 0:
-		aim_dir = move_direction
-	# Flip sprite
-	if is_dashing:
-		animated_sprite_2d.flip_h = move_direction < 0
-	else:
-		animated_sprite_2d.flip_h = aim_dir < 0
-	# Flip melee area
-	melee_area.scale.x = aim_dir
 
 	### --- WEAPON STATE --- ###
 	# Hide and disable pistol during dash or melee
@@ -193,33 +121,44 @@ func _physics_process(delta: float) -> void:
 		pistol_1.set_process(true)
 		pistol_1.set_process_input(true)
 
+### --- UPDATE AIM DIRECTION --- ###
+func _update_aim_direction() -> void:
+	# Calculate direction to mouse position
+	var mouse_pos = get_global_mouse_position()
+	aim_direction = (mouse_pos - global_position).normalized()
+	
+	# Update sprite facing based on aim
+	if abs(aim_direction.x) > abs(aim_direction.y):
+		animated_sprite_2d.flip_h = aim_direction.x < 0
+	else:
+		# Reset flip for vertical directions
+		animated_sprite_2d.flip_h = false
+
 ### --- DASH INITIALIZATION --- ###
 func start_dash():
 	is_dashing = true
 	dash_timer = DASH_DURATION
 	can_dash = false
-	ground_touched_since_dash = false
-	velocity.y = 0.0
-	collision_mask &= IGNORE_LAYER_3_MASK         # Ignore layer 3 during dash
-	collision_layer = LAYER_3_MASK                # ← Change to ghost layer during dash
-
-	# If no input, dash toward cursor direction
-	if input_direction == 0:
-		var dir = sign(get_global_mouse_position().x - global_position.x)
-		if dir != 0:
-			move_direction = dir
-	# Reset action queue
-	jump_after_dash = false
-	attack_after_dash = false
+	velocity = aim_direction * DASH_SPEED
+	collision_mask &= IGNORE_LAYER_3_MASK  # Ignore layer 3 during dash
+	collision_layer = LAYER_3_MASK         # Change to ghost layer
+	
+	# Queue attack if pressed during dash
+	if Input.is_action_just_pressed("melee"):
+		attack_after_dash = true
+	else:
+		attack_after_dash = false
 
 ### --- ATTACK INITIALIZATION --- ###
 func start_attack():
 	is_attacking = true
 	attack_timer = ATTACK_DURATION
-	velocity.x = 0 # Freeze horizontal movement
+	velocity = Vector2.ZERO  # Freeze movement during attack
 
 ### --- ENABLE MELEE AREA & DEBUG --- ###
 func _enable_melee():
+	# Position melee area in aim direction
+	melee_area.position = aim_direction * 20
 	melee_area.monitoring = true
 	melee_area.visible = true
 
@@ -228,7 +167,7 @@ func _on_melee_area_body_entered(body: Node) -> void:
 
 ### --- DASH COOLDOWN --- ###
 func update_dash_cooldown(delta: float) -> void:
-	if dash_cooldown_timer > 0.0 and ground_touched_since_dash:
+	if dash_cooldown_timer > 0.0:
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		if dash_cooldown_timer == 0.0:
 			can_dash = true
@@ -239,9 +178,7 @@ func update_animations() -> void:
 		animated_sprite_2d.play(current_attack_animation)
 	elif is_dashing:
 		animated_sprite_2d.play("Dash")
-	elif not is_on_floor():
-		animated_sprite_2d.play("Jump")
-	elif input_direction != 0.0:
+	elif move_direction.length() > 0.1:  # Moving
 		animated_sprite_2d.play("Run")
 	else:
 		animated_sprite_2d.play("Idle")
