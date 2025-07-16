@@ -13,6 +13,15 @@ const ATTACK_DURATION = 0.3             # How long attack locks movement
 const IGNORE_LAYER_3_MASK = ~(1 << 2)   # Mask to ignore layer 3 (bit 2)
 const LAYER_3_MASK = (1 << 2)           # Mask only layer 3 (bit 2)
 
+### --- PLAYER HEALTH --- ###
+@export var max_health: int = 3         # Maximum HP for player
+var health: int                          # Current HP
+
+### --- INVULNERABILITY --- ###
+const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
+var invuln_timer := 0.0                 # Invulnerability countdown
+var is_invulnerable := false            # True while invulnerable
+
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
 @onready var pistol_1: Node2D = $"Pistol 1" # Pistol node
@@ -44,7 +53,8 @@ var original_collision_mask := 0        # Stores default collision mask
 var original_collision_layer := 0       # Stores default collision layer  
 
 func _ready() -> void:
-	# Disable melee area until needed
+	# Initialize health and disable melee area until needed
+	health = max_health                     # Set starting HP
 	melee_area.monitoring = false
 	melee_area.visible = false
 	melee_area.connect("body_entered", Callable(self, "_on_melee_area_body_entered"))
@@ -53,6 +63,12 @@ func _ready() -> void:
 	original_collision_layer = collision_layer
 
 func _physics_process(delta: float) -> void:
+	### --- INVULNERABILITY TIMER --- ###
+	if is_invulnerable:
+		invuln_timer -= delta
+		if invuln_timer <= 0.0:
+			is_invulnerable = false
+
 	### --- INPUT PROCESSING --- ###
 	# Get combined movement input (4-directional)
 	move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -213,3 +229,21 @@ func update_animations() -> void:
 		animated_sprite_2d.play("Run")
 	else:
 		animated_sprite_2d.play("Idle")
+
+### --- DAMAGE & DEATH --- ###
+func apply_damage(amount: int) -> void:
+	# Subtract incoming damage if not invulnerable
+	if is_invulnerable:
+		return
+	health -= amount
+	is_invulnerable = true
+	invuln_timer = INVULN_DURATION        # Start invulnerability
+	print("Player took %d damage, %d HP remaining" % [amount, health])
+	
+	# Check for death
+	if health <= 0:
+		die()
+
+func die() -> void:
+	# Handle player death 
+	queue_free()

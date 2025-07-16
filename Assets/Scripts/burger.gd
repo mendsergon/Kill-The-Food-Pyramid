@@ -22,13 +22,12 @@ func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
-	# Initialize animation and health
 	animated_sprite_2d.play("Idle")
 	health = max_health                    # Set starting HP
 
 func _physics_process(delta: float) -> void:
 	if player == null:
-		return  # Don't run until the player is assigned
+		return
 
 	### --- TIMER MANAGEMENT --- ###
 	behavior_timer += delta
@@ -48,7 +47,6 @@ func _physics_process(delta: float) -> void:
 		move_direction = (player.global_position - global_position).normalized()
 		velocity = move_direction * MOVE_SPEED
 
-		# Flip sprite based on horizontal direction only
 		if abs(move_direction.x) > abs(move_direction.y):
 			animated_sprite_2d.flip_h = move_direction.x < 0
 	else:
@@ -57,16 +55,19 @@ func _physics_process(delta: float) -> void:
 	### --- APPLY MOVEMENT --- ###
 	move_and_slide()
 
+	### --- PLAYER DAMAGE ON TOUCH --- ###
+	for i in range(get_slide_collision_count()):
+		var collision = get_slide_collision(i)
+		var other = collision.get_collider()            # Get the collided object
+		if other == player and other.has_method("apply_damage"):
+			other.apply_damage(1)                       # Deal 1 damage to player
+
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
-	# Subtract incoming damage
-	health -= amount
+	health -= amount                                 # Subtract incoming damage
 	print("Burger took %d damage, %d HP remaining" % [amount, health])
-
-	# Check for death
 	if health <= 0:
 		die()
 
 func die() -> void:
-	# Handle burger death (play animation, drop loot, etc.)
-	queue_free()
+	queue_free()                                     # Remove burger on death

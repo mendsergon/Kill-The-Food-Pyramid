@@ -9,4 +9,6 @@ func _ready() -> void:
 	burger.set_player_reference(player)
 
 func _process(_delta: float) -> void:
-	pass
+	# Restart the scene when the player's instance has been freed 
+	if not is_instance_valid(player):
+		get_tree().reload_current_scene()
