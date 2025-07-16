@@ -30,6 +30,10 @@ var attack_after_dash := false          # Attack after dash ends
 var move_direction := Vector2.ZERO      # Combined movement input
 var aim_direction := Vector2.RIGHT      # Current mouse aim direction
 
+### --- LOCKED DIRECTION --- ###
+var is_direction_locked := false        # True while dash/attack in progress
+var locked_aim_direction := Vector2.RIGHT  # Stored direction at action start
+
 ### --- COMBAT STATE --- ###
 var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
@@ -66,17 +70,29 @@ func _physics_process(delta: float) -> void:
 			# Disable melee hit detection
 			melee_area.monitoring = false
 			melee_area.visible = false
+			# Unlock look direction at end of attack
+			is_direction_locked = false
 
 	### --- ACTION INITIATION --- ###
 	# Start dash if available
 	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking:
 		start_dash()
+		# Lock look direction at dash start
+		locked_aim_direction = aim_direction
+		is_direction_locked = true
+
+	# Queue melee **during** dash → Swing_2
+	if is_dashing and Input.is_action_just_pressed("melee"):  # ← NEW
+		attack_after_dash = true                              # ← NEW
 
 	# Normal attack
 	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
 		start_attack()
 		current_attack_animation = "Swing_1"
 		_enable_melee()
+		# Lock look direction at attack start
+		locked_aim_direction = aim_direction
+		is_direction_locked = true
 
 	### --- DASH PHYSICS --- ###
 	if is_dashing:
@@ -94,6 +110,9 @@ func _physics_process(delta: float) -> void:
 				current_attack_animation = "Swing_2"
 				_enable_melee()
 				attack_after_dash = false
+				# Lock look direction for the queued attack
+				locked_aim_direction = aim_direction
+				is_direction_locked = true
 
 	### --- REGULAR MOVEMENT --- ###
 	else:
@@ -121,20 +140,32 @@ func _physics_process(delta: float) -> void:
 		pistol_1.set_process(true)
 		pistol_1.set_process_input(true)
 
-### --- UPDATE AIM DIRECTION --- ###
+	### --- SPRITE ORIENTATION --- ###
+	# Rotate to face locked mouse direction during dash or melee, otherwise reset and flip on movement
+	if is_dashing or is_attacking:
+		# Use the stored direction, not live aim
+		var dir = locked_aim_direction
+		animated_sprite_2d.rotation = dir.angle()                  # Rotate sprite to face mouse
+		# Flip vertically when facing left (between 90° and 270°)
+		if animated_sprite_2d.rotation_degrees > 90 and animated_sprite_2d.rotation_degrees < 270:
+			animated_sprite_2d.scale.y = -1                       # Mirror sprite on Y axis
+		else:
+			animated_sprite_2d.scale.y = 1                        # Default upward scale
+		animated_sprite_2d.flip_h = false                         # Disable horizontal flip while rotated
+	else:
+		# Reset rotation and scale when not in those actions
+		animated_sprite_2d.rotation = 0
+		animated_sprite_2d.scale.y = 1
+		# Horizontal flip based on movement direction
+		if move_direction.x != 0:
+			animated_sprite_2d.flip_h = move_direction.x < 0
+
 func _update_aim_direction() -> void:
 	# Calculate direction to mouse position
 	var mouse_pos = get_global_mouse_position()
 	aim_direction = (mouse_pos - global_position).normalized()
-	
-	# Update sprite facing based on aim
-	if abs(aim_direction.x) > abs(aim_direction.y):
-		animated_sprite_2d.flip_h = aim_direction.x < 0
-	else:
-		# Reset flip for vertical directions
-		animated_sprite_2d.flip_h = false
+	# (Rotation and flip handled in _physics_process)
 
-### --- DASH INITIALIZATION --- ###
 func start_dash():
 	is_dashing = true
 	dash_timer = DASH_DURATION
@@ -149,13 +180,11 @@ func start_dash():
 	else:
 		attack_after_dash = false
 
-### --- ATTACK INITIALIZATION --- ###
 func start_attack():
 	is_attacking = true
 	attack_timer = ATTACK_DURATION
 	velocity = Vector2.ZERO  # Freeze movement during attack
 
-### --- ENABLE MELEE AREA & DEBUG --- ###
 func _enable_melee():
 	# Position melee area in aim direction
 	melee_area.position = aim_direction * 20
@@ -165,14 +194,12 @@ func _enable_melee():
 func _on_melee_area_body_entered(body: Node) -> void:
 	print("Melee hit:", body.name)
 
-### --- DASH COOLDOWN --- ###
 func update_dash_cooldown(delta: float) -> void:
 	if dash_cooldown_timer > 0.0:
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		if dash_cooldown_timer == 0.0:
 			can_dash = true
 
-### --- ANIMATION CONTROLLER --- ###
 func update_animations() -> void:
 	if is_attacking and current_attack_animation != "":
 		animated_sprite_2d.play(current_attack_animation)
