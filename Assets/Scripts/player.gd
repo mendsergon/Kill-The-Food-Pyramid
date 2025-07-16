@@ -82,8 +82,8 @@ func _physics_process(delta: float) -> void:
 		is_direction_locked = true
 
 	# Queue melee **during** dash → Swing_2
-	if is_dashing and Input.is_action_just_pressed("melee"):  # ← NEW
-		attack_after_dash = true                              # ← NEW
+	if is_dashing and Input.is_action_just_pressed("melee"):  
+		attack_after_dash = true                              
 
 	# Normal attack
 	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
@@ -146,6 +146,8 @@ func _physics_process(delta: float) -> void:
 		# Use the stored direction, not live aim
 		var dir = locked_aim_direction
 		animated_sprite_2d.rotation = dir.angle()                  # Rotate sprite to face mouse
+		# Wrap rotation to keep within 0–360 degrees
+		animated_sprite_2d.rotation_degrees = wrap(animated_sprite_2d.rotation_degrees, 0, 360)  # ← NEW
 		# Flip vertically when facing left (between 90° and 270°)
 		if animated_sprite_2d.rotation_degrees > 90 and animated_sprite_2d.rotation_degrees < 270:
 			animated_sprite_2d.scale.y = -1                       # Mirror sprite on Y axis
@@ -164,7 +166,6 @@ func _update_aim_direction() -> void:
 	# Calculate direction to mouse position
 	var mouse_pos = get_global_mouse_position()
 	aim_direction = (mouse_pos - global_position).normalized()
-	# (Rotation and flip handled in _physics_process)
 
 func start_dash():
 	is_dashing = true
