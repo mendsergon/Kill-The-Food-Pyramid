@@ -8,10 +8,6 @@
 [node name="Game" type="Node2D"]
 script = ExtResource("1_rh331")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(14, -8)
-zoom = Vector2(4, 4)
-
 [node name="Cyber Cat" parent="." instance=ExtResource("2_pfbgl")]
 position = Vector2(61, -11)
 
@@ -22,3 +18,7 @@ collision_mask = 131
 
 [node name="Player" parent="." instance=ExtResource("1_nbu75")]
 position = Vector2(14, -15)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(0, 7)
+zoom = Vector2(4, 4)

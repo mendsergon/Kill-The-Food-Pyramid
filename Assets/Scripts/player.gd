@@ -147,7 +147,7 @@ func _physics_process(delta: float) -> void:
 		var dir = locked_aim_direction
 		animated_sprite_2d.rotation = dir.angle()                  # Rotate sprite to face mouse
 		# Wrap rotation to keep within 0–360 degrees
-		animated_sprite_2d.rotation_degrees = wrap(animated_sprite_2d.rotation_degrees, 0, 360)  # ← NEW
+		animated_sprite_2d.rotation_degrees = wrap(animated_sprite_2d.rotation_degrees, 0, 360)  
 		# Flip vertically when facing left (between 90° and 270°)
 		if animated_sprite_2d.rotation_degrees > 90 and animated_sprite_2d.rotation_degrees < 270:
 			animated_sprite_2d.scale.y = -1                       # Mirror sprite on Y axis
