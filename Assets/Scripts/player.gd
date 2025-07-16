@@ -193,6 +193,9 @@ func _enable_melee():
 	melee_area.visible = true
 
 func _on_melee_area_body_entered(body: Node) -> void:
+	# Deal 3 HP melee damage if possible
+	if body.has_method("apply_damage"):
+		body.apply_damage(3)
 	print("Melee hit:", body.name)
 
 func update_dash_cooldown(delta: float) -> void:

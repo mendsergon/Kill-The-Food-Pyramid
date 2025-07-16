@@ -9,6 +9,11 @@ const SPEED: int = 300                     # Bullet travel speed (pixels per sec
 func _physics_process(delta: float) -> void:
 	if ray_cast_2d.is_colliding():             # Check if raycast hit something this frame
 		var collider = ray_cast_2d.get_collider()
+		
+		# If the thing we hit can take damage, apply 1 HP from bullets
+		if collider.has_method("apply_damage"):
+			collider.apply_damage(1)
+		
 		print("Hit:", collider.name)
 		queue_free()                            # Destroy bullet on impact
 	else:

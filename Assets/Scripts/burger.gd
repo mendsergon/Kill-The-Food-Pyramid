@@ -2,23 +2,29 @@ extends CharacterBody2D
 
 ### --- CORE CONSTANTS --- ###
 const MOVE_SPEED = 50.0                  # Enemy walk speed
-const MOVE_DURATION = 3.0               # Active chase time
-const IDLE_COOLDOWN = 2.0               # Pause duration between chases
+const MOVE_DURATION = 3.0                # Active chase time
+const IDLE_COOLDOWN = 2.0                # Pause duration between chases
+
+### --- HEALTH --- ###
+@export var max_health: int = 5          # Maximum HP for burger
+var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D  # Enemy sprite
 
 ### --- STATE --- ###
-var player: CharacterBody2D = null        # Reference to player node
-var is_moving := true                     # Currently chasing player
-var behavior_timer := 0.0                 # Tracks chase/idle timing
+var player: CharacterBody2D = null       # Reference to player node
+var is_moving := true                    # Currently chasing player
+var behavior_timer := 0.0                # Tracks chase/idle timing
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
+	# Initialize animation and health
 	animated_sprite_2d.play("Idle")
+	health = max_health                    # Set starting HP
 
 func _physics_process(delta: float) -> void:
 	if player == null:
@@ -31,7 +37,6 @@ func _physics_process(delta: float) -> void:
 		is_moving = false
 		behavior_timer = 0.0
 		animated_sprite_2d.play("Idle")
-
 	elif not is_moving and behavior_timer >= IDLE_COOLDOWN:
 		is_moving = true
 		behavior_timer = 0.0
@@ -51,3 +56,17 @@ func _physics_process(delta: float) -> void:
 
 	### --- APPLY MOVEMENT --- ###
 	move_and_slide()
+
+### --- DAMAGE & DEATH --- ###
+func apply_damage(amount: int) -> void:
+	# Subtract incoming damage
+	health -= amount
+	print("Burger took %d damage, %d HP remaining" % [amount, health])
+
+	# Check for death
+	if health <= 0:
+		die()
+
+func die() -> void:
+	# Handle burger death (play animation, drop loot, etc.)
+	queue_free()
