@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=3 uid="uid://bph66ic70jhpq"]
+
+[ext_resource type="Script" path="res://Assets/Scripts/bread.gd" id="1_hrixj"]
+[ext_resource type="Texture2D" uid="uid://cil4xh37npmfr" path="res://Assets/Sprites/Bread/bread_spritesheet.png" id="1_oksie"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sh533"]
+atlas = ExtResource("1_oksie")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7cmkh"]
+atlas = ExtResource("1_oksie")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i6741"]
+atlas = ExtResource("1_oksie")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4e76h"]
+atlas = ExtResource("1_oksie")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_req6j"]
+atlas = ExtResource("1_oksie")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_naf3r"]
+atlas = ExtResource("1_oksie")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1rgbc"]
+atlas = ExtResource("1_oksie")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d26is"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sh533")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7cmkh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i6741")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4e76h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_req6j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_naf3r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1rgbc")
+}],
+"loop": true,
+"name": &"Run",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j7te5"]
+size = Vector2(19, 18)
+
+[node name="Bread" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_hrixj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_d26is")
+animation = &"Run"
+autoplay = "Idle"
+frame = 2
+frame_progress = 0.539661
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 5)
+shape = SubResource("RectangleShape2D_j7te5")
