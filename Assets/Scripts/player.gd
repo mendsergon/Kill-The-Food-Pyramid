@@ -47,6 +47,7 @@ var locked_aim_direction := Vector2.RIGHT  # Stored direction at action start
 var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
 var current_attack_animation := ""      # Attack animation name
+var is_dead := false                    # True after death initiated
 
 ### --- COLLISION MASK STATE --- ###
 var original_collision_mask := 0        # Stores default collision mask
@@ -63,6 +64,11 @@ func _ready() -> void:
 	original_collision_layer = collision_layer
 
 func _physics_process(delta: float) -> void:
+	# --- SKIP EVERYTHING IF DEAD --- #
+	if is_dead:
+		move_and_slide()  # Allow any last motion to complete
+		return
+
 	### --- INVULNERABILITY TIMER --- ###
 	if is_invulnerable:
 		invuln_timer -= delta
@@ -221,7 +227,9 @@ func update_dash_cooldown(delta: float) -> void:
 			can_dash = true
 
 func update_animations() -> void:
-	if is_attacking and current_attack_animation != "":
+	if is_dead:
+		animated_sprite_2d.play("Death")
+	elif is_attacking and current_attack_animation != "":
 		animated_sprite_2d.play(current_attack_animation)
 	elif is_dashing:
 		animated_sprite_2d.play("Dash")
@@ -233,7 +241,7 @@ func update_animations() -> void:
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
 	# Subtract incoming damage if not invulnerable
-	if is_invulnerable:
+	if is_invulnerable or is_dead:
 		return
 	health -= amount
 	is_invulnerable = true
@@ -246,4 +254,17 @@ func apply_damage(amount: int) -> void:
 
 func die() -> void:
 	# Handle player death 
-	queue_free()
+	is_dead = true
+	velocity = Vector2.ZERO
+	pistol_1.visible = false
+	pistol_1.set_process(false)
+	pistol_1.set_process_input(false)
+	animated_sprite_2d.play("Death")      # Play death animation
+	# Defer deletion until animation ends
+	if not animated_sprite_2d.is_connected("animation_finished", Callable(self, "_on_animation_finished")):
+		animated_sprite_2d.connect("animation_finished", Callable(self, "_on_animation_finished"))
+
+func _on_animation_finished() -> void:
+	if animated_sprite_2d.animation == "Death" and is_dead:
+		print("Death animation finished — freeing")
+		queue_free()
