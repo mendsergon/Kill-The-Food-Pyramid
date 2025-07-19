@@ -160,8 +160,8 @@ func _physics_process(delta: float) -> void:
 	update_animations()
 
 	### --- WEAPON STATE --- ###
-	# Hide and disable pistol during dash or melee
-	if is_dashing or is_attacking:
+	# Hide and disable pistol during dash, melee, or hit
+	if is_dashing or is_attacking or is_hit:
 		pistol_1.visible = false
 		pistol_1.set_process(false)
 		pistol_1.set_process_input(false)
