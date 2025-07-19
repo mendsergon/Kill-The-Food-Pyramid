@@ -60,7 +60,9 @@ func _physics_process(delta: float) -> void:
 		var collision = get_slide_collision(i)
 		var other = collision.get_collider()            # Get the collided object
 		if other == player and other.has_method("apply_damage"):
-			other.apply_damage(1)                       # Deal 1 damage to player
+			# Knockback direction points from enemy to player (push player away)
+			var knockback_dir = (player.global_position - global_position).normalized()
+			other.apply_damage(1, (player.global_position - global_position).normalized())         # Deal 1 damage + knockback to player
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:

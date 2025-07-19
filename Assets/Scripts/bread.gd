@@ -6,7 +6,7 @@ const MOVE_DURATION = 4.0                # Active chase time
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
 
 ### --- HEALTH --- ###
-@export var max_health: int = 3          # Maximum HP for burger
+@export var max_health: int = 3          # Maximum HP for bread
 var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
@@ -60,7 +60,9 @@ func _physics_process(delta: float) -> void:
 		var collision = get_slide_collision(i)
 		var other = collision.get_collider()            # Get the collided object
 		if other == player and other.has_method("apply_damage"):
-			other.apply_damage(1)                       # Deal 1 damage to player
+			# Knockback direction points from enemy to player (push player away)
+			var knockback_dir = (player.global_position - global_position).normalized()
+			other.apply_damage(1, (player.global_position - global_position).normalized())         # Deal 1 damage + knockback to player
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
@@ -70,4 +72,4 @@ func apply_damage(amount: int) -> void:
 		die()
 
 func die() -> void:
-	queue_free()                                     # Remove burger on death
+	queue_free()                                     # Remove bread on death

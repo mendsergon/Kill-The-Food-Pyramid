@@ -55,6 +55,10 @@ var hit_timer := 0.0                    # Hit animation countdown
 var original_collision_mask := 0        # Stores default collision mask
 var original_collision_layer := 0       # Stores default collision layer  
 
+### --- KNOCKBACK STATE --- ###
+var knockback_velocity := Vector2.ZERO  # Velocity applied from knockback
+const KNOCKBACK_DECAY := 800.0           # Rate at which knockback slows down
+
 func _ready() -> void:
 	# Initialize health and disable melee area until needed
 	health = max_health                     # Set starting HP
@@ -155,6 +159,17 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity = Vector2.ZERO  # Freeze movement during attack or hit
 
+	### --- APPLY KNOCKBACK VELOCITY --- ###
+	# Knockback overrides movement velocity additively, decays over time
+	if knockback_velocity.length() > 0:
+		velocity += knockback_velocity
+		# Reduce knockback velocity smoothly
+		var decay_amount = KNOCKBACK_DECAY * delta
+		if knockback_velocity.length() <= decay_amount:
+			knockback_velocity = Vector2.ZERO
+		else:
+			knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, decay_amount)
+
 	### --- PHYSICS UPDATE --- ###
 	move_and_slide()
 
@@ -254,7 +269,7 @@ func update_animations() -> void:
 		animated_sprite_2d.play("Idle")
 
 ### --- DAMAGE & DEATH --- ###
-func apply_damage(amount: int) -> void:
+func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
 	# Subtract incoming damage if not invulnerable
 	if is_invulnerable or is_dead:
 		return
@@ -272,7 +287,11 @@ func apply_damage(amount: int) -> void:
 	if health > 0:
 		is_hit = true
 		hit_timer = 0.5                    # Duration of hit animation
-	
+
+		# Apply knockback velocity if direction provided
+		if knockback_dir != Vector2.ZERO:
+			knockback_velocity = knockback_dir.normalized() * 300
+
 	# Check for death
 	if health <= 0:
 		die()
@@ -281,6 +300,7 @@ func die() -> void:
 	# Handle player death 
 	is_dead = true
 	velocity = Vector2.ZERO
+	knockback_velocity = Vector2.ZERO
 	pistol_1.visible = false
 	pistol_1.set_process(false)
 	pistol_1.set_process_input(false)
