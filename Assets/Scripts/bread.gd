@@ -5,6 +5,7 @@ const MOVE_SPEED = 75.0                  # Enemy walk speed
 const MOVE_DURATION = 4.0                # Active chase time
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
+const STAGGER_DURATION = 0.1             # Time frozen after taking hit
 
 ### --- HEALTH --- ###
 @export var max_health: int = 3          # Maximum HP for bread
@@ -18,6 +19,7 @@ var player: CharacterBody2D = null       # Reference to player node
 var is_moving := true                    # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
+var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
@@ -33,6 +35,8 @@ func _physics_process(delta: float) -> void:
 
 	### --- TIMER MANAGEMENT --- ###
 	behavior_timer += delta
+	if stagger_timer > 0.0:
+		stagger_timer -= delta
 
 	if is_moving and behavior_timer >= MOVE_DURATION:
 		is_moving = false
@@ -45,7 +49,7 @@ func _physics_process(delta: float) -> void:
 
 	### --- MOVEMENT LOGIC --- ###
 	var move_direction = Vector2.ZERO
-	if is_moving:
+	if is_moving and stagger_timer <= 0.0:
 		move_direction = (player.global_position - global_position).normalized()
 		velocity = move_direction * MOVE_SPEED
 
@@ -77,6 +81,7 @@ func apply_damage(amount: int) -> void:
 	print("Bread took %d damage, %d HP remaining" % [amount, health])
 	animated_sprite_2d.modulate = Color(1, 0, 0)     # Tint sprite red
 	flash_timer = FLASH_DURATION                    # Start flash timer
+	stagger_timer = STAGGER_DURATION                # Freeze movement briefly
 
 	if health <= 0:
 		die()
