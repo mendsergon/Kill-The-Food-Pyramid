@@ -4,6 +4,7 @@ extends CharacterBody2D
 const MOVE_SPEED = 50.0                  # Enemy walk speed
 const MOVE_DURATION = 3.0                # Active chase time
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
+const FLASH_DURATION = 0.25              # Duration of red flash on damage
 
 ### --- HEALTH --- ###
 @export var max_health: int = 5          # Maximum HP for burger
@@ -16,6 +17,7 @@ var health: int                          # Current HP
 var player: CharacterBody2D = null       # Reference to player node
 var is_moving := true                    # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
+var flash_timer := 0.0                   # Timer for red flash effect
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
@@ -63,10 +65,19 @@ func _physics_process(delta: float) -> void:
 			# Knockback direction points from enemy to player 
 			other.apply_damage(1, (player.global_position - global_position).normalized())         # Deal 1 damage + knockback to player
 
+	### --- RED FLASH ON DAMAGE --- ###
+	if flash_timer > 0.0:
+		flash_timer -= delta
+		if flash_timer <= 0.0:
+			animated_sprite_2d.modulate = Color(1, 1, 1)  # Reset color to normal
+
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
 	health -= amount                                 # Subtract incoming damage
 	print("Burger took %d damage, %d HP remaining" % [amount, health])
+	animated_sprite_2d.modulate = Color(1, 0, 0)     # Tint sprite red
+	flash_timer = FLASH_DURATION                    # Start flash timer
+
 	if health <= 0:
 		die()
 
