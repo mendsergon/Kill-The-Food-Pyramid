@@ -15,12 +15,10 @@ position = Vector2(61, -11)
 [node name="Burger" parent="." instance=ExtResource("3_22p6o")]
 position = Vector2(-44, -55)
 scale = Vector2(0.75, 0.75)
-collision_mask = 3
 
 [node name="Bread" parent="." instance=ExtResource("5_6ymoj")]
 position = Vector2(-80, -19)
 scale = Vector2(0.75, 0.75)
-collision_mask = 3
 
 [node name="Player" parent="." instance=ExtResource("1_nbu75")]
 position = Vector2(14, -15)
