@@ -105,18 +105,18 @@ func _physics_process(delta: float) -> void:
 
 	### --- ACTION INITIATION --- ###
 	# Start dash if available
-	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking:
+	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking and not is_hit:
 		start_dash()
 		# Lock look direction at dash start
 		locked_aim_direction = aim_direction
 		is_direction_locked = true
 
 	# Queue melee **during** dash → Swing_2
-	if is_dashing and Input.is_action_just_pressed("melee"):  
+	if is_dashing and Input.is_action_just_pressed("melee") and not is_hit:
 		attack_after_dash = true                              
 
 	# Normal attack
-	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking:
+	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking and not is_hit:
 		start_attack()
 		current_attack_animation = "Swing_1"
 		_enable_melee()
@@ -146,9 +146,11 @@ func _physics_process(delta: float) -> void:
 
 	### --- REGULAR MOVEMENT --- ###
 	else:
-		# Apply movement if not attacking
-		if not is_attacking:
+		# Apply movement if not attacking or hit
+		if not is_attacking and not is_hit:
 			velocity = move_direction * SPEED
+		else:
+			velocity = Vector2.ZERO  # Freeze movement during attack or hit
 
 	### --- PHYSICS UPDATE --- ###
 	move_and_slide()
