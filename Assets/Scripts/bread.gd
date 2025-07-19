@@ -6,6 +6,7 @@ const MOVE_DURATION = 4.0                # Active chase time
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
 const STAGGER_DURATION = 0.1             # Time frozen after taking hit
+const DEATH_DURATION = 0.5               # Time before removing dead bread
 
 ### --- HEALTH --- ###
 @export var max_health: int = 3          # Maximum HP for bread
@@ -20,6 +21,8 @@ var is_moving := true                    # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
+var death_timer := 0.0                   # Timer after death before deletion
+var is_dying := false                    # Whether bread is in death state
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
@@ -30,6 +33,13 @@ func _ready() -> void:
 	health = max_health                    # Set starting HP
 
 func _physics_process(delta: float) -> void:
+	### --- DEATH TIMER --- ###
+	if is_dying:
+		death_timer -= delta
+		if death_timer <= 0.0:
+			queue_free()                  # Remove bread after death delay
+		return                            # Skip logic while dead
+
 	if player == null:
 		return
 
@@ -87,4 +97,11 @@ func apply_damage(amount: int) -> void:
 		die()
 
 func die() -> void:
-	queue_free()                                     # Remove bread on death
+	is_dying = true                                  # Mark bread as dying
+	death_timer = DEATH_DURATION                     # Countdown before deletion
+	animated_sprite_2d.modulate = Color(1, 0, 0)     # Turn red
+	rotation_degrees = 90                            # Rotate 90 degrees
+	velocity = Vector2.ZERO                          # Stop movement
+
+	### --- MOVE TO PHYSICS LAYER 5 --- ###
+	collision_layer = 1 << 4                         # Set to physics layer 5 (bit flag index 4)
