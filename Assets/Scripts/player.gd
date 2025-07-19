@@ -48,6 +48,8 @@ var is_attacking := false               # During attack animation
 var attack_timer := 0.0                 # Attack duration countdown
 var current_attack_animation := ""      # Attack animation name
 var is_dead := false                    # True after death initiated
+var is_hit := false                     # True during hit animation
+var hit_timer := 0.0                    # Hit animation countdown
 
 ### --- COLLISION MASK STATE --- ###
 var original_collision_mask := 0        # Stores default collision mask
@@ -94,6 +96,12 @@ func _physics_process(delta: float) -> void:
 			melee_area.visible = false
 			# Unlock look direction at end of attack
 			is_direction_locked = false
+
+	# Handle hit animation duration
+	if is_hit:
+		hit_timer -= delta
+		if hit_timer <= 0.0:
+			is_hit = false
 
 	### --- ACTION INITIATION --- ###
 	# Start dash if available
@@ -229,6 +237,8 @@ func update_dash_cooldown(delta: float) -> void:
 func update_animations() -> void:
 	if is_dead:
 		animated_sprite_2d.play("Death")
+	elif is_hit:
+		animated_sprite_2d.play("Hit")
 	elif is_attacking and current_attack_animation != "":
 		animated_sprite_2d.play(current_attack_animation)
 	elif is_dashing:
@@ -247,6 +257,11 @@ func apply_damage(amount: int) -> void:
 	is_invulnerable = true
 	invuln_timer = INVULN_DURATION        # Start invulnerability
 	print("Player took %d damage, %d HP remaining" % [amount, health])
+
+	# Trigger hit animation if not dead
+	if health > 0:
+		is_hit = true
+		hit_timer = 0.5                    # Duration of hit animation
 	
 	# Check for death
 	if health <= 0:
