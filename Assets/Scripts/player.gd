@@ -76,6 +76,9 @@ func _physics_process(delta: float) -> void:
 		invuln_timer -= delta
 		if invuln_timer <= 0.0:
 			is_invulnerable = false
+			# Restore collision layers back
+			collision_layer = original_collision_layer
+			collision_mask = original_collision_mask
 
 	### --- INPUT PROCESSING --- ###
 	# Get combined movement input (4-directional)
@@ -258,6 +261,11 @@ func apply_damage(amount: int) -> void:
 	health -= amount
 	is_invulnerable = true
 	invuln_timer = INVULN_DURATION        # Start invulnerability
+	
+	# Move player to ghost layer while invulnerable
+	collision_layer = LAYER_3_MASK
+	collision_mask &= IGNORE_LAYER_3_MASK
+
 	print("Player took %d damage, %d HP remaining" % [amount, health])
 
 	# Trigger hit animation if not dead

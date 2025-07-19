@@ -105,7 +105,7 @@ size = Vector2(21, 19)
 
 [node name="Burger" type="CharacterBody2D"]
 collision_layer = 4
-collision_mask = 7
+collision_mask = 3
 script = ExtResource("1_x8nvj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
