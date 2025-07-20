@@ -19,7 +19,8 @@ var health: int                          # Current HP
 
 ### --- HEALTH BAR --- ###
 var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
-@onready var hearts_parent: HBoxContainer = $"../HealthBar/HBoxContainer"  # Reference to the container holding heart UI elements
+@onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
+
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -82,8 +83,8 @@ func _ready() -> void:
 		if heart_node is TextureRect:
 			hearts_list.append(heart_node)
 
-	# Slightly move the hearts container down and right
-	hearts_parent.position += Vector2(10, 7.5)  
+	# Heart container position
+	hearts_parent.position += Vector2(55, 15)  
 
 	# Enable processing to run _process for blinking hearts
 	set_process(true)

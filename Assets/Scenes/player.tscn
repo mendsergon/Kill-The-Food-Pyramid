@@ -1,8 +1,9 @@
-[gd_scene load_steps=46 format=3 uid="uid://dr0o1vrv8l7kq"]
+[gd_scene load_steps=47 format=3 uid="uid://dr0o1vrv8l7kq"]
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Sprites/Player/Player.png" id="1_6cd4h"]
 [ext_resource type="Script" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
 [ext_resource type="PackedScene" uid="uid://c6eum3n2mgjdb" path="res://Assets/Scenes/pistol_1.tscn" id="3_38rej"]
+[ext_resource type="PackedScene" uid="uid://chrs6jk0nsxnb" path="res://Assets/Scenes/heart.tscn" id="4_22rpc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ecf78"]
 atlas = ExtResource("1_6cd4h")
@@ -351,3 +352,29 @@ collision_mask = 4
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeArea2D"]
 position = Vector2(16, -8)
 shape = SubResource("RectangleShape2D_38rej")
+
+[node name="HealthBar" type="CanvasLayer" parent="."]
+scale = Vector2(2, 2)
+transform = Transform2D(2, 0, 0, 2, 0, 0)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HealthBar"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Heart" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart" instance=ExtResource("4_22rpc")]
+position = Vector2(-45.5, -8)
+
+[node name="Heart2" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart2" instance=ExtResource("4_22rpc")]
+position = Vector2(-33, -8)
+
+[node name="Heart3" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart3" instance=ExtResource("4_22rpc")]
+position = Vector2(-20.5, -8)
