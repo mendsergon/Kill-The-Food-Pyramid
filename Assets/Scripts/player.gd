@@ -14,8 +14,12 @@ const IGNORE_LAYER_3_MASK = ~(1 << 2)   # Mask to ignore layer 3 (bit 2)
 const LAYER_3_MASK = (1 << 2)           # Mask only layer 3 (bit 2)
 
 ### --- PLAYER HEALTH --- ###
-@export var max_health: int = 3         # Maximum HP for player
+@export var max_health: int = 3          # Maximum HP for player
 var health: int                          # Current HP
+
+### --- HEALTH BAR --- ###
+var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
+@onready var hearts_parent: HBoxContainer = $"../HealthBar/HBoxContainer"  # Reference to the container holding heart UI elements
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -68,6 +72,17 @@ func _ready() -> void:
 	# Store initial collision mask and layer
 	original_collision_mask = collision_mask
 	original_collision_layer = collision_layer
+
+	# Initialize hearts_list from hearts_parent children 
+	for heart_node in hearts_parent.get_children():
+		if heart_node is TextureRect:
+			hearts_list.append(heart_node)
+
+	# Slightly move the hearts container down and right
+	hearts_parent.position += Vector2(10, 7.5)  
+
+
+	update_health_bar()  # Initial update of health bar display
 
 func _physics_process(delta: float) -> void:
 	# --- SKIP EVERYTHING IF DEAD --- #
@@ -274,6 +289,8 @@ func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
 	if is_invulnerable or is_dead:
 		return
 	health -= amount
+	update_health_bar()  # Update health bar on damage
+
 	is_invulnerable = true
 	invuln_timer = INVULN_DURATION        # Start invulnerability
 	
@@ -313,3 +330,14 @@ func _on_animation_finished() -> void:
 	if animated_sprite_2d.animation == "Death" and is_dead:
 		print("Death animation finished — freeing")
 		queue_free()
+
+### --- HEALTH BAR UPDATE --- ###
+func update_health_bar() -> void:
+	# Clamp health to valid range
+	health = clamp(health, 0, max_health)
+	# Show or hide hearts based on current health
+	for i in range(hearts_list.size()):
+		if i < health:
+			hearts_list[i].visible = true
+		else:
+			hearts_list[i].visible = false

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://bpbg1hrm0jn1k"]
+[gd_scene load_steps=7 format=3 uid="uid://bpbg1hrm0jn1k"]
 
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="1_nbu75"]
 [ext_resource type="Script" path="res://Assets/Scripts/game.gd" id="1_rh331"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/Scenes/cyber_cat.tscn" id="2_pfbgl"]
 [ext_resource type="PackedScene" uid="uid://cpaq54jiqc41b" path="res://Assets/Scenes/burger.tscn" id="3_22p6o"]
 [ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Scenes/bread.tscn" id="5_6ymoj"]
+[ext_resource type="PackedScene" uid="uid://chrs6jk0nsxnb" path="res://Assets/Scenes/heart.tscn" id="6_l3mha"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_rh331")
@@ -26,3 +27,28 @@ position = Vector2(14, -15)
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, 7)
 zoom = Vector2(4, 4)
+
+[node name="HealthBar" type="CanvasLayer" parent="."]
+scale = Vector2(2, 2)
+transform = Transform2D(2, 0, 0, 2, 0, 0)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HealthBar"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Heart" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart" instance=ExtResource("6_l3mha")]
+
+[node name="Heart2" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart2" instance=ExtResource("6_l3mha")]
+position = Vector2(13, 0)
+
+[node name="Heart3" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart3" instance=ExtResource("6_l3mha")]
+position = Vector2(26, 0)
