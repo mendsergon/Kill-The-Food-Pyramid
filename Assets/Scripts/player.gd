@@ -63,6 +63,10 @@ var original_collision_layer := 0       # Stores default collision layer
 var knockback_velocity := Vector2.ZERO  # Velocity applied from knockback
 const KNOCKBACK_DECAY := 800.0           # Rate at which knockback slows down
 
+### --- BLINKING STATE FOR LAST HEART --- ###
+var blink_timer := 0.0                   # Timer for blinking effect
+const BLINK_INTERVAL := 0.5              # Seconds for blink on/off
+
 func _ready() -> void:
 	# Initialize health and disable melee area until needed
 	health = max_health                     # Set starting HP
@@ -81,8 +85,25 @@ func _ready() -> void:
 	# Slightly move the hearts container down and right
 	hearts_parent.position += Vector2(10, 7.5)  
 
+	# Enable processing to run _process for blinking hearts
+	set_process(true)
 
 	update_health_bar()  # Initial update of health bar display
+
+func _process(delta: float) -> void:
+	if health == 1 and hearts_list.size() > 0:
+		blink_timer += delta
+		var blink_phase = int(blink_timer / BLINK_INTERVAL) % 2
+		var last_heart = hearts_list[health - 1]
+		if blink_phase == 0:
+			last_heart.modulate = Color(1, 1, 1, 1)  # fully visible
+		else:
+			last_heart.modulate = Color(1, 1, 1, 0.3)  # dimmed to create blink
+	else:
+		blink_timer = 0.0
+		for heart in hearts_list:
+			heart.modulate = Color(1, 1, 1, 1)  # reset to normal
+
 
 func _physics_process(delta: float) -> void:
 	# --- SKIP EVERYTHING IF DEAD --- #
@@ -341,3 +362,7 @@ func update_health_bar() -> void:
 			hearts_list[i].visible = true
 		else:
 			hearts_list[i].visible = false
+	# If health != 1, reset modulate on all hearts (to avoid stuck blinking)
+	if health != 1:
+		for heart in hearts_list:
+			heart.modulate = Color(1, 1, 1, 1)
