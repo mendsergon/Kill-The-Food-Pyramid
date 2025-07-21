@@ -102,9 +102,11 @@ func _process(delta: float) -> void:
 			last_heart.modulate = Color(1, 1, 1, 0.3)  # dimmed to create blink
 	else:
 		blink_timer = 0.0
-		for heart in hearts_list:
-			heart.modulate = Color(1, 1, 1, 1)  # reset to normal
-
+		for i in range(hearts_list.size()):
+			if i < health:
+				hearts_list[i].modulate = Color(1, 1, 1, 1)  # full visible for active hearts
+			else:
+				hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # transparent for missing hearts
 
 func _physics_process(delta: float) -> void:
 	# --- SKIP EVERYTHING IF DEAD --- #
@@ -357,13 +359,9 @@ func _on_animation_finished() -> void:
 func update_health_bar() -> void:
 	# Clamp health to valid range
 	health = clamp(health, 0, max_health)
-	# Show or hide hearts based on current health
+	# Adjust heart visibility (no longer hides, just dims missing hearts)
 	for i in range(hearts_list.size()):
 		if i < health:
-			hearts_list[i].visible = true
+			hearts_list[i].modulate = Color(1, 1, 1, 1)     # Full opacity for active hearts
 		else:
-			hearts_list[i].visible = false
-	# If health != 1, reset modulate on all hearts (to avoid stuck blinking)
-	if health != 1:
-		for heart in hearts_list:
-			heart.modulate = Color(1, 1, 1, 1)
+			hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # Low opacity for empty hearts
