@@ -26,8 +26,6 @@ var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
 @onready var melee_orbs_parent: HBoxContainer = $MeleeOrbBar/HBoxContainer # Reference to the container holding melee orb UI elements
 const MAX_MELEE_ORBS := 3                # Maximum number of orbs
 var current_orb_charges := 0             # Start with zero orbs
-const ORB_RECHARGE_TIME := 2.0           # Time in seconds to regenerate one orb (not used for pistol hits)
-var orb_recharge_timer := 0.0            # Countdown timer for next orb
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
