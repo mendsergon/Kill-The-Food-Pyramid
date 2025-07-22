@@ -1,5 +1,8 @@
 extends Area2D
 
+@warning_ignore("unused_signal")
+signal hit_target(collider)  # Signal to notify when bullet hits something
+
 @onready var ray_cast_2d: RayCast2D = $RayCast2D  # Raycast to detect collisions manually
 
 ### --- CORE CONSTANTS --- ###
@@ -15,6 +18,7 @@ func _physics_process(delta: float) -> void:
 			collider.apply_damage(1)
 		
 		print("Hit:", collider.name)
+		emit_signal("hit_target", collider)  # Emit signal to notify listeners of hit
 		queue_free()                            # Destroy bullet on impact
 	else:
 		position += transform.x * SPEED * delta  # Move bullet forward based on local direction

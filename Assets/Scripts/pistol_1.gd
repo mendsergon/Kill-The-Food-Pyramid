@@ -26,3 +26,14 @@ func _process(_delta: float) -> void:
 		get_tree().root.add_child(bullet_instance)                         # Add to scene
 		bullet_instance.global_position = muzzle.global_position           # Set spawn position
 		bullet_instance.rotation = global_rotation                         # Match aim direction
+
+		# Connect bullet hit signal to pistol to handle melee orb recharge
+		bullet_instance.connect("hit_target", Callable(self, "_on_bullet_hit"))
+
+# Called when a bullet hits a collider
+func _on_bullet_hit(_collider) -> void:
+	# Assuming player node is the pistol's parent or accessible via the scene tree
+	var player = get_parent()  # Adjust if your player node is somewhere else
+
+	if player and player.has_method("add_melee_orb"):
+		player.add_melee_orb()  # Add melee orb charge on bullet hit

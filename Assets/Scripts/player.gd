@@ -21,6 +21,13 @@ var health: int                          # Current HP
 var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
+### --- MELEE ORB BAR --- ###
+var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
+@onready var melee_orbs_parent: HBoxContainer = $MeleeOrbBar/HBoxContainer # Reference to the container holding melee orb UI elements
+const MAX_MELEE_ORBS := 3                # Maximum number of orbs
+var current_orb_charges := 0             # Start with zero orbs
+const ORB_RECHARGE_TIME := 2.0           # Time in seconds to regenerate one orb (not used for pistol hits)
+var orb_recharge_timer := 0.0            # Countdown timer for next orb
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -89,7 +96,16 @@ func _ready() -> void:
 	# Enable processing to run _process for blinking hearts
 	set_process(true)
 
+	# Initialize melee orb list from melee orb UI container
+	for orb_node in melee_orbs_parent.get_children():
+		if orb_node is TextureRect:
+			melee_orb_list.append(orb_node)
+
+	# Melee orb container position
+	melee_orbs_parent.position += Vector2(110, 30)
+	
 	update_health_bar()  # Initial update of health bar display
+	update_melee_orb_bar()  # Initial update of melee orb display
 
 func _process(delta: float) -> void:
 	if health == 1 and hearts_list.size() > 0:
@@ -159,16 +175,21 @@ func _physics_process(delta: float) -> void:
 
 	# Queue melee **during** dash → Swing_2
 	if is_dashing and Input.is_action_just_pressed("melee") and not is_hit:
-		attack_after_dash = true                              
+		if current_orb_charges > 0:
+			attack_after_dash = true
 
 	# Normal attack
 	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking and not is_hit:
-		start_attack()
-		current_attack_animation = "Swing_1"
-		_enable_melee()
-		# Lock look direction at attack start
-		locked_aim_direction = aim_direction
-		is_direction_locked = true
+		if current_orb_charges > 0:
+			start_attack()
+			current_attack_animation = "Swing_1"
+			_enable_melee()
+			# CONSUME ALL ORBS ON MELEE
+			current_orb_charges = 0
+			update_melee_orb_bar()
+			# Lock look direction at attack start
+			locked_aim_direction = aim_direction
+			is_direction_locked = true
 
 	### --- DASH PHYSICS --- ###
 	if is_dashing:
@@ -181,10 +202,13 @@ func _physics_process(delta: float) -> void:
 			collision_layer = original_collision_layer
 			
 			# Execute queued attack
-			if attack_after_dash:
+			if attack_after_dash and current_orb_charges > 0:
 				start_attack()
 				current_attack_animation = "Swing_2"
 				_enable_melee()
+				# CONSUME ALL ORBS ON MELEE
+				current_orb_charges = 0
+				update_melee_orb_bar()
 				attack_after_dash = false
 				# Lock look direction for the queued attack
 				locked_aim_direction = aim_direction
@@ -202,7 +226,6 @@ func _physics_process(delta: float) -> void:
 	# Knockback overrides movement velocity additively, decays over time
 	if knockback_velocity.length() > 0:
 		velocity += knockback_velocity
-		# Reduce knockback velocity smoothly
 		var decay_amount = KNOCKBACK_DECAY * delta
 		if knockback_velocity.length() <= decay_amount:
 			knockback_velocity = Vector2.ZERO
@@ -219,7 +242,6 @@ func _physics_process(delta: float) -> void:
 	update_animations()
 
 	### --- WEAPON STATE --- ###
-	# Hide and disable pistol during dash, melee, or hit
 	if is_dashing or is_attacking or is_hit:
 		pistol_1.visible = false
 		pistol_1.set_process(false)
@@ -230,29 +252,22 @@ func _physics_process(delta: float) -> void:
 		pistol_1.set_process_input(true)
 
 	### --- SPRITE ORIENTATION --- ###
-	# Rotate to face locked mouse direction during dash or melee, otherwise reset and flip on movement
 	if is_dashing or is_attacking:
-		# Use the stored direction, not live aim
 		var dir = locked_aim_direction
-		animated_sprite_2d.rotation = dir.angle()                  # Rotate sprite to face mouse
-		# Wrap rotation to keep within 0–360 degrees
+		animated_sprite_2d.rotation = dir.angle()                 
 		animated_sprite_2d.rotation_degrees = wrap(animated_sprite_2d.rotation_degrees, 0, 360)  
-		# Flip vertically when facing left (between 90° and 270°)
 		if animated_sprite_2d.rotation_degrees > 90 and animated_sprite_2d.rotation_degrees < 270:
-			animated_sprite_2d.scale.y = -1                       # Mirror sprite on Y axis
+			animated_sprite_2d.scale.y = -1                       
 		else:
-			animated_sprite_2d.scale.y = 1                        # Default upward scale
-		animated_sprite_2d.flip_h = false                         # Disable horizontal flip while rotated
+			animated_sprite_2d.scale.y = 1                        
+		animated_sprite_2d.flip_h = false                         
 	else:
-		# Reset rotation and scale when not in those actions
 		animated_sprite_2d.rotation = 0
 		animated_sprite_2d.scale.y = 1
-		# Horizontal flip based on movement direction
 		if move_direction.x != 0:
 			animated_sprite_2d.flip_h = move_direction.x < 0
 
 func _update_aim_direction() -> void:
-	# Calculate direction to mouse position
 	var mouse_pos = get_global_mouse_position()
 	aim_direction = (mouse_pos - global_position).normalized()
 
@@ -261,11 +276,9 @@ func start_dash():
 	dash_timer = DASH_DURATION
 	can_dash = false
 	velocity = aim_direction * DASH_SPEED
-	collision_mask &= IGNORE_LAYER_3_MASK  # Ignore layer 3 during dash
-	collision_layer = LAYER_3_MASK         # Change to ghost layer
-	
-	# Queue attack if pressed during dash
-	if Input.is_action_just_pressed("melee"):
+	collision_mask &= IGNORE_LAYER_3_MASK  
+	collision_layer = LAYER_3_MASK         
+	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
 		attack_after_dash = true
 	else:
 		attack_after_dash = false
@@ -273,16 +286,14 @@ func start_dash():
 func start_attack():
 	is_attacking = true
 	attack_timer = ATTACK_DURATION
-	velocity = Vector2.ZERO  # Freeze movement during attack
+	velocity = Vector2.ZERO  
 
 func _enable_melee():
-	# Position melee area in aim direction
 	melee_area.position = aim_direction * 20
 	melee_area.monitoring = true
 	melee_area.visible = true
 
 func _on_melee_area_body_entered(body: Node) -> void:
-	# Deal 3 HP melee damage if possible
 	if body.has_method("apply_damage"):
 		body.apply_damage(3)
 	print("Melee hit:", body.name)
@@ -302,66 +313,66 @@ func update_animations() -> void:
 		animated_sprite_2d.play(current_attack_animation)
 	elif is_dashing:
 		animated_sprite_2d.play("Dash")
-	elif move_direction.length() > 0.1:  # Moving
+	elif move_direction.length() > 0.1:
 		animated_sprite_2d.play("Run")
 	else:
 		animated_sprite_2d.play("Idle")
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
-	# Subtract incoming damage if not invulnerable
 	if is_invulnerable or is_dead:
 		return
 	health -= amount
-	update_health_bar()  # Update health bar on damage
+	update_health_bar()
 
 	is_invulnerable = true
-	invuln_timer = INVULN_DURATION        # Start invulnerability
-	
-	# Move player to ghost layer while invulnerable
-	collision_layer = LAYER_3_MASK
-	collision_mask &= IGNORE_LAYER_3_MASK
+	invuln_timer = INVULN_DURATION
 
-	print("Player took %d damage, %d HP remaining" % [amount, health])
+	collision_layer = 0
+	collision_mask = 0
 
-	# Trigger hit animation if not dead
-	if health > 0:
-		is_hit = true
-		hit_timer = 0.5                    # Duration of hit animation
+	knockback_velocity = knockback_dir.normalized() * 350
 
-		# Apply knockback velocity if direction provided
-		if knockback_dir != Vector2.ZERO:
-			knockback_velocity = knockback_dir.normalized() * 300
+	is_hit = true
+	hit_timer = 0.5
 
-	# Check for death
 	if health <= 0:
 		die()
 
 func die() -> void:
-	# Handle player death 
 	is_dead = true
 	velocity = Vector2.ZERO
 	knockback_velocity = Vector2.ZERO
-	pistol_1.visible = false
-	pistol_1.set_process(false)
-	pistol_1.set_process_input(false)
-	animated_sprite_2d.play("Death")      # Play death animation
-	# Defer deletion until animation ends
+	
+	# Hide the pistol when player dies
+	if is_instance_valid(pistol_1):
+		pistol_1.visible = false
+	
+	animated_sprite_2d.play("Death")
 	if not animated_sprite_2d.is_connected("animation_finished", Callable(self, "_on_animation_finished")):
 		animated_sprite_2d.connect("animation_finished", Callable(self, "_on_animation_finished"))
 
-func _on_animation_finished() -> void:
-	if animated_sprite_2d.animation == "Death" and is_dead:
-		print("Death animation finished — freeing")
-		queue_free()
-
-### --- HEALTH BAR UPDATE --- ###
 func update_health_bar() -> void:
-	# Clamp health to valid range
-	health = clamp(health, 0, max_health)
-	# Adjust heart visibility (no longer hides, just dims missing hearts)
 	for i in range(hearts_list.size()):
 		if i < health:
-			hearts_list[i].modulate = Color(1, 1, 1, 1)     # Full opacity for active hearts
+			hearts_list[i].modulate = Color(1, 1, 1, 1)     # Full visible for active hearts
 		else:
-			hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # Low opacity for empty hearts
+			hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for spent hearts
+
+func update_melee_orb_bar() -> void:
+	for i in range(melee_orb_list.size()):
+		if i < current_orb_charges:
+			melee_orb_list[i].modulate = Color(1, 1, 1, 1)     # Full visible for active orbs
+		else:
+			melee_orb_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for spent orbs
+
+### --- ADD MELEE ORB ON PISTOL HIT --- ###
+func add_melee_orb() -> void:
+	if current_orb_charges < MAX_MELEE_ORBS:
+		current_orb_charges += 1
+		update_melee_orb_bar()
+
+### --- FREE PLAYER PROCESS --- ###
+func _on_animation_finished():
+	if is_dead:
+		queue_free()  # actually removes the player node

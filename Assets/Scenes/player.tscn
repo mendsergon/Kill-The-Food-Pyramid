@@ -1,9 +1,10 @@
-[gd_scene load_steps=47 format=3 uid="uid://dr0o1vrv8l7kq"]
+[gd_scene load_steps=48 format=3 uid="uid://dr0o1vrv8l7kq"]
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Sprites/Player/Player.png" id="1_6cd4h"]
 [ext_resource type="Script" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
 [ext_resource type="PackedScene" uid="uid://c6eum3n2mgjdb" path="res://Assets/Scenes/pistol_1.tscn" id="3_38rej"]
 [ext_resource type="PackedScene" uid="uid://chrs6jk0nsxnb" path="res://Assets/Scenes/heart.tscn" id="4_22rpc"]
+[ext_resource type="PackedScene" uid="uid://ctyl5h0p06oaf" path="res://Assets/Scenes/melee_orb.tscn" id="5_2pvs1"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ecf78"]
 atlas = ExtResource("1_6cd4h")
@@ -378,3 +379,30 @@ layout_mode = 2
 
 [node name="Heart" parent="HealthBar/HBoxContainer/Heart3" instance=ExtResource("4_22rpc")]
 position = Vector2(-20.5, -8)
+
+[node name="MeleeOrbBar" type="CanvasLayer" parent="."]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MeleeOrbBar"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect" instance=ExtResource("5_2pvs1")]
+position = Vector2(-91, 17)
+scale = Vector2(2, 1.925)
+
+[node name="TextureRect2" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect2" instance=ExtResource("5_2pvs1")]
+position = Vector2(-62, 17)
+scale = Vector2(2, 1.925)
+
+[node name="TextureRect3" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect3" instance=ExtResource("5_2pvs1")]
+position = Vector2(-33, 17)
+scale = Vector2(2, 1.925)
