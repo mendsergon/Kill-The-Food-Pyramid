@@ -26,6 +26,8 @@ var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
 @onready var melee_orbs_parent: HBoxContainer = $MeleeOrbBar/HBoxContainer # Reference to the container holding melee orb UI elements
 const MAX_MELEE_ORBS := 3                # Maximum number of orbs
 var current_orb_charges := 0             # Start with zero orbs
+var orb_reset_timer := 0.0               # Timer for delaying orb consumption
+const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -163,6 +165,14 @@ func _physics_process(delta: float) -> void:
 		if hit_timer <= 0.0:
 			is_hit = false
 
+	### --- ORB RESET TIMER --- ###
+	if orb_reset_timer > 0.0:
+		orb_reset_timer -= delta
+		if orb_reset_timer <= 0.0:
+			# CONSUME ALL ORBS ON MELEE after delay
+			current_orb_charges = 0
+			update_melee_orb_bar()
+
 	### --- ACTION INITIATION --- ###
 	# Start dash if available
 	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking and not is_hit:
@@ -182,9 +192,8 @@ func _physics_process(delta: float) -> void:
 			start_attack()
 			current_attack_animation = "Swing_1"
 			_enable_melee()
-			# CONSUME ALL ORBS ON MELEE
-			current_orb_charges = 0
-			update_melee_orb_bar()
+			# Start timer to consume orbs shortly after melee starts (instead of instantly)
+			orb_reset_timer = ORB_RESET_DELAY
 			# Lock look direction at attack start
 			locked_aim_direction = aim_direction
 			is_direction_locked = true
@@ -204,9 +213,8 @@ func _physics_process(delta: float) -> void:
 				start_attack()
 				current_attack_animation = "Swing_2"
 				_enable_melee()
-				# CONSUME ALL ORBS ON MELEE
-				current_orb_charges = 0
-				update_melee_orb_bar()
+				# Start timer to consume orbs shortly after melee starts (instead of instantly)
+				orb_reset_timer = ORB_RESET_DELAY
 				attack_after_dash = false
 				# Lock look direction for the queued attack
 				locked_aim_direction = aim_direction
@@ -229,7 +237,7 @@ func _physics_process(delta: float) -> void:
 			knockback_velocity = Vector2.ZERO
 		else:
 			knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, decay_amount)
-
+	
 	### --- PHYSICS UPDATE --- ###
 	move_and_slide()
 
@@ -293,8 +301,10 @@ func _enable_melee():
 
 func _on_melee_area_body_entered(body: Node) -> void:
 	if body.has_method("apply_damage"):
-		body.apply_damage(3)
-	print("Melee hit:", body.name)
+		var damage = 2 + current_orb_charges
+		body.apply_damage(damage)
+	print("Melee hit:", body.name, "Damage:", 2 + current_orb_charges)
+
 
 func update_dash_cooldown(delta: float) -> void:
 	if dash_cooldown_timer > 0.0:
@@ -373,4 +383,4 @@ func add_melee_orb() -> void:
 ### --- FREE PLAYER PROCESS --- ###
 func _on_animation_finished():
 	if is_dead:
-		queue_free()  # actually removes the player node
+		queue_free()  # Removes the player node
