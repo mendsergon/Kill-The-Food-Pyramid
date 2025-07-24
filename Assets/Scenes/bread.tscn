@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3 uid="uid://bph66ic70jhpq"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/bread.gd" id="1_hrixj"]
+[ext_resource type="Script" uid="uid://basmymwrynwen" path="res://Assets/Scripts/bread.gd" id="1_hrixj"]
 [ext_resource type="Texture2D" uid="uid://dhvf8f3jf5ode" path="res://Assets/Sprites/Bread/bread.png" id="2_rccyi"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_rt657"]

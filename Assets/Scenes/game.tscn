@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bpbg1hrm0jn1k"]
 
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="1_nbu75"]
-[ext_resource type="Script" path="res://Assets/Scripts/game.gd" id="1_rh331"]
+[ext_resource type="Script" uid="uid://cnim03an8koje" path="res://Assets/Scripts/game.gd" id="1_rh331"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/Scenes/cyber_cat.tscn" id="2_pfbgl"]
 [ext_resource type="PackedScene" uid="uid://cpaq54jiqc41b" path="res://Assets/Scenes/burger.tscn" id="3_22p6o"]
 [ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Scenes/bread.tscn" id="5_6ymoj"]

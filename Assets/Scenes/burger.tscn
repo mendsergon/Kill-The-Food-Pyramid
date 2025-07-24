@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://cpaq54jiqc41b"]
 
-[ext_resource type="Script" path="res://Assets/Scripts/burger.gd" id="1_x8nvj"]
+[ext_resource type="Script" uid="uid://ts3bcj0jrd4u" path="res://Assets/Scripts/burger.gd" id="1_x8nvj"]
 [ext_resource type="Texture2D" uid="uid://o67a5v0wj0o5" path="res://Assets/Sprites/Burger/burger.png" id="2_2loif"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g34rq"]
