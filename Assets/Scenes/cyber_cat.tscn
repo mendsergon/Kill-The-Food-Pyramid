@@ -44,7 +44,6 @@ animations = [{
 size = Vector2(20, 23)
 
 [node name="Cyber Cat" type="CharacterBody2D"]
-position = Vector2(-1, -14)
 collision_layer = 4
 collision_mask = 7
 script = SubResource("GDScript_3bn5i")
