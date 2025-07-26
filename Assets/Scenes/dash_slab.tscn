@@ -3,4 +3,5 @@
 [ext_resource type="Texture2D" uid="uid://wk7c7aekcbbc" path="res://Assets/Sprites/DashSlab/DashSlab.png" id="1_h4kq3"]
 
 [node name="DashSlab" type="Sprite2D"]
+scale = Vector2(1, 0.5)
 texture = ExtResource("1_h4kq3")

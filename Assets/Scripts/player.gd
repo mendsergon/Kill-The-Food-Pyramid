@@ -108,8 +108,17 @@ func _ready() -> void:
 	# Melee orb container position
 	melee_orbs_parent.position += Vector2(110, 30)
 	
-	update_health_bar()  # Initial update of health bar display
-	update_melee_orb_bar()  # Initial update of melee orb display
+	# Initialize dash slab list from dash slab UI container
+	for slab_node in dash_slabs_parent.get_children():
+		if slab_node is TextureRect:
+			dash_slab_list.append(slab_node)
+	
+	# Dash slab container position
+	dash_slabs_parent.position += Vector2(105, 30) 
+
+	update_health_bar()       # Initial update of health bar display
+	update_melee_orb_bar()    # Initial update of melee orb bar display
+	update_dash_slab_bar()    # Initial update of dash slab bar display
 
 func _process(delta: float) -> void:
 	if health == 1 and hearts_list.size() > 0:
@@ -285,6 +294,7 @@ func start_dash():
 	is_dashing = true
 	dash_timer = DASH_DURATION
 	can_dash = false
+	update_dash_slab_bar()                      # Update dash slab UI immediately
 	velocity = aim_direction * DASH_SPEED
 	collision_mask &= IGNORE_LAYER_3_MASK  
 	collision_layer = LAYER_3_MASK         
@@ -309,12 +319,20 @@ func _on_melee_area_body_entered(body: Node) -> void:
 		body.apply_damage(damage)
 	print("Melee hit:", body.name, "Damage:", 2 + current_orb_charges)
 
-
 func update_dash_cooldown(delta: float) -> void:
 	if dash_cooldown_timer > 0.0:
 		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
 		if dash_cooldown_timer == 0.0:
 			can_dash = true
+	update_dash_slab_bar()                      # Always refresh dash slab UI
+
+func update_dash_slab_bar() -> void:
+	# Grey out or restore dash slabs based on availability
+	for slab in dash_slab_list:
+		if can_dash:
+			slab.modulate = Color(1, 1, 1, 1)   # Normala
+		else:
+			slab.modulate = Color(1, 1, 1, 0.15) # Dimmed
 
 func update_animations() -> void:
 	if is_dead:

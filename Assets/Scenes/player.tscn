@@ -419,4 +419,4 @@ layout_mode = 2
 
 [node name="DashSlab" parent="DashSlabBar/HBoxContainer/DashSlab" instance=ExtResource("6_w3t24")]
 position = Vector2(-76, 46)
-scale = Vector2(2, 2)
+scale = Vector2(1.5, 1)
