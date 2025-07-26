@@ -333,6 +333,8 @@ size = Vector2(32, 16)
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 133
 script = ExtResource("1_7dd06")
+max_health = 6
+MAX_MELEE_ORBS = 6
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
@@ -385,7 +387,19 @@ position = Vector2(-20.5, -8)
 layout_mode = 2
 
 [node name="Heart" parent="HealthBar/HBoxContainer/Heart4" instance=ExtResource("4_22rpc")]
-position = Vector2(-7.5, -8)
+position = Vector2(-8, -8)
+
+[node name="Heart5" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart5" instance=ExtResource("4_22rpc")]
+position = Vector2(4.5, -8)
+
+[node name="Heart6" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart6" instance=ExtResource("4_22rpc")]
+position = Vector2(17, -8)
 
 [node name="MeleeOrbBar" type="CanvasLayer" parent="."]
 
@@ -418,7 +432,21 @@ scale = Vector2(2, 1.925)
 layout_mode = 2
 
 [node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb4" instance=ExtResource("5_2pvs1")]
-position = Vector2(-3, 17)
+position = Vector2(-4, 17)
+scale = Vector2(2, 1.925)
+
+[node name="MeleeOrb5" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb5" instance=ExtResource("5_2pvs1")]
+position = Vector2(25, 17)
+scale = Vector2(2, 1.925)
+
+[node name="MeleeOrb6" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb6" instance=ExtResource("5_2pvs1")]
+position = Vector2(54, 17)
 scale = Vector2(2, 1.925)
 
 [node name="DashSlabBar" type="CanvasLayer" parent="."]
@@ -431,5 +459,5 @@ offset_bottom = 40.0
 layout_mode = 2
 
 [node name="DashSlab" parent="DashSlabBar/HBoxContainer/DashSlab" instance=ExtResource("6_w3t24")]
-position = Vector2(-76, 46)
+position = Vector2(-74, 46)
 scale = Vector2(1.5, 1)
