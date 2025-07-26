@@ -393,25 +393,32 @@ position = Vector2(-7.5, -8)
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="TextureRect" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+[node name="MeleeOrb" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
 layout_mode = 2
 
-[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect" instance=ExtResource("5_2pvs1")]
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb" instance=ExtResource("5_2pvs1")]
 position = Vector2(-91, 17)
 scale = Vector2(2, 1.925)
 
-[node name="TextureRect2" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+[node name="MeleeOrb2" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
 layout_mode = 2
 
-[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect2" instance=ExtResource("5_2pvs1")]
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb2" instance=ExtResource("5_2pvs1")]
 position = Vector2(-62, 17)
 scale = Vector2(2, 1.925)
 
-[node name="TextureRect3" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+[node name="MeleeOrb3" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
 layout_mode = 2
 
-[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/TextureRect3" instance=ExtResource("5_2pvs1")]
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb3" instance=ExtResource("5_2pvs1")]
 position = Vector2(-33, 17)
+scale = Vector2(2, 1.925)
+
+[node name="MeleeOrb4" type="TextureRect" parent="MeleeOrbBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="MeleeOrb" parent="MeleeOrbBar/HBoxContainer/MeleeOrb4" instance=ExtResource("5_2pvs1")]
+position = Vector2(-3, 17)
 scale = Vector2(2, 1.925)
 
 [node name="DashSlabBar" type="CanvasLayer" parent="."]

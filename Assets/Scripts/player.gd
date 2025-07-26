@@ -21,11 +21,13 @@ var health: int                          # Current HP
 var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
+### --- PLAYER MELEE ORBS --- ###
+@export var MAX_MELEE_ORBS: int = 3      # Maximum number of orbs
+var current_orb_charges := 0             # Start with zero orbs
+
 ### --- MELEE ORB BAR --- ###
 var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
 @onready var melee_orbs_parent: HBoxContainer = $MeleeOrbBar/HBoxContainer # Reference to the container holding melee orb UI elements
-const MAX_MELEE_ORBS := 3                # Maximum number of orbs
-var current_orb_charges := 0             # Start with zero orbs
 var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
@@ -405,8 +407,10 @@ func update_melee_orb_bar() -> void:
 	for i in range(melee_orb_list.size()):
 		if i < current_orb_charges:
 			melee_orb_list[i].modulate = Color(1, 1, 1, 1)     # Full visible for active orbs
+		elif i < MAX_MELEE_ORBS:
+			melee_orb_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for missing-but-allowed orbs
 		else:
-			melee_orb_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for spent orbs
+			melee_orb_list[i].modulate = Color(1, 1, 1, 0.0)   # Invisible for orbs beyond MAX_MELEE_ORBS
 
 ### --- ADD MELEE ORB ON PISTOL HIT --- ###
 func add_melee_orb() -> void:
