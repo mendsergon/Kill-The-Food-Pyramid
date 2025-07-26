@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bowm4xay7gba4"]
+
+[ext_resource type="Texture2D" uid="uid://wk7c7aekcbbc" path="res://Assets/Sprites/DashSlab/DashSlab.png" id="1_h4kq3"]
+
+[node name="DashSlab" type="Sprite2D"]
+texture = ExtResource("1_h4kq3")

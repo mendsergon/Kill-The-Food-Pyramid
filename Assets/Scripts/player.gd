@@ -29,6 +29,10 @@ var current_orb_charges := 0             # Start with zero orbs
 var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
+### --- DASH SLAB BAR --- ###
+var dash_slab_list: Array[TextureRect] = [] # List of dash slash UI nodes
+@onready var dash_slabs_parent: HBoxContainer = $DashSlabBar/HBoxContainer # Reference to the container holding dash slab UI elements 
+
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
 var invuln_timer := 0.0                 # Invulnerability countdown
