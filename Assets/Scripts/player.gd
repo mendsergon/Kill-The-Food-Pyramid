@@ -129,13 +129,23 @@ func _process(delta: float) -> void:
 			last_heart.modulate = Color(1, 1, 1, 1)  # fully visible
 		else:
 			last_heart.modulate = Color(1, 1, 1, 0.3)  # dimmed to create blink
+		# Hide or dim all other hearts above
+		for i in range(hearts_list.size()):
+			if i == health - 1:
+				continue
+			elif i < max_health:
+				hearts_list[i].modulate = Color(1, 1, 1, 0.15)
+			else:
+				hearts_list[i].modulate = Color(1, 1, 1, 0.0)
 	else:
 		blink_timer = 0.0
 		for i in range(hearts_list.size()):
 			if i < health:
-				hearts_list[i].modulate = Color(1, 1, 1, 1)  # full visible for active hearts
+				hearts_list[i].modulate = Color(1, 1, 1, 1)    # full visible for active hearts
+			elif i < max_health:
+				hearts_list[i].modulate = Color(1, 1, 1, 0.15) # transparent for missing-but-allowed hearts
 			else:
-				hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # transparent for missing hearts
+				hearts_list[i].modulate = Color(1, 1, 1, 0.0)  # fully invisible for hearts above max_health
 
 func _physics_process(delta: float) -> void:
 	# --- SKIP EVERYTHING IF DEAD --- #
@@ -386,8 +396,10 @@ func update_health_bar() -> void:
 	for i in range(hearts_list.size()):
 		if i < health:
 			hearts_list[i].modulate = Color(1, 1, 1, 1)     # Full visible for active hearts
+		elif i < max_health:
+			hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for missing-but-allowed hearts
 		else:
-			hearts_list[i].modulate = Color(1, 1, 1, 0.15)  # Dimmed for spent hearts
+			hearts_list[i].modulate = Color(1, 1, 1, 0.0)   # Invisible for hearts beyond max_health
 
 func update_melee_orb_bar() -> void:
 	for i in range(melee_orb_list.size()):

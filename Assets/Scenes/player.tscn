@@ -381,6 +381,12 @@ layout_mode = 2
 [node name="Heart" parent="HealthBar/HBoxContainer/Heart3" instance=ExtResource("4_22rpc")]
 position = Vector2(-20.5, -8)
 
+[node name="Heart4" type="TextureRect" parent="HealthBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="HealthBar/HBoxContainer/Heart4" instance=ExtResource("4_22rpc")]
+position = Vector2(-7.5, -8)
+
 [node name="MeleeOrbBar" type="CanvasLayer" parent="."]
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MeleeOrbBar"]
