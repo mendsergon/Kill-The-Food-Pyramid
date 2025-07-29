@@ -1,5 +1,5 @@
 extends CharacterBody2D
-#test
+
 ### --- CORE CONSTANTS --- ###
 # Movement
 const SPEED = 150.0                     # Normal movement speed
