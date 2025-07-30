@@ -12,6 +12,8 @@ const ATTACK_DURATION = 0.3             # How long attack locks movement
 # Collision
 const IGNORE_LAYER_3_MASK = ~(1 << 2)   # Mask to ignore layer 3 (bit 2)
 const LAYER_3_MASK = (1 << 2)           # Mask only layer 3 (bit 2)
+const DASH_INVULN_DURATION := 0.5
+var dash_invuln_timer := 0.0  
 
 ### --- PLAYER HEALTH --- ###
 @export var max_health: int = 3          # Maximum HP for player
@@ -39,7 +41,7 @@ var current_dash_slabs := MAX_DASH_SLABS
 var dash_slab_list: Array[TextureRect] = [] # List of dash slash UI nodes
 @onready var dash_slabs_parent: HBoxContainer = $DashSlabBar/HBoxContainer # Reference to the container holding dash slab UI elements 
 var dash_recharge_timer := 0.0
-const DASH_SLAB_RECHARGE_TIME = 0.5  
+const DASH_SLAB_RECHARGE_TIME = 0.75  
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -161,12 +163,19 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()  # Allow any last motion to complete
 		return
 
-	### --- INVULNERABILITY TIMER --- ###
+	# --- INVULNERABILITY TIMER --- #
 	if is_invulnerable:
 		invuln_timer -= delta
 		if invuln_timer <= 0.0:
 			is_invulnerable = false
-			# Restore collision layers back
+			collision_layer = original_collision_layer
+			collision_mask = original_collision_mask
+
+	# --- DASH INVULN TIMER --- #
+	if dash_invuln_timer > 0.0:
+		dash_invuln_timer -= delta
+		if dash_invuln_timer <= 0.0:
+			# Restore collision layers when dash invuln ends
 			collision_layer = original_collision_layer
 			collision_mask = original_collision_mask
 
@@ -236,8 +245,7 @@ func _physics_process(delta: float) -> void:
 		if dash_timer <= 0.0:
 			is_dashing = false
 			dash_cooldown_timer = DASH_COOLDOWN
-			collision_mask = original_collision_mask  # Restore collisions
-			collision_layer = original_collision_layer
+
 			
 			# Execute queued attack
 			if attack_after_dash and current_orb_charges > 0:
@@ -328,7 +336,7 @@ func _update_aim_direction() -> void:
 func start_dash():
 	if current_dash_slabs <= 0:
 		return  # No dash slabs left, can't dash
-	
+
 	# Consume one dash slab and reset recharge timer
 	current_dash_slabs -= 1
 	dash_recharge_timer = 0.0
@@ -338,17 +346,20 @@ func start_dash():
 	dash_timer = DASH_DURATION
 	can_dash = false
 
-	# Update the dash UI immediately to reflect slab usage
-	update_dash_slab_bar()
-
-	# Set velocity in the aim direction at dash speed
+	# Set dash velocity in aim direction
 	velocity = aim_direction * DASH_SPEED
 
-	# Modify collision layers/masks to ignore certain collisions during dash
-	collision_mask &= IGNORE_LAYER_3_MASK  
-	collision_layer = LAYER_3_MASK         
+	# Temporarily move to ghost collision layer during dash
+	collision_layer = LAYER_3_MASK
+	collision_mask = IGNORE_LAYER_3_MASK
 
-	# If melee button pressed at dash start and orbs available, queue attack after dash
+	# Set the invulnerability timer for dash
+	dash_invuln_timer = DASH_INVULN_DURATION
+
+	# Update the dash slab UI
+	update_dash_slab_bar()
+
+	# Queue melee attack if melee input pressed and orbs available
 	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
 		attack_after_dash = true
 	else:
