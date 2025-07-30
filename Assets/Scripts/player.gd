@@ -6,7 +6,7 @@ const SPEED = 150.0                     # Normal movement speed
 # Dash
 const DASH_SPEED = 450.0                # Dash velocity
 const DASH_DURATION = 0.25              # Time dash lasts 
-const DASH_COOLDOWN = 0.5               # Delay between dashes
+const DASH_COOLDOWN = 0.05               # Delay between dashes
 # Combat
 const ATTACK_DURATION = 0.3             # How long attack locks movement  
 # Collision
@@ -31,9 +31,15 @@ var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
 var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
+### --- PLAYER DASH SLABS --- ###
+@export var MAX_DASH_SLABS: int = 3
+var current_dash_slabs := MAX_DASH_SLABS
+
 ### --- DASH SLAB BAR --- ###
 var dash_slab_list: Array[TextureRect] = [] # List of dash slash UI nodes
 @onready var dash_slabs_parent: HBoxContainer = $DashSlabBar/HBoxContainer # Reference to the container holding dash slab UI elements 
+var dash_recharge_timer := 0.0
+const DASH_SLAB_RECHARGE_TIME = 0.5  
 
 ### --- INVULNERABILITY --- ###
 const INVULN_DURATION := 1.0            # Seconds invulnerable after hit
@@ -199,8 +205,8 @@ func _physics_process(delta: float) -> void:
 			update_melee_orb_bar()
 
 	### --- ACTION INITIATION --- ###
-	# Start dash if available
-	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking and not is_hit:
+	# Start dash if available AND dash slabs are present
+	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking and not is_hit and current_dash_slabs > 0:
 		start_dash()
 		# Lock look direction at dash start
 		locked_aim_direction = aim_direction
@@ -266,8 +272,25 @@ func _physics_process(delta: float) -> void:
 	### --- PHYSICS UPDATE --- ###
 	move_and_slide()
 
-	### --- DASH RECHARGE --- ###
-	update_dash_cooldown(delta)
+	### --- DASH COOLDOWN TIMER --- ###
+	if dash_cooldown_timer > 0.0:
+		dash_cooldown_timer -= delta
+		if dash_cooldown_timer <= 0.0:
+			dash_cooldown_timer = 0.0
+			# Allow dash if slabs available
+			if current_dash_slabs > 0:
+				can_dash = true
+
+	### --- DASH SLAB RECHARGE --- ###
+	if current_dash_slabs < MAX_DASH_SLABS:
+		dash_recharge_timer += delta
+		if dash_recharge_timer >= DASH_SLAB_RECHARGE_TIME:
+			current_dash_slabs += 1
+			dash_recharge_timer = 0.0
+			update_dash_slab_bar()
+			# If cooldown finished, allow dash immediately
+			if dash_cooldown_timer <= 0.0:
+				can_dash = true
 
 	### --- ANIMATION SYSTEM --- ###
 	update_animations()
@@ -303,17 +326,41 @@ func _update_aim_direction() -> void:
 	aim_direction = (mouse_pos - global_position).normalized()
 
 func start_dash():
+	if current_dash_slabs <= 0:
+		return  # No dash slabs left, can't dash
+	
+	# Consume one dash slab and reset recharge timer
+	current_dash_slabs -= 1
+	dash_recharge_timer = 0.0
+
+	# Start dash state
 	is_dashing = true
 	dash_timer = DASH_DURATION
 	can_dash = false
-	update_dash_slab_bar()                      # Update dash slab UI immediately
+
+	# Update the dash UI immediately to reflect slab usage
+	update_dash_slab_bar()
+
+	# Set velocity in the aim direction at dash speed
 	velocity = aim_direction * DASH_SPEED
+
+	# Modify collision layers/masks to ignore certain collisions during dash
 	collision_mask &= IGNORE_LAYER_3_MASK  
 	collision_layer = LAYER_3_MASK         
+
+	# If melee button pressed at dash start and orbs available, queue attack after dash
 	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
 		attack_after_dash = true
 	else:
 		attack_after_dash = false
+
+func update_dash_recharge(delta: float) -> void:
+	if current_dash_slabs < MAX_DASH_SLABS:
+		dash_recharge_timer += delta
+		if dash_recharge_timer >= DASH_COOLDOWN:
+			current_dash_slabs += 1
+			dash_recharge_timer = 0.0
+			update_dash_slab_bar()
 
 func start_attack():
 	is_attacking = true
@@ -339,12 +386,13 @@ func update_dash_cooldown(delta: float) -> void:
 	update_dash_slab_bar()                      # Always refresh dash slab UI
 
 func update_dash_slab_bar() -> void:
-	# Grey out or restore dash slabs based on availability
-	for slab in dash_slab_list:
-		if can_dash:
-			slab.modulate = Color(1, 1, 1, 1)   # Normala
+	for i in range(dash_slab_list.size()):
+		if i < current_dash_slabs:
+			dash_slab_list[i].modulate = Color(1, 1, 1, 1)    # Fully visible for available slabs
+		elif i < MAX_DASH_SLABS:
+			dash_slab_list[i].modulate = Color(1, 1, 1, 0.15) # Dimmed for used slabs within max slabs
 		else:
-			slab.modulate = Color(1, 1, 1, 0.15) # Dimmed
+			dash_slab_list[i].modulate = Color(1, 1, 1, 0)    # Fully invisible for slabs above max slabs
 
 func update_animations() -> void:
 	if is_dead:

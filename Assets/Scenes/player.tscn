@@ -461,3 +461,17 @@ layout_mode = 2
 [node name="DashSlab" parent="DashSlabBar/HBoxContainer/DashSlab" instance=ExtResource("6_w3t24")]
 position = Vector2(-74, 46)
 scale = Vector2(1.5, 1)
+
+[node name="DashSlab2" type="TextureRect" parent="DashSlabBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="DashSlab" parent="DashSlabBar/HBoxContainer/DashSlab2" instance=ExtResource("6_w3t24")]
+position = Vector2(-29, 46)
+scale = Vector2(1.5, 1)
+
+[node name="DashSlab3" type="TextureRect" parent="DashSlabBar/HBoxContainer"]
+layout_mode = 2
+
+[node name="DashSlab" parent="DashSlabBar/HBoxContainer/DashSlab3" instance=ExtResource("6_w3t24")]
+position = Vector2(16, 46)
+scale = Vector2(1.5, 1)
