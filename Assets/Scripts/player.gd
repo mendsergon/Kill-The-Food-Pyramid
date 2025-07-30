@@ -166,18 +166,25 @@ func _physics_process(delta: float) -> void:
 	# --- INVULNERABILITY TIMER --- #
 	if is_invulnerable:
 		invuln_timer -= delta
-		if invuln_timer <= 0.0:
-			is_invulnerable = false
-			collision_layer = original_collision_layer
-			collision_mask = original_collision_mask
+	if invuln_timer <= 0.0:
+		is_invulnerable = false
 
 	# --- DASH INVULN TIMER --- #
 	if dash_invuln_timer > 0.0:
 		dash_invuln_timer -= delta
-		if dash_invuln_timer <= 0.0:
-			# Restore collision layers when dash invuln ends
-			collision_layer = original_collision_layer
-			collision_mask = original_collision_mask
+	if dash_invuln_timer <= 0.0:
+		dash_invuln_timer = 0.0  # Just to be sure it doesn't go negative
+
+	# --- Manage collision layers based on invulnerability states --- #
+	if dash_invuln_timer > 0.0:
+		collision_layer = LAYER_3_MASK
+		collision_mask = IGNORE_LAYER_3_MASK
+	elif is_invulnerable:
+		collision_layer = 0
+		collision_mask = 0
+	else:
+		collision_layer = original_collision_layer
+		collision_mask = original_collision_mask
 
 	### --- INPUT PROCESSING --- ###
 	# Get combined movement input (4-directional)
@@ -384,10 +391,14 @@ func _enable_melee():
 	melee_area.visible = true
 
 func _on_melee_area_body_entered(body: Node) -> void:
+	if body == self:
+		return  # Don't hit yourself
+
 	if body.has_method("apply_damage"):
 		var damage = 2 + current_orb_charges
 		body.apply_damage(damage)
-	print("Melee hit:", body.name, "Damage:", 2 + current_orb_charges)
+		print("Melee hit:", body.name, "Damage:", damage)
+
 
 func update_dash_cooldown(delta: float) -> void:
 	if dash_cooldown_timer > 0.0:
@@ -421,7 +432,7 @@ func update_animations() -> void:
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
-	if is_invulnerable or is_dead:
+	if is_invulnerable or is_dead or dash_invuln_timer > 0.0:
 		return
 	health -= amount
 	update_health_bar()
