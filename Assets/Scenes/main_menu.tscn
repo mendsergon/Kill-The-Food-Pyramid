@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://rtruea8fbpge"]
+[gd_scene load_steps=3 format=3 uid="uid://rtruea8fbpge"]
 
 [ext_resource type="Script" uid="uid://br6istepwy186" path="res://Assets/Scenes/main_menu.gd" id="1_x6jn2"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="2_fsbqx"]
 
 [node name="main_menu" type="Control"]
 layout_mode = 3
@@ -33,17 +34,20 @@ size_flags_vertical = 4
 [node name="Play" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 4
-text = "Play
+theme_override_fonts/font = ExtResource("2_fsbqx")
+text = "PLAY
 "
 
 [node name="Settings" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Settings
+theme_override_fonts/font = ExtResource("2_fsbqx")
+text = "SETTINGS
 "
 
 [node name="Exit" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Exit
+theme_override_fonts/font = ExtResource("2_fsbqx")
+text = "EXIT
 "
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Play" to="." method="_on_play_pressed"]
