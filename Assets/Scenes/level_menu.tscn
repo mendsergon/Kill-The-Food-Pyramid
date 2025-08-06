@@ -45,3 +45,4 @@ text = "LEVEL 1
 "
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Test Area" to="." method="_on_test_area_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Level 1" to="." method="_on_level_1_pressed"]

@@ -176,12 +176,9 @@ func _physics_process(delta: float) -> void:
 		dash_invuln_timer = 0.0  # Just to be sure it doesn't go negative
 
 	# --- Manage collision layers based on invulnerability states --- #
-	if dash_invuln_timer > 0.0:
+	if dash_invuln_timer > 0.0 or is_invulnerable:
 		collision_layer = LAYER_3_MASK
 		collision_mask = IGNORE_LAYER_3_MASK
-	elif is_invulnerable:
-		collision_layer = 0
-		collision_mask = 0
 	else:
 		collision_layer = original_collision_layer
 		collision_mask = original_collision_mask

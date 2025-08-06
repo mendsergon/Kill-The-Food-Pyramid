@@ -325,7 +325,7 @@ animations = [{
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_15psk"]
 radius = 4.0
-height = 16.0
+height = 10.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_38rej"]
 size = Vector2(32, 16)
@@ -343,7 +343,7 @@ animation = &"Hit"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -8)
+position = Vector2(-1, -5)
 shape = SubResource("CapsuleShape2D_15psk")
 
 [node name="Pistol 1" parent="." instance=ExtResource("3_38rej")]
@@ -358,6 +358,7 @@ position = Vector2(16, -8)
 shape = SubResource("RectangleShape2D_38rej")
 
 [node name="HealthBar" type="CanvasLayer" parent="."]
+visible = false
 scale = Vector2(2, 2)
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 
@@ -402,6 +403,7 @@ layout_mode = 2
 position = Vector2(17, -8)
 
 [node name="MeleeOrbBar" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MeleeOrbBar"]
 offset_right = 40.0
@@ -450,6 +452,7 @@ position = Vector2(54, 17)
 scale = Vector2(2, 1.925)
 
 [node name="DashSlabBar" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="DashSlabBar"]
 offset_right = 40.0
