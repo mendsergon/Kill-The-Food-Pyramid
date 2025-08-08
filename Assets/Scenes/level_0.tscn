@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://c1ppbw0tdgfeh"]
+[gd_scene load_steps=56 format=3 uid="uid://c1ppbw0tdgfeh"]
 
 [ext_resource type="Script" uid="uid://c6niq3vyfsuyf" path="res://Assets/Scripts/level_0.gd" id="1_awqea"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_q5pns"]
@@ -28,6 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://caanktclkm3fo" path="res://Assets/Tiles/Outside/TilesetHouse.png" id="26_jqseg"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="27_qnuki"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Scenes/interaction_area.tscn" id="28_q5pns"]
+[ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Scenes/fade_layer.tscn" id="29_xjd3k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_637wq"]
 texture = ExtResource("2_q5pns")
@@ -3924,3 +3925,5 @@ zoom = Vector2(4, 4)
 [node name="InteractionArea" parent="." instance=ExtResource("28_q5pns")]
 position = Vector2(-40, -67)
 scale = Vector2(0.5, 0.446)
+
+[node name="FadeLayer" parent="." instance=ExtResource("29_xjd3k")]

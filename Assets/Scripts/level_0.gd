@@ -1,12 +1,15 @@
 extends Node2D
 
-### --- NODE REFERENCES --- ###
 @onready var player: CharacterBody2D = $Player
-@onready var camera_2d: Camera2D = $Player/Camera2D
+@onready var interaction_area: Area2D = $InteractionArea
+@onready var fade_layer: CanvasLayer = $FadeLayer  # The node with the fade script
 
+func _ready() -> void:
+	interaction_area.connect("interacted", Callable(self, "_on_interacted"))
 
 func _process(_delta: float) -> void:
-	# Restart the scene when the player's instance has been freed 
 	if not is_instance_valid(player):
 		get_tree().reload_current_scene()
-		return
+
+func _on_interacted() -> void:
+	fade_layer.start_fade("res://Assets/Scenes/main_menu.tscn")  # Call on CanvasLayer, not ColorRect
