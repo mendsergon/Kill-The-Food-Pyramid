@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://84xmxo3fupiq"]
+
+[ext_resource type="Script" uid="uid://bbsdc738p47df" path="res://Assets/interaction_area.gd" id="1_ehb73"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="2_4ux2t"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8qooa"]
+radius = 30.0167
+
+[node name="InteractionArea" type="Area2D"]
+script = ExtResource("1_ehb73")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_8qooa")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -11.0
+offset_right = 28.0
+offset_bottom = 11.0
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_4ux2t")
+text = "press [X]"
