@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bhgwo3lkrssho"]
 
-[ext_resource type="Script" uid="uid://bqpc568bnqysn" path="res://Assets/Scenes/level_menu.gd" id="1_4pf6b"]
+[ext_resource type="Script" uid="uid://bqpc568bnqysn" path="res://Assets/Scripts/level_menu.gd" id="1_4pf6b"]
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="1_m71ff"]
 
 [node name="level_menu" type="Control"]
