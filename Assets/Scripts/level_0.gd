@@ -12,4 +12,4 @@ func _process(_delta: float) -> void:
 		get_tree().reload_current_scene()
 
 func _on_interacted() -> void:
-	fade_layer.start_fade("res://Assets/Scenes/main_menu.tscn")  # Call on CanvasLayer, not ColorRect
+	fade_layer.start_fade("res://Assets/Scenes/floor_1.tscn")  # Call on CanvasLayer, not ColorRect
