@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://104owe5xdrx"]
+[gd_scene load_steps=55 format=3 uid="uid://104owe5xdrx"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_43y52"]
 [ext_resource type="Script" uid="uid://dgg64d5k6juh3" path="res://Assets/Scripts/floor_1.gd" id="1_avqbm"]
@@ -3947,6 +3947,9 @@ sources/22 = SubResource("TileSetAtlasSource_m816l")
 sources/23 = SubResource("TileSetAtlasSource_l8qcx")
 sources/24 = SubResource("TileSetAtlasSource_2q1bl")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_avqbm"]
+size = Vector2(704, 703)
+
 [node name="Floor 1" type="Node2D"]
 script = ExtResource("1_avqbm")
 
@@ -3966,3 +3969,11 @@ layer_3/tile_data = PackedInt32Array(-1441815, 589832, 805306369, -1507305, 5898
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(4, 4)
+
+[node name="SpawnArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea"]
+light_mask = 0
+visibility_layer = 0
+position = Vector2(5, 7.5)
+shape = SubResource("RectangleShape2D_avqbm")
