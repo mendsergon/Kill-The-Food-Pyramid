@@ -1,0 +1,83 @@
+[gd_scene load_steps=12 format=3 uid="uid://dt8cbustd2vjr"]
+
+[ext_resource type="Script" uid="uid://5u5uw1codvt4" path="res://Assets/Scripts/black_bread.gd" id="1_nunvc"]
+[ext_resource type="Texture2D" uid="uid://bqgs7ic7rd7nb" path="res://Assets/Sprites/Bread/blackbread.png" id="2_nunvc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w4rp5"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d2bln"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bqaan"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bpntf"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iw6gy"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c5f24"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bihnk"]
+atlas = ExtResource("2_nunvc")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_d26is"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w4rp5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d2bln")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bqaan")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bpntf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iw6gy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c5f24")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bihnk")
+}],
+"loop": true,
+"name": &"Run",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j7te5"]
+size = Vector2(19, 18)
+
+[node name="Black Bread" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_nunvc")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_d26is")
+animation = &"Idle"
+autoplay = "Idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 5)
+shape = SubResource("RectangleShape2D_j7te5")
