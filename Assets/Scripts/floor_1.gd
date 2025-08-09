@@ -6,39 +6,66 @@ extends Node2D
 @onready var spawn_area: Area2D = $SpawnArea
 @onready var spawn_shape: CollisionShape2D = $SpawnArea/CollisionShape2D
 
-### --- ENEMY SCENES --- ###
-var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
-
-### --- SPAWN SETTINGS --- ###
-var total_to_spawn := 20
+### --- WAVE SETTINGS --- ###
+var waves = [
+	{
+		"enemy_scene": preload("res://Assets/Scenes/bread.tscn"),
+		"total": 20,
+		"batch_size": 2,
+		"spawn_rate": 1.0
+	},
+	# More waves can be added here later
+]
+var current_wave := 0
 var spawned_count := 0
 var spawn_timer: Timer
 
+### --- EDGE OFFSET --- ###
 var edge_offset := 16 # pixels outside camera view
 
 func _ready() -> void:
 	randomize()
+	_start_wave(0)
+
+func _start_wave(wave_index: int) -> void:
+	if wave_index >= waves.size():
+		print("All waves complete!")
+		return
+
+	current_wave = wave_index
+	spawned_count = 0
+
+	var wave = waves[current_wave]
 	spawn_timer = Timer.new()
-	spawn_timer.wait_time = 1.0
+	spawn_timer.wait_time = wave["spawn_rate"]
 	spawn_timer.one_shot = false
 	spawn_timer.connect("timeout", Callable(self, "_spawn_wave_batch"))
 	add_child(spawn_timer)
 	spawn_timer.start()
 
 func _spawn_wave_batch() -> void:
+	var wave = waves[current_wave]
+	var total_to_spawn = wave["total"]
+	var batch_size = wave["batch_size"]
+	var enemy_scene = wave["enemy_scene"]
+
 	if spawned_count >= total_to_spawn:
 		spawn_timer.stop()
+		spawn_timer.queue_free()
+		# Start next wave after 2 seconds
+		await get_tree().create_timer(2.0).timeout
+		_start_wave(current_wave + 1)
 		return
 
-	for i in range(2):
+	for i in range(batch_size):
 		if spawned_count >= total_to_spawn:
 			break
 		var spawn_pos = _get_spawn_position_near_camera_edge_in_area()
-		var bread_enemy = bread_scene.instantiate()
-		bread_enemy.global_position = spawn_pos
-		if bread_enemy.has_method("set_player_reference"):
-			bread_enemy.set_player_reference(player)
-		get_parent().add_child(bread_enemy)
+		var enemy = enemy_scene.instantiate()
+		enemy.global_position = spawn_pos
+		if enemy.has_method("set_player_reference"):
+			enemy.set_player_reference(player)
+		get_parent().add_child(enemy)
 		spawned_count += 1
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
@@ -56,7 +83,6 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 		var pos := Vector2.ZERO
 		var tries := 0
 		while true:
-			# Pick side of camera
 			var side := randi() % 4
 			match side:
 				0: # top
@@ -72,9 +98,7 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 					pos.x = cam_rect.position.x + cam_rect.size.x + edge_offset
 					pos.y = clamp(randf_range(cam_rect.position.y, cam_rect.position.y + cam_rect.size.y), area_min.y, area_max.y)
 
-			# Ensure position is inside spawn area bounds
 			if pos.x >= area_min.x and pos.x <= area_max.x and pos.y >= area_min.y and pos.y <= area_max.y:
-				# Ensure not inside camera view
 				if not cam_rect.has_point(pos):
 					return pos
 
