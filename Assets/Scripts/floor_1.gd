@@ -112,30 +112,37 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 			camera_2d.get_viewport_rect().size
 		)
 
-		var pos := Vector2.ZERO
 		var tries := 0
-		while true:
+		while tries < 100:
+			var pos := Vector2.ZERO
 			var side := randi() % 4
 			match side:
-				0: # top
+				0: # top edge (just above camera)
 					pos.y = cam_rect.position.y - edge_offset
-					pos.x = clamp(randf_range(cam_rect.position.x, cam_rect.position.x + cam_rect.size.x), area_min.x, area_max.x)
-				1: # bottom
+					pos.x = randf_range(cam_rect.position.x, cam_rect.position.x + cam_rect.size.x)
+				1: # bottom edge (just below camera)
 					pos.y = cam_rect.position.y + cam_rect.size.y + edge_offset
-					pos.x = clamp(randf_range(cam_rect.position.x, cam_rect.position.x + cam_rect.size.x), area_min.x, area_max.x)
-				2: # left
+					pos.x = randf_range(cam_rect.position.x, cam_rect.position.x + cam_rect.size.x)
+				2: # left edge (just left of camera)
 					pos.x = cam_rect.position.x - edge_offset
-					pos.y = clamp(randf_range(cam_rect.position.y, cam_rect.position.y + cam_rect.size.y), area_min.y, area_max.y)
-				3: # right
+					pos.y = randf_range(cam_rect.position.y, cam_rect.position.y + cam_rect.size.y)
+				3: # right edge (just right of camera)
 					pos.x = cam_rect.position.x + cam_rect.size.x + edge_offset
-					pos.y = clamp(randf_range(cam_rect.position.y, cam_rect.position.y + cam_rect.size.y), area_min.y, area_max.y)
+					pos.y = randf_range(cam_rect.position.y, cam_rect.position.y + cam_rect.size.y)
 
-			if pos.x >= area_min.x and pos.x <= area_max.x and pos.y >= area_min.y and pos.y <= area_max.y:
-				if not cam_rect.has_point(pos):
-					return pos
+			# Clamp position inside spawn area rectangle
+			pos.x = clamp(pos.x, area_min.x, area_max.x)
+			pos.y = clamp(pos.y, area_min.y, area_max.y)
+
+			# Conditions:
+			# 1) pos must be inside spawn area rectangle (already clamped)
+			# 2) pos must be outside camera viewport
+			if not cam_rect.has_point(pos):
+				return pos
 
 			tries += 1
-			if tries > 50:
-				return spawn_shape.global_position
+
+		# fallback to center of spawn area
+		return spawn_shape.global_position
 
 	return spawn_shape.global_position
