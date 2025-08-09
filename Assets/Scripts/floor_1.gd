@@ -6,18 +6,29 @@ extends Node2D
 @onready var spawn_area: Area2D = $SpawnArea
 @onready var spawn_shape: CollisionShape2D = $SpawnArea/CollisionShape2D
 
+### --- ENEMY SCENES --- ###
+var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
+var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
+
 ### --- WAVE SETTINGS --- ###
 var waves = [
 	{
-		"enemy_scene": preload("res://Assets/Scenes/bread.tscn"),
 		"total": 20,
 		"batch_size": 2,
-		"spawn_rate": 1.0
+		"spawn_rate": 1.0,
+		"enemy_type": "bread" # single type
 	},
-	# More waves can be added here later
+	{
+		"total": 40,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"enemy_type": "mixed" # 50% bread / black_bread
+	}
 ]
+
 var current_wave := 0
 var spawned_count := 0
+var alive_enemies := 0
 var spawn_timer: Timer
 
 ### --- EDGE OFFSET --- ###
@@ -34,6 +45,7 @@ func _start_wave(wave_index: int) -> void:
 
 	current_wave = wave_index
 	spawned_count = 0
+	alive_enemies = 0
 
 	var wave = waves[current_wave]
 	spawn_timer = Timer.new()
@@ -47,26 +59,46 @@ func _spawn_wave_batch() -> void:
 	var wave = waves[current_wave]
 	var total_to_spawn = wave["total"]
 	var batch_size = wave["batch_size"]
-	var enemy_scene = wave["enemy_scene"]
 
 	if spawned_count >= total_to_spawn:
 		spawn_timer.stop()
 		spawn_timer.queue_free()
-		# Start next wave after 2 seconds
-		await get_tree().create_timer(2.0).timeout
-		_start_wave(current_wave + 1)
-		return
+		return # Wait for alive_enemies to reach 0 before starting next wave
 
 	for i in range(batch_size):
 		if spawned_count >= total_to_spawn:
 			break
 		var spawn_pos = _get_spawn_position_near_camera_edge_in_area()
+
+		# Choose enemy scene based on wave type
+		var enemy_scene: PackedScene
+		if wave["enemy_type"] == "bread":
+			enemy_scene = bread_scene
+		elif wave["enemy_type"] == "mixed":
+			if randf() < 0.5:
+				enemy_scene = bread_scene
+			else:
+				enemy_scene = black_bread_scene
+
 		var enemy = enemy_scene.instantiate()
 		enemy.global_position = spawn_pos
 		if enemy.has_method("set_player_reference"):
 			enemy.set_player_reference(player)
+
+		# Track when enemy dies
+		if enemy.has_signal("tree_exited"):
+			enemy.connect("tree_exited", Callable(self, "_on_enemy_died"))
+
 		get_parent().add_child(enemy)
 		spawned_count += 1
+		alive_enemies += 1
+
+func _on_enemy_died() -> void:
+	alive_enemies -= 1
+	if alive_enemies <= 0 and spawned_count >= waves[current_wave]["total"]:
+		# Wave is truly complete (all spawned enemies are dead)
+		await get_tree().create_timer(5.0).timeout
+		_start_wave(current_wave + 1)
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 	var shape := spawn_shape.shape
