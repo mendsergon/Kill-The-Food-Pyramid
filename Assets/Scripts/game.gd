@@ -4,9 +4,10 @@ extends Node2D
 @onready var player: CharacterBody2D = $Player
 @onready var burger: CharacterBody2D = $Burger
 @onready var bread: CharacterBody2D = $Bread
+@onready var baguette: CharacterBody2D = $Baguette
 @onready var camera_2d: Camera2D = $Player/Camera2D
 
-### --- ENEMY SCENES --- ###
+### --- ENEMY SCENES --- ###w
 var burger_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var bread_scene: PackedScene = preload("res://Assets/Scenes/burger.tscn")
 
@@ -19,6 +20,7 @@ func _ready() -> void:
 	# Pass player reference to enemy for tracking
 	burger.set_player_reference(player)
 	bread.set_player_reference(player)
+	baguette.set_player_reference(player)
 
 func _process(_delta: float) -> void:
 	# Restart the scene when the player's instance has been freed 

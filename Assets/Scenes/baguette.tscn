@@ -1,0 +1,85 @@
+[gd_scene load_steps=12 format=3 uid="uid://dx6xvy3qsu862"]
+
+[ext_resource type="Texture2D" uid="uid://dk7br8565u7c8" path="res://Assets/Sprites/Baguette/Baguette.png" id="1_3v13v"]
+[ext_resource type="Script" uid="uid://cig23pfn3nc44" path="res://Assets/Scripts/baguette.gd" id="1_ph281"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ph281"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0xoyo"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kfj5o"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3v13v"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jrs2v"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r4j1s"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hyuvc"]
+atlas = ExtResource("1_3v13v")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_jrs2v"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ph281")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0xoyo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kfj5o")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3v13v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jrs2v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r4j1s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hyuvc")
+}],
+"loop": true,
+"name": &"Run",
+"speed": 10.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_r4j1s"]
+radius = 5.0
+height = 24.0
+
+[node name="Baguette" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_ph281")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_jrs2v")
+animation = &"Run"
+frame = 1
+frame_progress = 0.72759
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 3)
+shape = SubResource("CapsuleShape2D_r4j1s")

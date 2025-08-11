@@ -9,6 +9,7 @@ extends Node2D
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
+var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
 
 ### --- WAVE SETTINGS --- ###
 var waves = [
@@ -19,7 +20,7 @@ var waves = [
 		"enemy_type": "bread" # single type
 	},
 	{
-		"total": 40,
+		"total": 25,
 		"batch_size": 2,
 		"spawn_rate": 1.0,
 		"enemy_type": "mixed" # 50% bread / black_bread
@@ -142,7 +143,7 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 
 			tries += 1
 
-		# fallback to center of spawn area
+		# fallbdack to center of spawn area
 		return spawn_shape.global_position
 
 	return spawn_shape.global_position
