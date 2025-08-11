@@ -9,7 +9,7 @@ extends Node2D
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
-var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
+var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn") 
 
 ### --- WAVE SETTINGS --- ###
 var waves = [
@@ -24,6 +24,12 @@ var waves = [
 		"batch_size": 2,
 		"spawn_rate": 1.0,
 		"enemy_type": "mixed" # 50% bread / black_bread
+	},
+	{
+		"total": 10,
+		"batch_size": 1,
+		"spawn_rate": 1.0,
+		"enemy_type": "baguette" 
 	}
 ]
 
@@ -80,6 +86,8 @@ func _spawn_wave_batch() -> void:
 				enemy_scene = bread_scene
 			else:
 				enemy_scene = black_bread_scene
+		elif wave["enemy_type"] == "baguette": 
+			enemy_scene = baguette_scene
 
 		var enemy = enemy_scene.instantiate()
 		enemy.global_position = spawn_pos
@@ -98,7 +106,7 @@ func _on_enemy_died() -> void:
 	alive_enemies -= 1
 	if alive_enemies <= 0 and spawned_count >= waves[current_wave]["total"]:
 		# Wave is truly complete (all spawned enemies are dead)
-		await get_tree().create_timer(5.0).timeout
+		await get_tree().create_timer(3.0).timeout
 		_start_wave(current_wave + 1)
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
@@ -143,7 +151,7 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 
 			tries += 1
 
-		# fallbdack to center of spawn area
+		# fallback to center of spawn area
 		return spawn_shape.global_position
 
 	return spawn_shape.global_position
