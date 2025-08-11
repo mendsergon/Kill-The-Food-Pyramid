@@ -4,6 +4,8 @@ extends CharacterBody2D
 const MOVE_SPEED = 50.0                  # Enemy walk speed
 const STOP_DISTANCE = 50.0               # Distance to stop from player
 const REACTIVATION_DISTANCE = 80.0       # Distance player must move away before chasing again
+const BREADCRUMB_RANGE = 75.0            # Distance to player to spawn breadcrumb
+const BREADCRUMB_SPAWN_INTERVAL = 2.0    # Seconds between breadcrumb spawns
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
 const STAGGER_DURATION = 0.1             # Time frozen after taking hit
@@ -15,6 +17,7 @@ var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D  # Enemy sprite
+@export var breadcrumb_scene: PackedScene = preload("res://Assets/Scenes/bread_cramb.tscn")                               
 
 ### --- STATE --- ###
 var player: CharacterBody2D = null       # Reference to player node
@@ -25,6 +28,9 @@ var stagger_timer := 0.0                 # Timer to freeze movement briefly afte
 var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether baguette is in death state
 var last_stop_position: Vector2          # Position of player when enemy last stopped
+
+### --- BREADCRUMB SPAWN TIMER --- ###
+var breadcrumb_timer := 0.0              # Tracks time between breadcrumb spawns
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
@@ -83,6 +89,13 @@ func _physics_process(delta: float) -> void:
 	### --- APPLY MOVEMENT --- ###
 	move_and_slide()
 
+	### --- SPAWN BREADCRUMBS WHEN CLOSE --- ###
+	if dist_to_player <= BREADCRUMB_RANGE:
+		breadcrumb_timer += delta
+		if breadcrumb_timer >= BREADCRUMB_SPAWN_INTERVAL:
+			breadcrumb_timer = 0.0
+			spawn_breadcrumb()
+
 	### --- PLAYER DAMAGE ON TOUCH --- ###
 	for i in range(get_slide_collision_count()):
 		var collision = get_slide_collision(i)
@@ -96,6 +109,29 @@ func _physics_process(delta: float) -> void:
 		flash_timer -= delta
 		if flash_timer <= 0.0:
 			animated_sprite_2d.modulate = Color(1, 1, 1)  # Reset color to normal
+
+### --- SPAWN FUNCTION --- ###
+func spawn_breadcrumb() -> void:
+	if breadcrumb_scene:
+		var crumb = breadcrumb_scene.instantiate()
+		crumb.global_position = global_position
+		
+		# Scale breadcrumb to 1/4 size
+		if crumb.has_method("set_scale"):
+			crumb.set_scale(Vector2(0.5, 0.5))
+		elif crumb.has_node("Sprite2D"):
+			crumb.get_node("Sprite2D").scale = Vector2(0.5, 0.5)
+		else:
+			crumb.scale = Vector2(0.5, 0.5)  # fallback if root node supports scale
+		
+		if crumb.has_method("set_direction"):
+			crumb.set_direction((player.global_position - global_position).normalized())
+		
+		# PASS PLAYER REFERENCE TO BREADCRUMB HERE:
+		if crumb.has_method("set_player_reference"):
+			crumb.set_player_reference(player)
+		
+		get_parent().add_child(crumb)
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
