@@ -11,6 +11,7 @@ var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
 var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
 var big_bread_scene: PackedScene = preload("res://Assets/Scenes/big_bread.tscn") 
+var big__black_bread_scene: PackedScene = preload("res://Assets/Scenes/big_black_bread.tscn")
 
 ### --- WAVE SETTINGS --- ###
 var waves = [
@@ -37,6 +38,12 @@ var waves = [
 		"batch_size": 2,
 		"spawn_rate": 0.5,
 		"enemy_type": "baguette_mixed" # new mixed wave: 10 baguettes + 20 mixed breads
+	},
+	{
+		"total": 1,
+		"batch_size": 1,
+		"spawn_rate": 0.5,
+		"enemy_type": "big_bread" # NEW wave 5: just 1 big bread
 	}
 ]
 
@@ -52,9 +59,29 @@ var mixed_spawned := 0
 ### --- EDGE OFFSET --- ###
 var edge_offset := 16 # pixels outside camera view
 
+### --- BIG BREAD TRACKING --- ###
+var big_bread_ref: Node = null
+var big_black_bread_spawned := false
+
 func _ready() -> void:
 	randomize()
+	set_process(true) # ensure _process runs for boss health polling
 	_start_wave(0)
+
+func _process(_delta: float) -> void:
+	# Check if big bread is alive and health <= 25, then spawn big black bread once
+	if big_bread_ref != null and not big_black_bread_spawned:
+		# ensure the instance is still valid (not freed)
+		if is_instance_valid(big_bread_ref):
+			# safely try to read health property
+			var h = big_bread_ref.get("health")
+			if typeof(h) == TYPE_INT or typeof(h) == TYPE_FLOAT:
+				if h <= 25:
+					_spawn_big_black_bread()
+					big_black_bread_spawned = true
+		else:
+			# reference invalid (freed), clear it to avoid repeated checks
+			big_bread_ref = null
 
 func _start_wave(wave_index: int) -> void:
 	if wave_index >= waves.size():
@@ -66,6 +93,8 @@ func _start_wave(wave_index: int) -> void:
 	alive_enemies = 0
 	baguette_spawned = 0
 	mixed_spawned = 0
+	big_bread_ref = null
+	big_black_bread_spawned = false
 
 	var wave = waves[current_wave]
 	spawn_timer = Timer.new()
@@ -131,19 +160,37 @@ func _spawn_wave_batch() -> void:
 				else:
 					enemy_scene = black_bread_scene
 				mixed_spawned += 1
+		elif wave["enemy_type"] == "big_bread":
+			enemy_scene = big_bread_scene # NEW wave 5 type
 
 		var enemy = enemy_scene.instantiate()
 		enemy.global_position = spawn_pos
 		if enemy.has_method("set_player_reference"):
 			enemy.set_player_reference(player)
 
-		# Track when enemy dies
+		# If this is the big bread, keep a reference for HP check
+		if wave["enemy_type"] == "big_bread":
+			big_bread_ref = enemy
+
+		# Track when enemy dies (only connect if the signal exists on that scene)
 		if enemy.has_signal("tree_exited"):
 			enemy.connect("tree_exited", Callable(self, "_on_enemy_died"))
 
 		get_parent().add_child(enemy)
 		spawned_count += 1
 		alive_enemies += 1
+
+func _spawn_big_black_bread() -> void:
+	var spawn_pos = _get_spawn_position_near_camera_edge_in_area()
+	var big_black = big__black_bread_scene.instantiate()
+	big_black.global_position = spawn_pos
+	if big_black.has_method("set_player_reference"):
+		big_black.set_player_reference(player)
+	if big_black.has_signal("tree_exited"):
+		big_black.connect("tree_exited", Callable(self, "_on_enemy_died"))
+	get_parent().add_child(big_black)
+	alive_enemies += 1
+	print("Big Black Bread spawned!")
 
 func _on_enemy_died() -> void:
 	alive_enemies -= 1
