@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://dvo5ged0w22h" path="res://Assets/Scripts/bread_cramb.gd" id="1_doeli"]
 [ext_resource type="Texture2D" uid="uid://dhd3utrbh7nir" path="res://Assets/Sprites/Bread Cramb/Bread Crumb.png" id="1_jji7y"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_doeli"]
-radius = 11.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_dn5y4"]
+radius = 12.0
 
 [node name="Bread Cramb" type="CharacterBody2D"]
 collision_layer = 4
@@ -15,4 +15,4 @@ script = ExtResource("1_doeli")
 texture = ExtResource("1_jji7y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_doeli")
+shape = SubResource("CircleShape2D_dn5y4")

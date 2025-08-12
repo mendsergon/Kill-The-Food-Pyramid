@@ -4,7 +4,6 @@ extends CharacterBody2D
 const MOVE_SPEED = 50.0                  # Enemy walk speed
 const STOP_DISTANCE = 50.0               # Distance to stop from player
 const REACTIVATION_DISTANCE = 80.0       # Distance player must move away before chasing again
-const BREADCRUMB_RANGE = 75.0            # Distance to player to spawn breadcrumb
 const BREADCRUMB_SPAWN_INTERVAL = 2.0    # Seconds between breadcrumb spawns
 const IDLE_COOLDOWN = 2.0                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
@@ -29,7 +28,7 @@ var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether baguette is in death state
 var last_stop_position: Vector2          # Position of player when enemy last stopped
 
-### --- BREADCRUMB SPAWN TIMER --- ###
+### --- BREADCRUMB SHOOT TIMER --- ###
 var breadcrumb_timer := 0.0              # Tracks time between breadcrumb spawns
 
 ### --- PUBLIC SETUP --- ###
@@ -89,12 +88,22 @@ func _physics_process(delta: float) -> void:
 	### --- APPLY MOVEMENT --- ###
 	move_and_slide()
 
-	### --- SPAWN BREADCRUMBS WHEN CLOSE --- ###
-	if dist_to_player <= BREADCRUMB_RANGE:
-		breadcrumb_timer += delta
-		if breadcrumb_timer >= BREADCRUMB_SPAWN_INTERVAL:
-			breadcrumb_timer = 0.0
-			spawn_breadcrumb()
+	### --- SHOOT BREADCRUMBS ONLY WHEN INSIDE PLAYER CAMERA VIEW --- ###
+	var camera = player.get_node("Camera2D")  
+	if camera:
+		# Calculate the visible rectangle of the camera in world space
+		var screen_size = camera.get_viewport_rect().size / camera.zoom
+		var cam_rect = Rect2(
+			camera.global_position - screen_size / 2,
+			screen_size
+		)
+
+		# Only shoot if baguette is inside the visible camera rectangle
+		if cam_rect.has_point(global_position):
+			breadcrumb_timer += delta
+			if breadcrumb_timer >= BREADCRUMB_SPAWN_INTERVAL:
+				breadcrumb_timer = 0.0
+				spawn_breadcrumb()
 
 	### --- PLAYER DAMAGE ON TOUCH --- ###
 	for i in range(get_slide_collision_count()):
