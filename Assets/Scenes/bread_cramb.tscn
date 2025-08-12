@@ -4,14 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://dhd3utrbh7nir" path="res://Assets/Sprites/Bread Cramb/Bread Crumb.png" id="1_jji7y"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dn5y4"]
-radius = 12.0
+radius = 11.0
 
 [node name="Bread Cramb" type="CharacterBody2D"]
-collision_layer = 4
+collision_layer = 0
 collision_mask = 3
 script = ExtResource("1_doeli")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
 texture = ExtResource("1_jji7y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
