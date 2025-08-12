@@ -30,6 +30,12 @@ var waves = [
 		"batch_size": 1,
 		"spawn_rate": 1.0,
 		"enemy_type": "baguette" 
+	},
+	{
+		"total": 30,
+		"batch_size": 2,
+		"spawn_rate": 0.5,
+		"enemy_type": "baguette_mixed" # new mixed wave: 10 baguettes + 20 mixed breads
 	}
 ]
 
@@ -37,6 +43,10 @@ var current_wave := 0
 var spawned_count := 0
 var alive_enemies := 0
 var spawn_timer: Timer
+
+# Track baguette/mixed counts separately for wave 4
+var baguette_spawned := 0
+var mixed_spawned := 0
 
 ### --- EDGE OFFSET --- ###
 var edge_offset := 16 # pixels outside camera view
@@ -53,6 +63,8 @@ func _start_wave(wave_index: int) -> void:
 	current_wave = wave_index
 	spawned_count = 0
 	alive_enemies = 0
+	baguette_spawned = 0
+	mixed_spawned = 0
 
 	var wave = waves[current_wave]
 	spawn_timer = Timer.new()
@@ -88,6 +100,36 @@ func _spawn_wave_batch() -> void:
 				enemy_scene = black_bread_scene
 		elif wave["enemy_type"] == "baguette": 
 			enemy_scene = baguette_scene
+		elif wave["enemy_type"] == "baguette_mixed":
+			# Total 10 baguettes and 20 mixed breads in random order
+			var total_baguettes = 10
+			var total_mixed = 20
+
+			# Calculate remaining enemies of each type
+			var baguettes_left = total_baguettes - baguette_spawned
+			var mixed_left = total_mixed - mixed_spawned
+
+			# Pick randomly which to spawn, but respect remaining counts
+			if baguettes_left > 0 and mixed_left > 0:
+				if randf() < 0.5:
+					enemy_scene = baguette_scene
+					baguette_spawned += 1
+				else:
+					if randf() < 0.5:
+						enemy_scene = bread_scene
+					else:
+						enemy_scene = black_bread_scene
+					mixed_spawned += 1
+			elif baguettes_left > 0:
+				enemy_scene = baguette_scene
+				baguette_spawned += 1
+			else:
+				# mixed only
+				if randf() < 0.5:
+					enemy_scene = bread_scene
+				else:
+					enemy_scene = black_bread_scene
+				mixed_spawned += 1
 
 		var enemy = enemy_scene.instantiate()
 		enemy.global_position = spawn_pos
