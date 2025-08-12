@@ -5,7 +5,8 @@ const MOVE_SPEED = 100.0                 # Speed of breadcrumb
 const FLASH_DURATION = 0.1               # Duration of red flash after taking damage
 const DEATH_DURATION = 0.2               # Delay before removing breadcrumb after death
 const MAX_DISTANCE_FROM_PLAYER = 800.0   # Auto-despawn distance from player
-const OVERLAP_RADIUS = 10.0               # Radius used for overlap-based hit detection
+const OVERLAP_RADIUS = 10.0              # Radius used for overlap-based hit detection
+const SPRITE_ORIENTATION_OFFSET = 0.0    # Radians: tweak if sprite art faces a different default direction
 
 ### --- HEALTH --- ###
 var health: int = 1                      # Breadcrumb HP (only 1 hit to destroy)
@@ -15,10 +16,10 @@ var health: int = 1                      # Breadcrumb HP (only 1 hit to destroy)
 
 ### --- STATE --- ###
 var direction := Vector2.ZERO            # Locked movement direction at spawn
-var flash_timer := 0.0                    # Timer for red flash effect
-var death_timer := 0.0                    # Timer before removing dead crumb
-var is_dying := false                     # Whether crumb is in death state
-var player: CharacterBody2D = null        # Reference to player node
+var flash_timer := 0.0                   # Timer for red flash effect
+var death_timer := 0.0                   # Timer before removing dead crumb
+var is_dying := false                    # Whether crumb is in death state
+var player: CharacterBody2D = null       # Reference to player node
 
 ### --- PUBLIC SETUP --- ###
 func set_direction(dir: Vector2) -> void:
@@ -45,10 +46,15 @@ func _physics_process(delta: float) -> void:
 			queue_free()
 		return
 
-	### --- FACE PLAYER --- ###
+	### --- FACE PLAYER (node rotation for logic) --- ###
 	if player:
 		var to_player = player.global_position - global_position
 		rotation = to_player.angle()
+
+	# --- CANCEL PARENT ROTATION ON SPRITE (rotate sprite opposite so it visually stays still) ---
+	# sprite_global_rotation = parent_rotation + sprite_local_rotation
+	# to make global rotation 0 (or fixed), set sprite_local_rotation = -parent_rotation + offset
+	sprite_2d.rotation = -rotation + SPRITE_ORIENTATION_OFFSET
 
 	### --- MOVE IN LOCKED DIRECTION --- ###
 	var collision = move_and_collide(direction * MOVE_SPEED * delta)
