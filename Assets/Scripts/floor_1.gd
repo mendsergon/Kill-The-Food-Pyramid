@@ -9,7 +9,8 @@ extends Node2D
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
-var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn") 
+var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
+var big_bread_scene: PackedScene = preload("res://Assets/Scenes/big_bread.tscn") 
 
 ### --- WAVE SETTINGS --- ###
 var waves = [
