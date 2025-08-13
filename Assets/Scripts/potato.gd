@@ -9,7 +9,7 @@ const STAGGER_DURATION = 0.1             # Time frozen after taking hit
 const DEATH_DURATION = 0.5               # Time before removing dead potato
 
 ### --- HEALTH --- ###
-@export var max_health: int = 3          # Maximum HP for potato
+@export var max_health: int = 5          # Maximum HP for potato
 var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
@@ -152,7 +152,7 @@ func handle_attack(delta: float) -> void:
 		if attack_timer <= 0.0:
 			attack_phase = "charge"
 			attack_timer = ATTACK_CHARGE_DURATION
-			animated_sprite_2d.play("Run") # Could be replaced with spin animation
+			animated_sprite_2d.play("Run") 
 
 	elif attack_phase == "charge":
 		# Spin backwards while moving fast in locked direction
