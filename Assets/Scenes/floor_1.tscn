@@ -1,4 +1,4 @@
-[gd_scene load_steps=55 format=3 uid="uid://104owe5xdrx"]
+[gd_scene load_steps=56 format=3 uid="uid://104owe5xdrx"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_43y52"]
 [ext_resource type="Script" uid="uid://dgg64d5k6juh3" path="res://Assets/Scripts/floor_1.gd" id="1_avqbm"]
@@ -27,6 +27,7 @@
 [ext_resource type="Texture2D" uid="uid://b5qnjdv73poff" path="res://Assets/Tiles/Outside/TilesetHole.png" id="24_5ybvi"]
 [ext_resource type="Texture2D" uid="uid://caanktclkm3fo" path="res://Assets/Tiles/Outside/TilesetHouse.png" id="25_ovmwr"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="26_mdb6j"]
+[ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Scenes/fade_layer.tscn" id="28_oxctm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_43i0i"]
 texture = ExtResource("1_43y52")
@@ -3977,3 +3978,5 @@ light_mask = 0
 visibility_layer = 0
 position = Vector2(5, 7.5)
 shape = SubResource("RectangleShape2D_avqbm")
+
+[node name="FadeLayer" parent="." instance=ExtResource("28_oxctm")]

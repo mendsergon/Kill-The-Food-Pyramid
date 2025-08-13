@@ -5,6 +5,7 @@ extends Node2D
 @onready var camera_2d: Camera2D = $Player/Camera2D
 @onready var spawn_area: Area2D = $SpawnArea
 @onready var spawn_shape: CollisionShape2D = $SpawnArea/CollisionShape2D
+@onready var fade_layer: CanvasLayer = $FadeLayer
 
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
@@ -195,9 +196,15 @@ func _spawn_big_black_bread() -> void:
 func _on_enemy_died() -> void:
 	alive_enemies -= 1
 	if alive_enemies <= 0 and spawned_count >= waves[current_wave]["total"]:
-		# Wave is truly complete (all spawned enemies are dead)
-		await get_tree().create_timer(3.0).timeout
-		_start_wave(current_wave + 1)
+		if current_wave + 1 >= waves.size():
+			# All waves complete, wait 5 seconds, then fade
+			await get_tree().create_timer(5.0).timeout
+			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
+				fade_layer.start_fade("res://Assets/Scenes/level_1.tscn")
+		else:
+			# Wave is truly complete (all spawned enemies are dead), start next wave after 3 seconds
+			await get_tree().create_timer(3.0).timeout
+			_start_wave(current_wave + 1)
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 	var shape := spawn_shape.shape
