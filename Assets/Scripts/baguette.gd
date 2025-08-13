@@ -36,7 +36,7 @@ func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
-	animated_sprite_2d.play("Idle")
+	animated_sprite_2d.play("Run")
 	health = max_health                    # Set starting HP
 
 func _physics_process(delta: float) -> void:

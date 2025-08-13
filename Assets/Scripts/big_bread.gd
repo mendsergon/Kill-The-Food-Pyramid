@@ -29,7 +29,7 @@ func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
-	animated_sprite_2d.play("Idle")
+	animated_sprite_2d.play("Run")         # Start moving immediately
 	health = max_health                    # Set starting HP
 
 func _physics_process(delta: float) -> void:
@@ -77,7 +77,7 @@ func _physics_process(delta: float) -> void:
 		var other = collision.get_collider()            # Get the collided object
 		if other == player and other.has_method("apply_damage"):
 			# Knockback direction points from enemy to player 
-				other.apply_damage(1, (player.global_position - global_position).normalized())         # Deal 1 damage + knockback to player
+			other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback to player
 
 	### --- RED FLASH ON DAMAGE --- ###
 	if flash_timer > 0.0:
