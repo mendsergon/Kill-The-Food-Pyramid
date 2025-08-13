@@ -3998,4 +3998,3 @@ position = Vector2(0, -6)
 scale = Vector2(0.75, 0.669)
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_i6cym")]
-visible = false
