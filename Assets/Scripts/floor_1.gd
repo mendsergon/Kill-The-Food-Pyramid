@@ -162,7 +162,7 @@ func _spawn_wave_batch() -> void:
 					enemy_scene = black_bread_scene
 				mixed_spawned += 1
 		elif wave["enemy_type"] == "big_bread":
-			enemy_scene = big_bread_scene # NEW wave 5 type
+			enemy_scene = big_bread_scene 
 
 		var enemy = enemy_scene.instantiate()
 		enemy.global_position = spawn_pos
@@ -173,7 +173,7 @@ func _spawn_wave_batch() -> void:
 		if wave["enemy_type"] == "big_bread":
 			big_bread_ref = enemy
 
-		# Track when enemy dies (only connect if the signal exists on that scene)
+		# Track when enemy dies 
 		if enemy.has_signal("tree_exited"):
 			enemy.connect("tree_exited", Callable(self, "_on_enemy_died"))
 
