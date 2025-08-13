@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="1_nbu75"]
 [ext_resource type="Script" uid="uid://cnim03an8koje" path="res://Assets/Scripts/game.gd" id="1_rh331"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/Scenes/cyber_cat.tscn" id="2_pfbgl"]
-[ext_resource type="PackedScene" uid="uid://dx6xvy3qsu862" path="res://Assets/Scenes/baguette.tscn" id="6_iusbg"]
+[ext_resource type="PackedScene" uid="uid://dohf3ue6hwihr" path="res://Assets/Scenes/potato.tscn" id="4_pb48a"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_rh331")
@@ -18,5 +18,5 @@ position = Vector2(14, -15)
 position = Vector2(0, 7)
 zoom = Vector2(4, 4)
 
-[node name="Baguette" parent="." instance=ExtResource("6_iusbg")]
-position = Vector2(149, -52)
+[node name="Potato" parent="." instance=ExtResource("4_pb48a")]
+position = Vector2(142, -52)

@@ -2,8 +2,8 @@ extends Node2D
 
 ### --- NODE REFERENCES --- ###
 @onready var player: CharacterBody2D = $Player
-@onready var baguette: CharacterBody2D = $Baguette
 @onready var camera_2d: Camera2D = $Player/Camera2D
+@onready var potato: CharacterBody2D = $Potato
 
 ### --- ENEMY SCENES --- ###w
 var burger_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
@@ -16,7 +16,7 @@ const SPAWN_MARGIN := 100   # Distance outside the camera view to spawn
 
 func _ready() -> void:
 	# Pass player reference to enemy for tracking
-	baguette.set_player_reference(player)
+	potato.set_player_reference(player)
 
 func _process(_delta: float) -> void:
 	# Restart the scene when the player's instance has been freed 
