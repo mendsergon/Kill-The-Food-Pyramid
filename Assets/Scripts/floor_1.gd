@@ -6,6 +6,7 @@ extends Node2D
 @onready var spawn_area: Area2D = $SpawnArea
 @onready var spawn_shape: CollisionShape2D = $SpawnArea/CollisionShape2D
 @onready var fade_layer: CanvasLayer = $FadeLayer
+@onready var wave_label: Label = $Player/Camera2D/WaveLabel
 
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
@@ -52,6 +53,8 @@ var current_wave := 0
 var spawned_count := 0
 var alive_enemies := 0
 var spawn_timer: Timer
+var wave_label_timer: float = 0.0
+var current_tween: Tween = null
 
 # Track baguette/mixed counts separately for wave 4
 var baguette_spawned := 0
@@ -67,9 +70,22 @@ var big_black_bread_spawned := false
 func _ready() -> void:
 	randomize()
 	set_process(true) # ensure _process runs for boss health polling
+	wave_label.modulate.a = 0.0  # Start fully transparent
+	wave_label.visible = false
 	_start_wave(0)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	# Handle wave label timer
+	if wave_label_timer > 0:
+		wave_label_timer -= delta
+		if wave_label_timer <= 0.5 and wave_label.modulate.a > 0:  # Start fading out last 0.5 seconds
+			if current_tween:
+				current_tween.kill()
+			current_tween = create_tween()
+			current_tween.tween_property(wave_label, "modulate:a", 0.0, 0.5)
+		elif wave_label_timer <= 0:
+			wave_label.visible = false
+
 	# Check if big bread is alive and health <= 25, then spawn big black bread once
 	if big_bread_ref != null and not big_black_bread_spawned:
 		# ensure the instance is still valid (not freed)
@@ -96,6 +112,16 @@ func _start_wave(wave_index: int) -> void:
 	mixed_spawned = 0
 	big_bread_ref = null
 	big_black_bread_spawned = false
+
+	# Display wave number on wave_label with fade effect
+	if is_instance_valid(wave_label):
+		wave_label.text = "Wave " + str(current_wave + 1)
+		if current_tween:
+			current_tween.kill()
+		wave_label.visible = true
+		wave_label_timer = 2.0
+		current_tween = create_tween()
+		current_tween.tween_property(wave_label, "modulate:a", 1.0, 0.2).from(0.0)
 
 	var wave = waves[current_wave]
 	spawn_timer = Timer.new()

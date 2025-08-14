@@ -1,5 +1,6 @@
-[gd_scene load_steps=55 format=3 uid="uid://ot6j478hi6vx"]
+[gd_scene load_steps=58 format=3 uid="uid://ot6j478hi6vx"]
 
+[ext_resource type="Script" uid="uid://0o66c8u3fwxs" path="res://Assets/Scripts/floor_2.gd" id="1_f8wuu"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_ql77r"]
 [ext_resource type="Texture2D" uid="uid://dml6nkqv27qce" path="res://Assets/Tiles/Outside/Pipes.png" id="2_f8wuu"]
 [ext_resource type="Texture2D" uid="uid://kdtr2ky747gu" path="res://Assets/Tiles/Outside/TilesetLogic.png" id="3_y21fc"]
@@ -27,6 +28,8 @@
 [ext_resource type="Texture2D" uid="uid://caanktclkm3fo" path="res://Assets/Tiles/Outside/TilesetHouse.png" id="25_iv0bs"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="26_o5umv"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Scenes/fade_layer.tscn" id="27_ltdh1"]
+[ext_resource type="PackedScene" uid="uid://104owe5xdrx" path="res://Assets/Scenes/floor_1.tscn" id="28_e0b1u"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="29_emi2n"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6maer"]
 texture = ExtResource("1_ql77r")
@@ -3951,6 +3954,7 @@ sources/24 = SubResource("TileSetAtlasSource_gpdd2")
 size = Vector2(704, 703)
 
 [node name="Floor 2" type="Node2D"]
+script = ExtResource("1_f8wuu")
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(0, -5)
@@ -3968,6 +3972,20 @@ layer_3/tile_data = PackedInt32Array(-1441815, 589832, 805306369, -1507305, 5898
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(4, 4)
+
+[node name="Floor 1" parent="Player/Camera2D" instance=ExtResource("28_e0b1u")]
+
+[node name="WaveLabel" type="Label" parent="Player/Camera2D/Floor 1"]
+visible = false
+offset_left = -26.0
+offset_top = -53.0
+offset_right = 32.0
+offset_bottom = -30.0
+theme_override_fonts/font = ExtResource("29_emi2n")
+text = "
+"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SpawnArea" type="Area2D" parent="."]
 
