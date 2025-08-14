@@ -3993,4 +3993,3 @@ position = Vector2(4.5, 2.5)
 shape = SubResource("RectangleShape2D_avqbm")
 
 [node name="FadeLayer" parent="." instance=ExtResource("27_ltdh1")]
-visible = false

@@ -15,6 +15,7 @@ var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
 var big_bread_scene: PackedScene = preload("res://Assets/Scenes/big_bread.tscn") 
 var big_black_bread_scene: PackedScene = preload("res://Assets/Scenes/big_black_bread.tscn")
 var potato_scene: PackedScene = preload("res://Assets/Scenes/potato.tscn")
+var sweet_potato_scene: PackedScene = preload("res://Assets/Scenes/sweet_potato.tscn")
 
 ### --- WAVE SETTINGS --- ###
 var waves := [
@@ -31,9 +32,19 @@ var waves := [
 		"spawn_rate": 1.0,
 		"composition": {
 			"potato": 15,
-			"bread": 12,      # 25 breads/black breads split 50/50
+			"bread": 12,      
 			"black_bread": 13,
 			"baguette": 10
+		}
+	},
+	{
+		"enemy_type": "mixed_third_wave",
+		"total": 45,  
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 25,
+			"sweet_potato": 20
 		}
 	}
 ]
@@ -77,8 +88,8 @@ func _start_wave(wave_index: int) -> void:
 	spawned_count = 0
 	alive_enemies = 0
 
-	# Prepare second wave spawn list if needed
-	if waves[current_wave].get("enemy_type") == "mixed_second_wave":
+	# Prepare spawn list for mixed waves
+	if waves[current_wave].get("enemy_type").begins_with("mixed_"):
 		second_wave_spawn_list.clear()
 		for enemy_type in waves[current_wave]["composition"]:
 			var count = waves[current_wave]["composition"][enemy_type]
@@ -121,7 +132,7 @@ func _spawn_wave_batch() -> void:
 		var enemy_scene: PackedScene
 		var enemy_type: String
 
-		if wave.get("enemy_type") == "mixed_second_wave":
+		if wave.get("enemy_type").begins_with("mixed_"):
 			enemy_type = second_wave_spawn_list.pop_back()
 		else:
 			enemy_type = wave.get("enemy_type", "bread")
@@ -131,6 +142,7 @@ func _spawn_wave_batch() -> void:
 			"black_bread": enemy_scene = black_bread_scene
 			"baguette": enemy_scene = baguette_scene
 			"potato": enemy_scene = potato_scene
+			"sweet_potato": enemy_scene = sweet_potato_scene
 			_: enemy_scene = bread_scene
 
 		var enemy = enemy_scene.instantiate()
