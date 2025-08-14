@@ -3950,7 +3950,7 @@ sources/23 = SubResource("TileSetAtlasSource_8wn58")
 sources/24 = SubResource("TileSetAtlasSource_gpdd2")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_avqbm"]
-size = Vector2(704, 703)
+size = Vector2(675, 671)
 
 [node name="Floor 2" type="Node2D"]
 script = ExtResource("1_f8wuu")
@@ -3989,7 +3989,8 @@ vertical_alignment = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SpawnArea"]
 light_mask = 0
 visibility_layer = 0
-position = Vector2(5, 7.5)
+position = Vector2(4.5, 2.5)
 shape = SubResource("RectangleShape2D_avqbm")
 
 [node name="FadeLayer" parent="." instance=ExtResource("27_ltdh1")]
+visible = false
