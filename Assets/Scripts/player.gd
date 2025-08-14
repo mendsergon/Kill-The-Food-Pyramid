@@ -34,7 +34,7 @@ var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
 ### --- PLAYER DASH SLABS --- ###
-@export var MAX_DASH_SLABS: int = 3
+@export var MAX_DASH_SLABS: int = 1
 var current_dash_slabs := MAX_DASH_SLABS
 
 ### --- DASH SLAB BAR --- ###

@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://4hw4nftb5fkb"]
+[gd_scene load_steps=57 format=3 uid="uid://4hw4nftb5fkb"]
 
 [ext_resource type="Script" uid="uid://jhyvglvyp6w6" path="res://Assets/Scripts/level_1.gd" id="1_ve6kg"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_ve6kg"]
@@ -28,6 +28,7 @@
 [ext_resource type="Texture2D" uid="uid://caanktclkm3fo" path="res://Assets/Tiles/Outside/TilesetHouse.png" id="26_og5wj"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Scenes/player.tscn" id="27_o3kt4"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Scenes/interaction_area.tscn" id="28_cr40h"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="28_i6cym"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Scenes/fade_layer.tscn" id="29_i6cym"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_82vm0"]
@@ -3985,7 +3986,17 @@ position = Vector2(-82, 55)
 position = Vector2(0, 7)
 zoom = Vector2(4, 4)
 
-[node name="InteractionArea" parent="." instance=ExtResource("28_cr40h")]
+[node name="Save" type="Label" parent="Player/Camera2D"]
+visible = false
+offset_left = 90.0
+offset_top = -81.0
+offset_right = 199.0
+offset_bottom = -58.0
+scale = Vector2(0.5, 0.5)
+theme_override_fonts/font = ExtResource("28_i6cym")
+text = "Game  Saved"
+
+[node name="InteractionArea1" parent="." instance=ExtResource("28_cr40h")]
 position = Vector2(56, -55)
 scale = Vector2(0.5, 0.446)
 
@@ -3998,5 +4009,6 @@ position = Vector2(0, -6)
 scale = Vector2(0.75, 0.669)
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_i6cym")]
+visible = false
 
 [connection signal="interacted" from="InteractionArea3" to="." method="_on_interaction_area_3_interacted"]
