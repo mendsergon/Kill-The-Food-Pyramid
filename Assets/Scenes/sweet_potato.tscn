@@ -1,0 +1,80 @@
+[gd_scene load_steps=11 format=3 uid="uid://ck4i18vfqajhw"]
+
+[ext_resource type="Script" uid="uid://cvlys6dn67tou" path="res://Assets/Scripts/sweet_potato.gd" id="1_b628o"]
+[ext_resource type="Texture2D" uid="uid://dxtvletwl26gq" path="res://Assets/Sprites/Sweet Potato/Sweet Potato.png" id="1_difu3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b628o"]
+atlas = ExtResource("1_difu3")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4q87l"]
+atlas = ExtResource("1_difu3")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_km1wd"]
+atlas = ExtResource("1_difu3")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_difu3"]
+atlas = ExtResource("1_difu3")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nfu8l"]
+atlas = ExtResource("1_difu3")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f70gg"]
+atlas = ExtResource("1_difu3")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_argar"]
+atlas = ExtResource("1_difu3")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nfu8l"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b628o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4q87l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_km1wd")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_difu3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nfu8l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f70gg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_argar")
+}],
+"loop": true,
+"name": &"Run",
+"speed": 10.0
+}]
+
+[node name="Sweet Potato" type="CharacterBody2D"]
+scale = Vector2(1.25, 1.25)
+collision_layer = 4
+collision_mask = 131
+script = ExtResource("1_b628o")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_nfu8l")
+animation = &"Run"
+autoplay = "Run"
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(3.2, 12.8, 7.2, 9.6, 7.2, 4, 6.4, 4, 5.6, 1.6, 4.8, 1.6, 4.8, 0, 4.8, -2.4, 4, -4, 4, -4.8, 4, -6.4, 0.8, -8, -0.8, -8, -2.4, -7.2, -4, -5.6, -4, -4.8, -4.8, -4.8, -5.6, -4, -6.4, -2.4, -7.2, -0.8, -8, 0, -8.8, 2.4, -8.8, 7.2, -8.8, 8, -8, 9.6, -4.8, 12.8, -4, 14.4, -2.4, 16, -0.8, 15.2, -0.8, 13.6, 0, 13.6, 0, 14.4, 1.6, 16, 3.2, 15.2)

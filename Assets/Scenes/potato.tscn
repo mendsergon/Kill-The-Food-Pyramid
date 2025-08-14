@@ -75,7 +75,9 @@ script = ExtResource("1_n7txm")
 sprite_frames = SubResource("SpriteFrames_2b64y")
 animation = &"Run"
 autoplay = "Run"
+frame = 3
+frame_progress = 0.977269
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 position = Vector2(0, -1.6)
-polygon = PackedVector2Array(1, -3, 4, -0.8, 6.4, 2.4, 7.2, 4.8, 7, 10, 3.2, 13.6, 2.4, 16, 0.8, 16, 1, 14, -3.2, 16, -4, 14, -6.4, 12, -8.8, 8.8, -9, 2, -6.4, -1.6, -2, -4)
+polygon = PackedVector2Array(1, -3, 4, -0.8, 6.4, 2.4, 7.2, 4.8, 7, 10, 7.2, 11.2, 4.8, 13.6, 4, 14.4, 2.4, 16, 0.8, 16, 1, 14, -3.2, 16, -4.8, 14.4, -6.4, 12.8, -8, 11.2, -8.8, 8.8, -9, 2, -6.4, -1.6, -2, -4)
