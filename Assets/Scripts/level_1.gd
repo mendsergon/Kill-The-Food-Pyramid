@@ -5,11 +5,12 @@ extends Node2D
 @onready var fade_layer: CanvasLayer = $FadeLayer  
 
 func _ready() -> void:
-	interaction_area.connect("interacted", Callable(self, "_on_interacted"))
+	interaction_area.connect("interacted", Callable(self, "_on_interaction_area_3_interacted"))
 
 func _process(_delta: float) -> void:
 	if not is_instance_valid(player):
 		get_tree().reload_current_scene()
 
-func _on_interacted() -> void:
-	fade_layer.start_fade("res://Assets/Scenes/floor_1.tscn")  
+func _on_interaction_area_3_interacted() -> void:
+	SaveManager.save_player()
+	print("Game saved from interaction")

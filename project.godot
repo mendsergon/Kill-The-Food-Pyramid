@@ -15,6 +15,10 @@ run/main_scene="uid://rtruea8fbpge"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="uid://byxvv6a3aouy7"
 
+[autoload]
+
+SaveManager="*res://Assets/Scenes/save_manager.tscn"
+
 [global_group]
 
 player=""
