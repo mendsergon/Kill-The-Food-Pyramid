@@ -3993,3 +3993,31 @@ position = Vector2(4.5, 2.5)
 shape = SubResource("RectangleShape2D_avqbm")
 
 [node name="FadeLayer" parent="." instance=ExtResource("27_ltdh1")]
+
+[node name="Camera2D Death" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+
+[node name="DeathLabel" type="Label" parent="Camera2D Death"]
+offset_left = -113.0
+offset_top = -87.0
+offset_right = 113.0
+offset_bottom = 24.0
+theme_override_fonts/font = ExtResource("29_emi2n")
+theme_override_font_sizes/font_size = 40
+text = "
+YOU  DIED
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DeathLabel2" type="Label" parent="Camera2D Death"]
+offset_left = -105.0
+offset_top = 38.0
+offset_right = 121.0
+offset_bottom = 206.0
+theme_override_fonts/font = ExtResource("29_emi2n")
+theme_override_font_sizes/font_size = 20
+text = "[E] to  restart
+[F] to  leave         "
+horizontal_alignment = 1
+vertical_alignment = 1

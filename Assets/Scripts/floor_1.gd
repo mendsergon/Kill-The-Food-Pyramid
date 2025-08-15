@@ -7,6 +7,9 @@ extends Node2D
 @onready var spawn_shape: CollisionShape2D = $SpawnArea/CollisionShape2D
 @onready var fade_layer: CanvasLayer = $FadeLayer
 @onready var wave_label: Label = $Player/Camera2D/WaveLabel
+@onready var camera_2d_death: Camera2D = $"Camera2D Death"
+@onready var death_label: Label = $"Camera2D Death/DeathLabel"
+@onready var death_label_2: Label = $"Camera2D Death/DeathLabel2"
 
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
@@ -55,6 +58,8 @@ var alive_enemies := 0
 var spawn_timer: Timer
 var wave_label_timer: float = 0.0
 var current_tween: Tween = null
+var is_player_dead := false
+var death_overlay: ColorRect = null
 
 # Track baguette/mixed counts separately for wave 4
 var baguette_spawned := 0
@@ -72,6 +77,15 @@ func _ready() -> void:
 	set_process(true) # ensure _process runs for boss health polling
 	wave_label.modulate.a = 0.0  # Start fully transparent
 	wave_label.visible = false
+	
+	# Initialize death camera and labels
+	if is_instance_valid(camera_2d_death):
+		camera_2d_death.enabled = true
+	if is_instance_valid(death_label):
+		death_label.visible = false
+	if is_instance_valid(death_label_2):
+		death_label_2.visible = false
+		
 	_start_wave(0)
 
 func _process(delta: float) -> void:
@@ -99,6 +113,56 @@ func _process(delta: float) -> void:
 		else:
 			# reference invalid (freed), clear it to avoid repeated checks
 			big_bread_ref = null
+	
+	# Check for player death
+	if not is_player_dead and not is_instance_valid(player):
+		_on_player_died()
+
+func _input(event: InputEvent) -> void:
+	if not is_player_dead:
+		return
+
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_E:
+			get_tree().reload_current_scene()
+		elif event.keycode == KEY_F:
+			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
+				fade_layer.start_fade("res://Assets/Scenes/level_0.tscn")
+
+func _on_player_died() -> void:
+	is_player_dead = true
+
+	# Remove all enemies when player dies
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+
+	if spawn_timer:
+		spawn_timer.stop()
+		spawn_timer.queue_free()
+
+	if is_instance_valid(camera_2d_death):
+		camera_2d_death.make_current()
+
+	if is_instance_valid(death_label):
+		death_label.visible = true
+	if is_instance_valid(death_label_2):
+		death_label_2.visible = true
+
+	if death_overlay == null:
+		death_overlay = ColorRect.new()
+		death_overlay.name = "DeathOverlay"
+		death_overlay.color = Color(0, 0, 0, 0.75)
+		death_overlay.anchor_left = 0.0
+		death_overlay.anchor_top = 0.0
+		death_overlay.anchor_right = 1.0
+		death_overlay.anchor_bottom = 1.0
+		death_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		death_overlay.z_index = -1
+		if is_instance_valid(camera_2d_death):
+			camera_2d_death.add_child(death_overlay)
+
+	print("Player died. Press E to restart, or F to go to rest area.")
 
 func _start_wave(wave_index: int) -> void:
 	if wave_index >= waves.size():
@@ -132,6 +196,12 @@ func _start_wave(wave_index: int) -> void:
 	spawn_timer.start()
 
 func _spawn_wave_batch() -> void:
+	if is_player_dead or not is_instance_valid(player):
+		if spawn_timer:
+			spawn_timer.stop()
+			spawn_timer.queue_free()
+		return
+
 	var wave = waves[current_wave]
 	var total_to_spawn = wave["total"]
 	var batch_size = wave["batch_size"]
@@ -203,7 +273,8 @@ func _spawn_wave_batch() -> void:
 		if enemy.has_signal("tree_exited"):
 			enemy.connect("tree_exited", Callable(self, "_on_enemy_died"))
 
-		get_parent().add_child(enemy)
+		add_child(enemy)
+		enemy.add_to_group("enemies")
 		spawned_count += 1
 		alive_enemies += 1
 
@@ -215,7 +286,8 @@ func _spawn_big_black_bread() -> void:
 		big_black.set_player_reference(player)
 	if big_black.has_signal("tree_exited"):
 		big_black.connect("tree_exited", Callable(self, "_on_enemy_died"))
-	get_parent().add_child(big_black)
+	add_child(big_black)
+	big_black.add_to_group("enemies")
 	alive_enemies += 1
 	print("Big Black Bread spawned!")
 
@@ -233,6 +305,9 @@ func _on_enemy_died() -> void:
 			_start_wave(current_wave + 1)
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
+	if not is_instance_valid(spawn_shape) or not is_instance_valid(camera_2d):
+		return Vector2.ZERO
+
 	var shape := spawn_shape.shape
 	if shape is RectangleShape2D:
 		var extents: Vector2 = shape.extents
