@@ -2,12 +2,17 @@ extends Node2D
 
 ### --- CONSTANTS --- ###
 const BULLET = preload("res://Assets/Scenes/bullet_1.tscn") # Bullet scene reference
+const KICKBACK_ANGLE := 10.0   # How much the pistol rotates on recoil
+const KICKBACK_SPEED := 15.0   # How fast the pistol returns to normal
 
 ### --- NODE REFERENCES --- ###
 @onready var muzzle: Marker2D = $Marker2D                  # Muzzle position for bullet spawn
 
+### --- STATE --- ###
+var recoil_offset: float = 0.0   # Current recoil rotation offset
+
 ### --- AIMING SYSTEM --- ###
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	# Rotate to face the global mouse position
 	look_at(get_global_mouse_position())
 	
@@ -20,6 +25,10 @@ func _process(_delta: float) -> void:
 	else:
 		scale.y = 1                         # Default upward scale
 
+	# Smoothly reduce recoil offset back to zero
+	recoil_offset = lerp(recoil_offset, 0.0, KICKBACK_SPEED * delta)
+	rotation += deg_to_rad(recoil_offset)
+
 	# Fire bullet on input press
 	if Input.is_action_just_pressed("shoot"):
 		var bullet_instance = BULLET.instantiate()                         # Create bullet
@@ -30,10 +39,15 @@ func _process(_delta: float) -> void:
 		# Connect bullet hit signal to pistol to handle melee orb recharge
 		bullet_instance.connect("hit_target", Callable(self, "_on_bullet_hit"))
 
+		# Apply recoil (kickback direction depends on aiming side)
+		if scale.y == 1:
+			recoil_offset = -KICKBACK_ANGLE
+		else:
+			recoil_offset = KICKBACK_ANGLE
+
 # Called when a bullet hits a collider
 func _on_bullet_hit(_collider) -> void:
-	# Assuming player node is the pistol's parent or accessible via the scene tree
-	var player = get_parent()  # Adjust if your player node is somewhere else
+	var player = get_parent()  
 
 	if player and player.has_method("add_melee_orb"):
 		player.add_melee_orb()  # Add melee orb charge on bullet hit
