@@ -19,6 +19,12 @@ config/icon="uid://byxvv6a3aouy7"
 
 SaveManager="*res://Assets/Scenes/save_manager.tscn"
 
+[display]
+
+window/size/mode=3
+window/stretch/mode="canvas_items"
+window/stretch/scale_mode="integer"
+
 [global_group]
 
 player=""
