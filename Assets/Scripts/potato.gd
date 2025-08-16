@@ -9,7 +9,7 @@ const STAGGER_DURATION = 0.1             # Time frozen after taking hit
 const DEATH_DURATION = 0.5               # Time before removing dead potato
 
 ### --- HEALTH --- ###
-@export var max_health: int = 2          # Maximum HP for potato
+@export var max_health: int = 3          # Maximum HP for potato
 var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
