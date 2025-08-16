@@ -15,8 +15,6 @@ extends Node2D
 var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
 var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
 var baguette_scene: PackedScene = preload("res://Assets/Scenes/baguette.tscn")
-var big_bread_scene: PackedScene = preload("res://Assets/Scenes/big_bread.tscn") 
-var big_black_bread_scene: PackedScene = preload("res://Assets/Scenes/big_black_bread.tscn")
 var potato_scene: PackedScene = preload("res://Assets/Scenes/potato.tscn")
 var sweet_potato_scene: PackedScene = preload("res://Assets/Scenes/sweet_potato.tscn")
 
