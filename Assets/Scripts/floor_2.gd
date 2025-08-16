@@ -62,6 +62,19 @@ var waves := [
 			"bread": 15,
 			"black_bread": 15
 		}
+	},
+	{
+		"enemy_type": "mixed_fifth_wave",
+		"total": 100,
+		"batch_size": 5,
+		"spawn_rate": 5.0,
+		"composition": {
+			"bread": 25,
+			"black_bread": 25,
+			"baguette": 20,
+			"potato": 15,
+			"sweet_potato": 15
+		}
 	}
 ]
 
