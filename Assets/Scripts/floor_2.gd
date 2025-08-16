@@ -49,6 +49,19 @@ var waves := [
 			"potato": 25,
 			"sweet_potato": 20
 		}
+	},
+	{
+		"enemy_type": "mixed_fourth_wave",
+		"total": 75,
+		"batch_size": 5,
+		"spawn_rate": 5.0,
+		"composition": {
+			"baguette": 15,
+			"potato": 20,
+			"sweet_potato": 10,
+			"bread": 15,
+			"black_bread": 15
+		}
 	}
 ]
 
