@@ -4011,12 +4011,7 @@ offset_bottom = -24.0852
 theme_override_fonts/font = ExtResource("28_i6cym")
 text = "*locked*"
 
-[node name="InteractionArea3" parent="." instance=ExtResource("28_cr40h")]
-position = Vector2(0, -6)
-scale = Vector2(0.75, 0.669)
-
 [node name="FadeLayer" parent="." instance=ExtResource("29_i6cym")]
 
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
 [connection signal="interacted" from="InteractionArea2" to="." method="_on_interaction_area_2_interacted"]
-[connection signal="interacted" from="InteractionArea3" to="." method="_on_interaction_area_3_interacted"]
