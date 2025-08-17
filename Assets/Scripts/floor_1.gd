@@ -126,8 +126,13 @@ func _input(event: InputEvent) -> void:
 		if event.keycode == KEY_E:
 			get_tree().reload_current_scene()
 		elif event.keycode == KEY_F:
-			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
-				fade_layer.start_fade("res://Assets/Scenes/level_0.tscn")
+			# Load last active slot via SaveManager
+			if SaveManager.has_method("get_active_slot") and SaveManager.get_active_slot() != -1:
+				var ok = SaveManager.continue_game()  # uses current_slot automatically
+				if not ok:
+					printerr("Failed to continue game from active save slot")
+			else:
+				print("No active save slot set — cannot load")
 
 func _on_player_died() -> void:
 	is_player_dead = true
