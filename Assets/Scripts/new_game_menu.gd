@@ -48,8 +48,8 @@ func _start_new_game(slot: int) -> void:
 	# Default save names per slot
 	match slot:
 		1: initial.save_name = "1-1"
-		2: initial.save_name = "2-1"
-		3: initial.save_name = "3-1"
+		2: initial.save_name = "1-1"
+		3: initial.save_name = "1-1"
 		_: initial.save_name = "NEW"
 
 	# 3) Determine file path

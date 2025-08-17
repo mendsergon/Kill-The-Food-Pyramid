@@ -260,7 +260,7 @@ func _on_enemy_died() -> void:
 		if current_wave + 1 >= waves.size():
 			await get_tree().create_timer(5.0).timeout
 			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
-				fade_layer.start_fade("res://Assets/Scenes/level_1.tscn")
+				fade_layer.start_fade("res://Assets/Scenes/level_2.tscn")
 		else:
 			await get_tree().create_timer(3.0).timeout
 			_start_wave(current_wave + 1)
