@@ -1,157 +1,135 @@
 extends Control
 
-### --- SCENE TRANSITION SYSTEM --- ###
+@onready var slot_1: Button = $"MarginContainer/VBoxContainer/SLOT 1"
+@onready var slot_2: Button = $"MarginContainer/VBoxContainer/SLOT 2"
+@onready var slot_3: Button = $"MarginContainer/VBoxContainer/SLOT 3"
+
+### --- NEW GAME MENU --- ###
+# Buttons: SLOT 1, SLOT 2, SLOT 3 should be connected to the handlers below.
+# Button text will display EMPTY or the save_name.
 
 func _ready() -> void:
-	# Wait a frame to ensure UI elements are initialized
 	await get_tree().process_frame
 	_update_slot_labels()
-
-### --- UI BUTTON HANDLERS --- ###
 
 func _on_back_pressed() -> void:
 	_queue_scene_change("res://Assets/Scenes/main_menu.tscn")
 
-# Pressing a slot: continue if a save exists for that slot, otherwise start a new game in that slot.
 func _on_slot_1_pressed() -> void:
-	_on_slot_pressed(1)
+	_start_new_game(1)
 
 func _on_slot_2_pressed() -> void:
-	_on_slot_pressed(2)
+	_start_new_game(2)
 
 func _on_slot_3_pressed() -> void:
-	_on_slot_pressed(3)
+	_start_new_game(3)
 
-func _on_slot_pressed(slot: int) -> void:
-	if not has_node("/root/SaveManager"):
-		printerr("SaveManager autoload not found")
-		return
-
-	# If a save exists in this slot -> set it active and continue
-	var data := SaveManager.load_save_resource(slot)
-	if data != null and data.scene_path != "":
-		# set active slot first
-		_set_active_slot_on_manager(slot)
-		print("Slot %d has a save — continuing." % slot)
-		SaveManager.continue_game(slot)
-	else:
-		# No save: initialize slot then set it active and start new game
-		_start_new_game(slot)
-
-### --- SLOT HANDLING --- ###
-
-func _update_slot_labels() -> void:
-	for slot in [1, 2, 3]:
-		var label: Label = get_node_or_null("SLOT %d" % slot)
-		if not label:
-			continue
-		
-		if not has_node("/root/SaveManager"):
-			label.text = "SLOT %d: EMPTY" % slot
-			continue
-		
-		# Use explicit slot load: SaveManager.load_save_resource(slot) should accept a slot param
-		var data = SaveManager.load_save_resource(slot)
-		if not data or data.scene_path == "":
-			label.text = "SLOT %d: EMPTY" % slot
-		else:
-			# Show just the scene file name for readability
-			label.text = "SLOT %d: %s" % [slot, data.scene_path.get_file()]
-
-# Start a new game in a given slot (initialize and set active)
+### --- START NEW GAME --- ###
 func _start_new_game(slot: int) -> void:
 	if not has_node("/root/SaveManager"):
 		printerr("SaveManager autoload not found")
 		return
 
-	# Set active slot on SaveManager (so in-scene saves will go there)
-	if not _set_active_slot_on_manager(slot):
-		printerr("_start_new_game: Failed to set active slot %d" % slot)
-		# still continue, but SaveManager.save_player() will fail until fixed
-	# Prepare initial save data
-	var data := PlayerSaveData.new()
-	data.scene_path = "res://Assets/Scenes/level_0.tscn"
-	data.position = Vector2.ZERO
-
-	# Save initial data into slot via SaveManager API (recommended)
-	var saved_ok := false
-	if SaveManager.has_method("save_player"):
-		saved_ok = SaveManager.save_player(slot)
-	else:
-		# fallback: write resource directly (kept for compatibility)
-		var path := SaveManager._get_slot_path(slot) if SaveManager.has_method("_get_slot_path") else "user://player_slot_%d.tres" % slot
-		if path != "":
-			var err := ResourceSaver.save(data, path)
-			saved_ok = (err == OK)
-	
-	if not saved_ok:
-		printerr("_start_new_game: Failed to write initial save to slot %d" % slot)
-	else:
-		print("_start_new_game: Slot %d initialized and saved" % slot)
-
-	_update_slot_labels()
-	_queue_scene_change(data.scene_path)
-
-# Helper that tries to set active slot using SaveManager API, returns true on success
-func _set_active_slot_on_manager(slot: int) -> bool:
-	# Use API method if present, otherwise write field directly
+	# 1) Set active slot on SaveManager
+	var set_ok := false
 	if SaveManager.has_method("set_active_slot"):
-		return SaveManager.set_active_slot(slot)
-	elif SaveManager.has_variable("current_slot"):
+		set_ok = SaveManager.set_active_slot(slot)
+	elif "current_slot" in SaveManager:
 		SaveManager.current_slot = slot
+		set_ok = true
 		print("SaveManager: current_slot set to %d (direct write)" % slot)
-		return true
+
+	if not set_ok:
+		printerr("_start_new_game: SaveManager did not accept slot %d" % slot)
+		return
+
+	# 2) Create initial PlayerSaveData
+	var initial := PlayerSaveData.new()
+	initial.scene_path = "res://Assets/Scenes/level_0.tscn"
+	initial.position = Vector2.ZERO
+	# Default save names per slot
+	match slot:
+		1: initial.save_name = "1-1"
+		2: initial.save_name = "2-1"
+		3: initial.save_name = "3-1"
+		_: initial.save_name = "NEW"
+
+	# 3) Determine file path
+	var path := ""
+	if SaveManager.has_method("_get_slot_path"):
+		path = SaveManager._get_slot_path(slot)
 	else:
-		# fallback attempt: set property via raw assignment (might still work)
-		if "current_slot" in SaveManager:
-			SaveManager.current_slot = slot
-			print("SaveManager: current_slot set to %d (fallback)" % slot)
-			return true
-		printerr("_set_active_slot_on_manager: SaveManager doesn't expose set_active_slot or current_slot")
-		return false
+		path = "user://player_slot_%d.tres" % slot
 
-### --- SCENE TRANSITION QUEUING --- ###
+	if path == "":
+		printerr("_start_new_game: invalid path for slot %d" % slot)
+		return
 
+	# Ensure user:// exists
+	var dir_ok = DirAccess.make_dir_recursive_absolute("user://")
+	if dir_ok != OK and dir_ok != ERR_ALREADY_EXISTS:
+		printerr("_start_new_game: failed to ensure user:// directory (err=%s)" % dir_ok)
+
+	# 4) Save the initial resource
+	var err := ResourceSaver.save(initial, path)
+	if err != OK:
+		printerr("_start_new_game: Failed to write initial save to slot %d: %s" % [slot, error_string(err)])
+		return
+
+	print("_start_new_game: Slot %d initialized and saved to %s" % [slot, path])
+
+	# 5) Refresh button labels and change scene
+	_update_slot_labels()
+	_queue_scene_change(initial.scene_path)
+
+### --- SLOT BUTTON LABELS --- ###
+func _update_slot_labels() -> void:
+	var buttons = [slot_1, slot_2, slot_3]
+	for i in range(3):
+		var slot = i + 1
+		var button: Button = buttons[i]
+
+		var path := ""
+		if has_node("/root/SaveManager") and SaveManager.has_method("_get_slot_path"):
+			path = SaveManager._get_slot_path(slot)
+		else:
+			path = "user://player_slot_%d.tres" % slot
+
+		if path == "" or not FileAccess.file_exists(path):
+			button.text = "SLOT %d: EMPTY" % slot
+			continue
+
+		var res = load(path)
+		if res and res is PlayerSaveData:
+			var name_to_show := ""
+			if res.save_name != "":
+				name_to_show = res.save_name
+			elif res.scene_path != "":
+				name_to_show = res.scene_path.get_file()
+			else:
+				name_to_show = "<corrupt>"
+
+			button.text = "SLOT %d:  %s" % [slot, name_to_show]
+		else:
+			button.text = "SLOT %d: <corrupt>" % slot
+
+### --- SCENE CHANGE HELPERS --- ###
 func _queue_scene_change(path: String) -> void:
-	# Call deferred to avoid physics/frame issues
 	call_deferred("_safe_change_scene", path)
-
-### --- SCENE TRANSITION EXECUTION --- ###
 
 func _safe_change_scene(path: String) -> void:
 	if not ResourceLoader.exists(path):
 		printerr("Scene path does not exist:", path)
 		return
-	
 	var tree := await _get_valid_tree()
 	if not tree:
-		printerr("Cannot change scene - invalid scene tree")
+		printerr("Invalid scene tree")
 		return
-	
 	var err := tree.change_scene_to_file(path)
 	if err != OK:
-		printerr("Scene change failed (", error_string(err), "):", path)
-	else:
-		print("Successfully changed scene to:", path)
-
-### --- SCENE TREE VALIDATION --- ###
+		printerr("Scene change failed:", error_string(err))
 
 func _get_valid_tree() -> SceneTree:
 	if not is_inside_tree():
 		await get_tree().process_frame
-	
-	var tree := get_tree()
-	if not tree:
-		printerr("Scene tree reference is null")
-		return null
-	
-	if not tree.current_scene:
-		printerr("Current scene reference is null")
-	
-	return tree
-
-### --- DEPRECATED METHODS --- ###
-
-func _change_scene(path: String) -> void:
-	printerr("Deprecated _change_scene called - use _safe_change_scene instead")
-	_safe_change_scene(path)
+	return get_tree()

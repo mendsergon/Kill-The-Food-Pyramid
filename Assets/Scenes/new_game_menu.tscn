@@ -35,18 +35,21 @@ size_flags_vertical = 4
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_fonts/font = ExtResource("1_rbtpw")
-text = "SLOT  1:  EMPTY
+text = "
+
 "
 
 [node name="SLOT 2" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_rbtpw")
-text = "SLOT  2:  EMPTY"
+text = "
+"
 
 [node name="SLOT 3" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_rbtpw")
-text = "SLOT  3:  EMPTY"
+text = "
+"
 
 [node name="BACK" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
