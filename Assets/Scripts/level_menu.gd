@@ -15,11 +15,11 @@ func _on_test_area_pressed() -> void:
 
 # New game button pressed handler  
 func _on_new_game_pressed() -> void:
-	_queue_scene_change("res://Assets/Scenes/level_0.tscn")
+	_queue_scene_change("res://Assets/Scenes/new_game_menu.tscn")
 
-# Continue button pressed handler
-func _on_continue_pressed() -> void:
-	_queue_continue_game()
+# Load game button pressed handler (replaces Continue)
+func _on_load_game_pressed() -> void:
+	_queue_scene_change("res://Assets/Scenes/load_game_menu.tscn")
 
 ### --- SCENE TRANSITION QUEUING --- ###
 
@@ -27,11 +27,6 @@ func _on_continue_pressed() -> void:
 func _queue_scene_change(path: String) -> void:
 	# Double deferral to avoid physics step issues
 	call_deferred("_safe_change_scene", path)
-
-# Queues a continue game operation
-func _queue_continue_game() -> void:
-	# Deferred call for safe execution timing
-	call_deferred("_safe_continue_game")
 
 ### --- SCENE TRANSITION EXECUTION --- ###
 
@@ -54,22 +49,6 @@ func _safe_change_scene(path: String) -> void:
 		printerr("Scene change failed (", error_string(err), "):", path)
 	else:
 		print("Successfully changed scene to:", path)
-
-# Main continue game handler with validation
-func _safe_continue_game() -> void:
-	# Get validated scene tree reference
-	var tree := await _get_valid_tree()
-	if not tree:
-		printerr("Cannot continue - invalid scene tree")
-		return
-	
-	# Verify SaveManager autoload exists
-	if not has_node("/root/SaveManager"):
-		printerr("SaveManager autoload not found")
-		return
-	
-	# Execute the continue operation
-	SaveManager.continue_game()
 
 ### --- SCENE TREE VALIDATION --- ###
 
@@ -98,7 +77,7 @@ func _change_scene(path: String) -> void:
 	printerr("Deprecated _change_scene called - use _safe_change_scene instead")
 	_safe_change_scene(path)
 
-# Legacy continue method (deprecated)  
-func _deferred_continue():
-	printerr("Deprecated _deferred_continue called - use _safe_continue_game instead")
-	_safe_continue_game()
+# Legacy continue method (deprecated)  -- removed per request
+
+func _on_back_pressed() -> void:
+	_queue_scene_change("res://Assets/Scenes/main_menu.tscn")

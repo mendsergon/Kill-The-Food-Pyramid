@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmtjpei6h0fhp"]
+
+[ext_resource type="Script" uid="uid://bynd61lo5ygrq" path="res://Assets/Scripts/load_game_menu.gd" id="1_28hig"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="1_japss"]
+
+[node name="load_game_menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_28hig")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -35.0
+offset_top = -50.5
+offset_right = 35.0
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="SLOT 1" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("1_japss")
+text = "SLOT  1:  EMPTY
+"
+
+[node name="SLOT 2" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_japss")
+text = "SLOT  2:  EMPTY"
+
+[node name="SLOT 3" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_japss")
+text = "SLOT  3:  EMPTY"
+
+[node name="BACK" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_japss")
+text = "BACK
+"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SLOT 1" to="." method="_on_slot_1_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SLOT 2" to="." method="_on_slot_2_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/SLOT 3" to="." method="_on_slot_3_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BACK" to="." method="_on_back_pressed"]

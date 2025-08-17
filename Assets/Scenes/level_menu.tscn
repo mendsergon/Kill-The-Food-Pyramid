@@ -44,13 +44,19 @@ theme_override_fonts/font = ExtResource("1_m71ff")
 text = "NEW  GAME
 "
 
-[node name="CONTINUE" type="Button" parent="MarginContainer/VBoxContainer"]
+[node name="LOAD GAME" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_m71ff")
-text = "CONTINUE
+text = "LOAD  GAME
+"
+
+[node name="BACK" type="Button" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_m71ff")
+text = "BACK
 "
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Test Area" to="." method="_on_test_area_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/NEW GAME" to="." method="_on_new_game_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CONTINUE" to="." method="_on_continue_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/CONTINUE" to="." method="_on_new_game_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/LOAD GAME" to="." method="_on_load_game_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/BACK" to="." method="_on_back_pressed"]

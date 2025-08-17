@@ -56,19 +56,22 @@ func _process(delta: float) -> void:
 			locked.visible = false
 
 func _on_interaction_area_3_interacted() -> void:
-	SaveManager.save_player()
-	print("Game saved from InteractionArea3")
-	
-	# Reset and show save label
-	if current_tween:
-		current_tween.kill()
-	
-	save.visible = true
-	save_timer = 2.0
-	
-	# Fade in quickly
-	current_tween = create_tween()
-	current_tween.tween_property(save, "modulate:a", 1.0, 0.2).from(0.0)
+	# Try to save to active slot. If none active, do NOT show success UI.
+	var ok := SaveManager.save_player()
+	if ok:
+		print("Game saved from InteractionArea3")
+		# Show save UI
+		if current_tween:
+			current_tween.kill()
+		save.visible = true
+		save_timer = 2.0
+		current_tween = create_tween()
+		current_tween.tween_property(save, "modulate:a", 1.0, 0.2).from(0.0)
+	else:
+		# Save failed — give clear feedback
+		printerr("InteractionArea3: Save failed. No active slot set or other error.")
+		# Optionally show a 'save failed' UI or a tooltip
+
 
 func _on_interaction_area_1_interacted() -> void:
 	fade_layer.start_fade("res://Assets/Scenes/floor_2.tscn")
