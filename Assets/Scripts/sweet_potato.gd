@@ -22,16 +22,16 @@ var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 var death_timer := 0.0                   # Timer after death before deletion
-var is_dying := false                     # Whether potato is in death state
+var is_dying := false                    # Whether potato is in death state
 
 ### --- EXTRA CONSTANTS FOR ATTACK --- ###
 const ATTACK_TRIGGER_DISTANCE = 75.0     # Distance to trigger spin attack
-const ATTACK_PREP_DURATION = 0.25         # Time to idle + rotate before charge
+const ATTACK_PREP_DURATION = 0.25        # Time to idle + rotate before charge
 const ATTACK_CHARGE_DURATION = 1.0       # Total spin & dash time
 const ATTACK_SPEED = 200.0               # Charge movement speed
 const ATTACK_ROTATION_SPEED = 720.0      # Degrees per second when spinning
 const ATTACK_COOLDOWN = 3.0              # Time before potato can attack again
-const ATTACK_REPEAT = 2                   # Number of back-to-back attacks
+const ATTACK_REPEAT = 2                  # Number of back-to-back attacks
 
 ### --- EXTRA STATE --- ###
 var is_attacking := false
@@ -39,23 +39,23 @@ var attack_phase := "none"               # "prep" or "charge"
 var attack_timer := 0.0
 var attack_direction := Vector2.ZERO
 var attack_cooldown_timer := 0.0         # Tracks time until next allowed attack
-var attack_count := 0                     # Tracks remaining attacks in sequence
+var attack_count := 0                    # Tracks remaining attacks in sequence
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
-	animated_sprite_2d.play("Run")         # Start moving immediately
-	health = max_health                     # Set starting HP
+	animated_sprite_2d.play("Run")        # Start moving immediately
+	health = max_health                   # Set starting HP
 
 func _physics_process(delta: float) -> void:
 	### --- DEATH TIMER --- ###
 	if is_dying:
 		death_timer -= delta
 		if death_timer <= 0.0:
-			queue_free()                   # Remove potato after death delay
-		return                             # Skip logic while dead
+			queue_free()                  # Remove potato after death delay
+		return                            # Skip logic while dead
 
 	if player == null:
 		return
@@ -71,45 +71,44 @@ func _physics_process(delta: float) -> void:
 	### --- HANDLE ATTACK MODE --- ###
 	if is_attacking:
 		handle_attack(delta)
-		return
-
-	### --- TIMER MANAGEMENT --- ###
-	behavior_timer += delta
-	if stagger_timer > 0.0:
-		stagger_timer -= delta
-
-	if is_moving and behavior_timer >= MOVE_DURATION:
-		is_moving = false
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Idle")
-	elif not is_moving and behavior_timer >= IDLE_COOLDOWN:
-		is_moving = true
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Run")
-
-	### --- MOVEMENT LOGIC --- ###
-	var move_direction = Vector2.ZERO
-	if is_moving and stagger_timer <= 0.0:
-		move_direction = (player.global_position - global_position).normalized()
-		velocity = move_direction * MOVE_SPEED
-
-		if abs(move_direction.x) > abs(move_direction.y):
-			animated_sprite_2d.flip_h = move_direction.x < 0
 	else:
-		velocity = Vector2.ZERO
+		### --- TIMER MANAGEMENT --- ###
+		behavior_timer += delta
+		if stagger_timer > 0.0:
+			stagger_timer -= delta
 
-	### --- APPLY MOVEMENT --- ###
-	move_and_slide()
+		if is_moving and behavior_timer >= MOVE_DURATION:
+			is_moving = false
+			behavior_timer = 0.0
+			animated_sprite_2d.play("Idle")
+		elif not is_moving and behavior_timer >= IDLE_COOLDOWN:
+			is_moving = true
+			behavior_timer = 0.0
+			animated_sprite_2d.play("Run")
 
-	### --- PLAYER DAMAGE ON TOUCH --- ###
-	for i in range(get_slide_collision_count()):
-		var collision = get_slide_collision(i)
-		var other = collision.get_collider()
-		if other == player and other.has_method("apply_damage"):
-			# Knockback direction points from potato to player
-			other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback
+		### --- MOVEMENT LOGIC --- ###
+		var move_direction = Vector2.ZERO
+		if is_moving and stagger_timer <= 0.0:
+			move_direction = (player.global_position - global_position).normalized()
+			velocity = move_direction * MOVE_SPEED
 
-	### --- RED FLASH ON DAMAGE --- ###
+			if abs(move_direction.x) > abs(move_direction.y):
+				animated_sprite_2d.flip_h = move_direction.x < 0
+		else:
+			velocity = Vector2.ZERO
+
+		### --- APPLY MOVEMENT --- ###
+		move_and_slide()
+
+		### --- PLAYER DAMAGE ON TOUCH --- ###
+		for i in range(get_slide_collision_count()):
+			var collision = get_slide_collision(i)
+			var other = collision.get_collider()
+			if other == player and other.has_method("apply_damage"):
+				# Knockback direction points from potato to player
+				other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback
+
+	### --- RED FLASH ON DAMAGE (ALWAYS RUNS) --- ###
 	if flash_timer > 0.0:
 		flash_timer -= delta
 		if flash_timer <= 0.0:
@@ -154,7 +153,7 @@ func handle_attack(delta: float) -> void:
 		rotation_degrees = lerp(rotation_degrees, rotation_degrees + 45, delta * 2)
 		if attack_timer <= 0.0:
 			attack_phase = "charge"
-			attack_timer = ATTACK_CHARGE_DURATION / ATTACK_REPEAT   # Half duration for each charge
+			attack_timer = ATTACK_CHARGE_DURATION / ATTACK_REPEAT   # Split duration between repeats
 			animated_sprite_2d.play("Run")
 
 	elif attack_phase == "charge":

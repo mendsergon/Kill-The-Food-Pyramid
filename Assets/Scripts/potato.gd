@@ -69,45 +69,44 @@ func _physics_process(delta: float) -> void:
 	### --- HANDLE ATTACK MODE --- ###
 	if is_attacking:
 		handle_attack(delta)
-		return
-
-	### --- TIMER MANAGEMENT --- ###
-	behavior_timer += delta
-	if stagger_timer > 0.0:
-		stagger_timer -= delta
-
-	if is_moving and behavior_timer >= MOVE_DURATION:
-		is_moving = false
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Idle")
-	elif not is_moving and behavior_timer >= IDLE_COOLDOWN:
-		is_moving = true
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Run")
-
-	### --- MOVEMENT LOGIC --- ###
-	var move_direction = Vector2.ZERO
-	if is_moving and stagger_timer <= 0.0:
-		move_direction = (player.global_position - global_position).normalized()
-		velocity = move_direction * MOVE_SPEED
-
-		if abs(move_direction.x) > abs(move_direction.y):
-			animated_sprite_2d.flip_h = move_direction.x < 0
 	else:
-		velocity = Vector2.ZERO
+		### --- TIMER MANAGEMENT --- ###
+		behavior_timer += delta
+		if stagger_timer > 0.0:
+			stagger_timer -= delta
 
-	### --- APPLY MOVEMENT --- ###
-	move_and_slide()
+		if is_moving and behavior_timer >= MOVE_DURATION:
+			is_moving = false
+			behavior_timer = 0.0
+			animated_sprite_2d.play("Idle")
+		elif not is_moving and behavior_timer >= IDLE_COOLDOWN:
+			is_moving = true
+			behavior_timer = 0.0
+			animated_sprite_2d.play("Run")
 
-	### --- PLAYER DAMAGE ON TOUCH --- ###
-	for i in range(get_slide_collision_count()):
-		var collision = get_slide_collision(i)
-		var other = collision.get_collider()            # Get the collided object
-		if other == player and other.has_method("apply_damage"):
-			# Knockback direction points from potato to player 
-			other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback to player
+		### --- MOVEMENT LOGIC --- ###
+		var move_direction = Vector2.ZERO
+		if is_moving and stagger_timer <= 0.0:
+			move_direction = (player.global_position - global_position).normalized()
+			velocity = move_direction * MOVE_SPEED
 
-	### --- RED FLASH ON DAMAGE --- ###
+			if abs(move_direction.x) > abs(move_direction.y):
+				animated_sprite_2d.flip_h = move_direction.x < 0
+		else:
+			velocity = Vector2.ZERO
+
+		### --- APPLY MOVEMENT --- ###
+		move_and_slide()
+
+		### --- PLAYER DAMAGE ON TOUCH --- ###
+		for i in range(get_slide_collision_count()):
+			var collision = get_slide_collision(i)
+			var other = collision.get_collider()            # Get the collided object
+			if other == player and other.has_method("apply_damage"):
+				# Knockback direction points from potato to player 
+				other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback to player
+
+	### --- RED FLASH ON DAMAGE (ALWAYS RUNS) --- ###
 	if flash_timer > 0.0:
 		flash_timer -= delta
 		if flash_timer <= 0.0:
