@@ -5,8 +5,6 @@ extends Control
 @onready var slot_3: Button = $"MarginContainer/VBoxContainer/SLOT 3"
 
 ### --- NEW GAME MENU --- ###
-# Buttons: SLOT 1, SLOT 2, SLOT 3 should be connected to the handlers below.
-# Button text will display EMPTY or the save_name.
 
 func _ready() -> void:
 	await get_tree().process_frame
