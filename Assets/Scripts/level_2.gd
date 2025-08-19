@@ -6,10 +6,16 @@ extends Node2D
 @onready var interaction_area_3: Area2D = $InteractionArea3
 @onready var fade_layer: CanvasLayer = $FadeLayer  
 @onready var save: Label = $Player/Camera2D/Save
+@onready var cyber_cat: CharacterBody2D = $"Cyber Cat"
+
 var save_timer: float = 0.0
 var current_tween: Tween = null
 
 func _ready() -> void:
+	# --- give Cyber Cat the player reference ---
+	if cyber_cat.has_method("set_player_reference"):
+		cyber_cat.set_player_reference(player)
+
 	# Connect interaction area 1 (floor transition)
 	if not interaction_area_1.is_connected("interacted", Callable(self, "_on_interaction_area_1_interacted")):
 		interaction_area_1.connect("interacted", Callable(self, "_on_interaction_area_1_interacted"))
