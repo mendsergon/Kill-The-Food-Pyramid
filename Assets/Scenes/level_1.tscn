@@ -3987,12 +3987,13 @@ position = Vector2(0, 7)
 zoom = Vector2(4, 4)
 
 [node name="Save" type="Label" parent="Player/Camera2D"]
-offset_left = 90.0
+offset_left = 112.0
 offset_top = -81.0
-offset_right = 199.0
+offset_right = 221.0
 offset_bottom = -58.0
 scale = Vector2(0.5, 0.5)
 theme_override_fonts/font = ExtResource("28_i6cym")
+theme_override_font_sizes/font_size = 9
 text = "Game  Saved"
 
 [node name="InteractionArea1" parent="." instance=ExtResource("28_cr40h")]
@@ -4008,7 +4009,9 @@ offset_left = -18.0
 offset_top = -47.0852
 offset_right = 60.0
 offset_bottom = -24.0852
+scale = Vector2(1.49038, 1.67462)
 theme_override_fonts/font = ExtResource("28_i6cym")
+theme_override_font_sizes/font_size = 9
 text = "*locked*"
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_i6cym")]

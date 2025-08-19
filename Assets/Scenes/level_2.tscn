@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://uo0cspm4ncv0"]
+[gd_scene load_steps=64 format=3 uid="uid://uo0cspm4ncv0"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_a6f8o"]
 [ext_resource type="Script" uid="uid://tbota4nb3qnr" path="res://Assets/Scripts/level_2.gd" id="1_unl7x"]
@@ -30,7 +30,9 @@
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="27_8dwdt"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Scenes/interaction_area.tscn" id="28_tkxoa"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Scenes/fade_layer.tscn" id="29_fbuxn"]
+[ext_resource type="Texture2D" uid="uid://ciee6ahdomu7l" path="res://Assets/UI/Text Bar.png" id="31_i2lfb"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/Scenes/cyber_cat.tscn" id="31_mvklg"]
+[ext_resource type="Texture2D" uid="uid://cnrs4v80iis4p" path="res://Assets/UI/CyberCat closeup.png" id="32_cqdt7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8f5v6"]
 texture = ExtResource("1_a6f8o")
@@ -4061,6 +4063,35 @@ sources/22 = SubResource("TileSetAtlasSource_k5j5u")
 sources/23 = SubResource("TileSetAtlasSource_gycdp")
 sources/24 = SubResource("TileSetAtlasSource_d2fbp")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_b5yqg"]
+atlas = ExtResource("32_cqdt7")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_copeh"]
+atlas = ExtResource("32_cqdt7")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2ev20"]
+atlas = ExtResource("32_cqdt7")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_thooq"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b5yqg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_copeh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2ev20")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 4.0
+}]
+
 [node name="Level 2" type="Node2D"]
 script = ExtResource("1_unl7x")
 
@@ -4080,7 +4111,7 @@ layer_3/tile_data = PackedInt32Array(0, 1507342, 5, -65536, 1507342, 4, -1, 1441
 position = Vector2(-424, -64)
 scale = Vector2(0.75, 0.75)
 
-[node name="InteractionArea" parent="Cyber Cat" instance=ExtResource("28_tkxoa")]
+[node name="InteractionArea4" parent="Cyber Cat" instance=ExtResource("28_tkxoa")]
 position = Vector2(4.06901e-05, 9.33333)
 
 [node name="Player" parent="." instance=ExtResource("26_gn14q")]
@@ -4091,13 +4122,45 @@ position = Vector2(0, 7)
 zoom = Vector2(4, 4)
 
 [node name="Save" type="Label" parent="Player/Camera2D"]
-offset_left = 90.0
+offset_left = 112.0
 offset_top = -81.0
-offset_right = 199.0
+offset_right = 221.0
 offset_bottom = -58.0
 scale = Vector2(0.5, 0.5)
 theme_override_fonts/font = ExtResource("27_8dwdt")
+theme_override_font_sizes/font_size = 9
 text = "Game  Saved"
+
+[node name="Dialoge Bar" type="Sprite2D" parent="Player/Camera2D"]
+position = Vector2(-22, 55)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("31_i2lfb")
+
+[node name="CyberCatCloseUp" type="AnimatedSprite2D" parent="Player/Camera2D/Dialoge Bar"]
+position = Vector2(-62, -1.33333)
+sprite_frames = SubResource("SpriteFrames_thooq")
+animation = &"Idle"
+autoplay = "Idle"
+frame_progress = 0.141489
+
+[node name="x" type="Label" parent="Player/Camera2D/Dialoge Bar"]
+offset_left = 66.6667
+offset_top = 8.0
+offset_right = 175.667
+offset_bottom = 31.0
+scale = Vector2(0.50649, 0.492595)
+theme_override_fonts/font = ExtResource("27_8dwdt")
+theme_override_font_sizes/font_size = 9
+text = "[X]"
+
+[node name="Dialoge" type="Label" parent="Player/Camera2D/Dialoge Bar"]
+offset_left = -37.3333
+offset_top = -14.6667
+offset_right = 2.66666
+offset_bottom = 8.33333
+theme_override_fonts/font = ExtResource("27_8dwdt")
+theme_override_font_sizes/font_size = 9
+text = "Hello ..."
 
 [node name="InteractionArea1" parent="." instance=ExtResource("28_tkxoa")]
 position = Vector2(56, -55)
@@ -4114,5 +4177,6 @@ visible = false
 position = Vector2(-536, 57)
 scale = Vector2(0.5, 0.398)
 
+[connection signal="interacted" from="Cyber Cat/InteractionArea4" to="." method="_on_interaction_area_4_interacted"]
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
 [connection signal="interacted" from="InteractionArea2" to="." method="_on_interaction_area_2_interacted"]

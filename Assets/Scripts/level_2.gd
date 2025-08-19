@@ -7,6 +7,9 @@ extends Node2D
 @onready var fade_layer: CanvasLayer = $FadeLayer  
 @onready var save: Label = $Player/Camera2D/Save
 @onready var cyber_cat: CharacterBody2D = $"Cyber Cat"
+@onready var dialoge_bar: Sprite2D = $"Player/Camera2D/Dialoge Bar"
+@onready var cyber_cat_close_up: AnimatedSprite2D = $"Player/Camera2D/Dialoge Bar/CyberCatCloseUp"
+@onready var dialoge: Label = $"Player/Camera2D/Dialoge Bar/Dialoge"
 
 var save_timer: float = 0.0
 var current_tween: Tween = null
@@ -110,3 +113,7 @@ func _on_interaction_area_3_interacted() -> void:
 		await get_tree().create_timer(2.0).timeout
 		if is_instance_valid(interaction_area_2):
 			interaction_area_2.monitoring = true
+
+
+func _on_interaction_area_4_interacted() -> void:
+	pass # Replace with function body.
