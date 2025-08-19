@@ -10,9 +10,15 @@ extends Node2D
 @onready var dialoge_bar: Sprite2D = $"Player/Camera2D/Dialoge Bar"
 @onready var cyber_cat_close_up: AnimatedSprite2D = $"Player/Camera2D/Dialoge Bar/CyberCatCloseUp"
 @onready var dialoge: Label = $"Player/Camera2D/Dialoge Bar/Dialoge"
+@onready var interaction_area_4: Area2D = $"Cyber Cat/InteractionArea4"
 
 var save_timer: float = 0.0
 var current_tween: Tween = null
+var dialogue_state: int = 0  # 0 = not in dialogue, 1 = typing, 2 = waiting for input
+var current_message: int = 0
+var messages: Array = []
+var typewriter_tween: Tween
+var player_was_movable: bool = true  # Track player's movement state before dialogue
 
 func _ready() -> void:
 	# --- give Cyber Cat the player reference ---
@@ -31,9 +37,16 @@ func _ready() -> void:
 	if not interaction_area_3.is_connected("interacted", Callable(self, "_on_interaction_area_3_interacted")):
 		interaction_area_3.connect("interacted", Callable(self, "_on_interaction_area_3_interacted"))
 	
+	# Connect interaction area 4
+	if not interaction_area_4.is_connected("interacted", Callable(self, "_on_interaction_area_4_interacted")):
+		interaction_area_4.connect("interacted", Callable(self, "_on_interaction_area_4_interacted"))
+	
+	# Hide dialogue bar at start
+	dialoge_bar.visible = false
+	
 	save.modulate.a = 0.0  # Start fully transparent
 	save.visible = false
-
+	
 	# --- Save immediately on scene start ---
 	_save_player_on_scene_start()
 
@@ -114,6 +127,86 @@ func _on_interaction_area_3_interacted() -> void:
 		if is_instance_valid(interaction_area_2):
 			interaction_area_2.monitoring = true
 
+func _input(event: InputEvent) -> void:
+	# Only process input if in dialogue
+	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
+		if dialogue_state == 1:  # Currently typing
+			# Skip to end of current message
+			if typewriter_tween:
+				typewriter_tween.kill()
+				typewriter_tween = null
+			dialoge.text = messages[current_message]
+			dialogue_state = 2
+			cyber_cat_close_up.play("Idle")  # Change to idle animation
+		elif dialogue_state == 2:  # Waiting for input to continue
+			next_message()
+
+# New function to start dialogue
+func start_dialogue(dialogue_messages: Array, cat_animation: String = "Idle") -> void:
+	if dialogue_state > 0:
+		return  # Already in dialogue
+	
+	# Lock player movement
+	if player.has_method("set_movement_enabled"):
+		player_was_movable = player.movement_enabled
+		player.set_movement_enabled(false)
+	elif player.has_method("set_physics_process"):
+		player.set_physics_process(false)
+	
+	messages = dialogue_messages
+	current_message = 0
+	dialoge_bar.visible = true
+	cyber_cat_close_up.play(cat_animation)
+	
+	# Start with an empty message and wait a frame before showing text
+	dialoge.text = ""
+	dialogue_state = 1
+	
+	# Wait one frame before starting the typewriter effect
+	await get_tree().process_frame
+	show_message()
+
+func show_message() -> void:
+	if current_message >= messages.size():
+		end_dialogue()
+		return
+	
+	dialogue_state = 1
+	
+	# Typewriter effect
+	typewriter_tween = create_tween()
+	var message_length = messages[current_message].length()
+	typewriter_tween.tween_method(Callable(self, "_add_letter"), 0, message_length, message_length * 0.05)
+	typewriter_tween.finished.connect(Callable(self, "_on_message_finished"))
+
+func _add_letter(letter_index: int) -> void:
+	dialoge.text = messages[current_message].substr(0, letter_index)
+
+func _on_message_finished() -> void:
+	dialogue_state = 2
+	cyber_cat_close_up.play("Idle")  # Switch to idle after typing
+
+func next_message() -> void:
+	current_message += 1
+	if current_message < messages.size():
+		cyber_cat_close_up.play("Idle")  # Switch animation for next message
+		show_message()
+	else:
+		end_dialogue()
+
+func end_dialogue() -> void:
+	dialogue_state = 0
+	dialoge_bar.visible = false
+	cyber_cat_close_up.stop()  # Stop animation
+	
+	# Unlock player movement
+	if player.has_method("set_movement_enabled"):
+		player.set_movement_enabled(player_was_movable)
+	elif player.has_method("set_physics_process"):
+		player.set_physics_process(true)
 
 func _on_interaction_area_4_interacted() -> void:
-	pass # Replace with function body.
+	start_dialogue([
+		"Hello...",
+		"Exploring  the  food  pyramid  \ntoo?"
+	], "Idle")
