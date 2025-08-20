@@ -1,9 +1,10 @@
-[gd_scene load_steps=49 format=3 uid="uid://dr0o1vrv8l7kq"]
+[gd_scene load_steps=50 format=3 uid="uid://dr0o1vrv8l7kq"]
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Sprites/Player/Player.png" id="1_6cd4h"]
 [ext_resource type="Script" uid="uid://bj0l1ulpnxuq8" path="res://Assets/Scripts/player.gd" id="1_7dd06"]
-[ext_resource type="PackedScene" uid="uid://c6eum3n2mgjdb" path="res://Assets/Scenes/pistol_1.tscn" id="3_38rej"]
+[ext_resource type="PackedScene" uid="uid://c6eum3n2mgjdb" path="res://Assets/Scenes/weapon_1.tscn" id="3_38rej"]
 [ext_resource type="PackedScene" uid="uid://chrs6jk0nsxnb" path="res://Assets/Scenes/heart.tscn" id="4_22rpc"]
+[ext_resource type="PackedScene" uid="uid://cxq1b4vcrpqnj" path="res://Assets/Scenes/weapon_2.tscn" id="4_c3tg1"]
 [ext_resource type="PackedScene" uid="uid://ctyl5h0p06oaf" path="res://Assets/Scenes/melee_orb.tscn" id="5_2pvs1"]
 [ext_resource type="PackedScene" uid="uid://bowm4xay7gba4" path="res://Assets/Scenes/dash_slab.tscn" id="6_w3t24"]
 
@@ -337,14 +338,17 @@ script = ExtResource("1_7dd06")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_w3t24")
-animation = &"Hit"
+animation = &"Idle"
 autoplay = "Idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, -5)
 shape = SubResource("CapsuleShape2D_15psk")
 
-[node name="Pistol 1" parent="." instance=ExtResource("3_38rej")]
+[node name="Weapon_1" parent="." instance=ExtResource("3_38rej")]
+position = Vector2(0, -6)
+
+[node name="Weapon_2" parent="." instance=ExtResource("4_c3tg1")]
 position = Vector2(0, -6)
 
 [node name="MeleeArea2D" type="Area2D" parent="."]

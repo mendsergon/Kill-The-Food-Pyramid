@@ -3,7 +3,7 @@ extends CharacterBody2D
 ### --- WEAPON SYSTEM --- ###
 @export var MAX_WEAPONS: int = 4  # Maximum number of weapon slots
 var current_weapon_index: int = 0  # Currently selected weapon
-var unlocked_weapons: Array[bool] = [true, false, false, false]  # Which weapons are unlocked
+var unlocked_weapons: Array[bool] = [true, true, false, false]  # Which weapons are unlocked
 var weapons: Array[Node] = []  # Array to hold weapon nodes
 
 ### --- CORE CONSTANTS --- ###
@@ -105,18 +105,21 @@ func _ready() -> void:
 	original_collision_mask = collision_mask
 	original_collision_layer = collision_layer
 
-	# Initialize weapons array
-	for i in range(1, MAX_WEAPONS + 1):
-		var weapon_node = get_node_or_null("Weapon_" + str(i))
+	# Initialize weapons array - FIXED: Ensure weapons are in correct order
+	for i in range(MAX_WEAPONS):
+		var weapon_node = get_node_or_null("Weapon_" + str(i + 1))
 		if weapon_node:
 			weapons.append(weapon_node)
 			# Disable all weapons initially
 			weapon_node.visible = false
 			weapon_node.set_process(false)
 			weapon_node.set_process_input(false)
+		else:
+			# Add null placeholder if weapon doesn't exist
+			weapons.append(null)
 	
-	# Enable the first weapon if unlocked
-	if unlocked_weapons[0] and weapons.size() > 0:
+	# Enable the first weapon if unlocked and exists
+	if unlocked_weapons[0] and weapons.size() > 0 and weapons[0]:
 		weapons[0].visible = true
 		weapons[0].set_process(true)
 		weapons[0].set_process_input(true)
@@ -168,7 +171,7 @@ func _input(event: InputEvent) -> void:
 
 func switch_weapon(index: int):
 	# Disable current weapon
-	if weapons.size() > current_weapon_index:
+	if weapons.size() > current_weapon_index and weapons[current_weapon_index]:
 		weapons[current_weapon_index].visible = false
 		weapons[current_weapon_index].set_process(false)
 		weapons[current_weapon_index].set_process_input(false)
@@ -179,7 +182,7 @@ func switch_weapon(index: int):
 	
 	# Enable new weapon
 	current_weapon_index = index
-	if weapons.size() > current_weapon_index:
+	if weapons.size() > current_weapon_index and weapons[current_weapon_index]:
 		weapons[current_weapon_index].visible = true
 		weapons[current_weapon_index].set_process(true)
 		weapons[current_weapon_index].set_process_input(true)
@@ -188,7 +191,7 @@ func switch_weapon(index: int):
 			weapons[current_weapon_index].connect("hit_target", Callable(self, "_on_weapon_hit"))
 
 func get_current_weapon():
-	if weapons.size() > current_weapon_index:
+	if weapons.size() > current_weapon_index and weapons[current_weapon_index]:
 		return weapons[current_weapon_index]
 	return null
 
