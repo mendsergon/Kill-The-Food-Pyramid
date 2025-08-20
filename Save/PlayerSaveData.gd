@@ -1,4 +1,3 @@
-# res://Save/PlayerSaveData.gd
 extends Resource
 class_name PlayerSaveData
 
@@ -11,6 +10,6 @@ class_name PlayerSaveData
 @export var max_melee_orbs: int
 @export var current_dash_slabs: int
 @export var max_dash_slabs: int
-
-# Add this so slots can show a friendly name
+@export var current_weapon_index: int = 0
+@export var unlocked_weapons: Array[bool] = [true, false, false, false]
 @export var save_name: String = ""

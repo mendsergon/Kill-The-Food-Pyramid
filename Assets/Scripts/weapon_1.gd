@@ -1,4 +1,4 @@
-extends Node2D
+extends WeaponBase  # Changed from Node2D to WeaponBase
 
 ### --- CONSTANTS --- ###
 const BULLET = preload("res://Assets/Scenes/bullet_1.tscn") # Bullet scene reference
@@ -13,6 +13,10 @@ var recoil_offset: float = 0.0   # Current recoil rotation offset
 
 ### --- AIMING SYSTEM --- ###
 func _process(delta: float) -> void:
+	# Skip processing if not visible/active
+	if not visible:
+		return
+	
 	# Rotate to face the global mouse position
 	look_at(get_global_mouse_position())
 	
@@ -47,7 +51,7 @@ func _process(delta: float) -> void:
 
 # Called when a bullet hits a collider
 func _on_bullet_hit(_collider) -> void:
-	var player = get_parent()  
-
+	# Get the player and call add_melee_orb directly
+	var player = get_parent()
 	if player and player.has_method("add_melee_orb"):
-		player.add_melee_orb()  # Add melee orb charge on bullet hit
+		player.add_melee_orb()

@@ -1,5 +1,11 @@
 extends CharacterBody2D
 
+### --- WEAPON SYSTEM --- ###
+@export var MAX_WEAPONS: int = 4  # Maximum number of weapon slots
+var current_weapon_index: int = 0  # Currently selected weapon
+var unlocked_weapons: Array[bool] = [true, false, false, false]  # Which weapons are unlocked
+var weapons: Array[Node] = []  # Array to hold weapon nodes
+
 ### --- CORE CONSTANTS --- ###
 # Movement
 const SPEED = 150.0                     # Normal movement speed
@@ -50,8 +56,8 @@ var is_invulnerable := false            # True while invulnerable
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
-@onready var pistol_1: Node2D = $"Pistol 1" # Pistol node
 @onready var melee_area: Area2D = $MeleeArea2D # Melee hit area
+# Note: Removed pistol_1 reference as we'll use the weapons array instead
 
 ### --- MOVEMENT STATE --- ###
 var is_dashing := false                 # True during dash
@@ -99,6 +105,25 @@ func _ready() -> void:
 	original_collision_mask = collision_mask
 	original_collision_layer = collision_layer
 
+	# Initialize weapons array
+	for i in range(1, MAX_WEAPONS + 1):
+		var weapon_node = get_node_or_null("Weapon_" + str(i))
+		if weapon_node:
+			weapons.append(weapon_node)
+			# Disable all weapons initially
+			weapon_node.visible = false
+			weapon_node.set_process(false)
+			weapon_node.set_process_input(false)
+	
+	# Enable the first weapon if unlocked
+	if unlocked_weapons[0] and weapons.size() > 0:
+		weapons[0].visible = true
+		weapons[0].set_process(true)
+		weapons[0].set_process_input(true)
+		# Connect hit signal for melee orb generation
+		if weapons[0].has_signal("hit_target"):
+			weapons[0].connect("hit_target", Callable(self, "_on_weapon_hit"))
+
 	# Initialize hearts_list from hearts_parent children 
 	for heart_node in hearts_parent.get_children():
 		if heart_node is TextureRect:
@@ -129,6 +154,43 @@ func _ready() -> void:
 	update_health_bar()       # Initial update of health bar display
 	update_melee_orb_bar()    # Initial update of melee orb bar display
 	update_dash_slab_bar()    # Initial update of dash slab bar display
+
+func _input(event: InputEvent) -> void:
+	# Weapon switching
+	if event.is_action_pressed("weapon_1") and unlocked_weapons[0]:
+		switch_weapon(0)
+	elif event.is_action_pressed("weapon_2") and unlocked_weapons[1]:
+		switch_weapon(1)
+	elif event.is_action_pressed("weapon_3") and unlocked_weapons[2]:
+		switch_weapon(2)
+	elif event.is_action_pressed("weapon_4") and unlocked_weapons[3]:
+		switch_weapon(3)
+
+func switch_weapon(index: int):
+	# Disable current weapon
+	if weapons.size() > current_weapon_index:
+		weapons[current_weapon_index].visible = false
+		weapons[current_weapon_index].set_process(false)
+		weapons[current_weapon_index].set_process_input(false)
+		# Disconnect hit signal
+		if weapons[current_weapon_index].has_signal("hit_target"):
+			if weapons[current_weapon_index].is_connected("hit_target", Callable(self, "_on_weapon_hit")):
+				weapons[current_weapon_index].disconnect("hit_target", Callable(self, "_on_weapon_hit"))
+	
+	# Enable new weapon
+	current_weapon_index = index
+	if weapons.size() > current_weapon_index:
+		weapons[current_weapon_index].visible = true
+		weapons[current_weapon_index].set_process(true)
+		weapons[current_weapon_index].set_process_input(true)
+		# Connect hit signal for melee orb generation
+		if weapons[current_weapon_index].has_signal("hit_target"):
+			weapons[current_weapon_index].connect("hit_target", Callable(self, "_on_weapon_hit"))
+
+func get_current_weapon():
+	if weapons.size() > current_weapon_index:
+		return weapons[current_weapon_index]
+	return null
 
 func _process(delta: float) -> void:
 	if health == 1 and hearts_list.size() > 0:
@@ -308,14 +370,17 @@ func _physics_process(delta: float) -> void:
 	update_animations()
 
 	### --- WEAPON STATE --- ###
+	var current_weapon = get_current_weapon()
 	if is_dashing or is_attacking or is_hit:
-		pistol_1.visible = false
-		pistol_1.set_process(false)
-		pistol_1.set_process_input(false)
+		if current_weapon:
+			current_weapon.visible = false
+			current_weapon.set_process(false)
+			current_weapon.set_process_input(false)
 	else:
-		pistol_1.visible = true
-		pistol_1.set_process(true)
-		pistol_1.set_process_input(true)
+		if current_weapon:
+			current_weapon.visible = true
+			current_weapon.set_process(true)
+			current_weapon.set_process_input(true)
 
 	### --- SPRITE ORIENTATION --- ###
 	if is_dashing or is_attacking:
@@ -453,9 +518,12 @@ func die() -> void:
 	velocity = Vector2.ZERO
 	knockback_velocity = Vector2.ZERO
 	
-	# Hide the pistol when player dies
-	if is_instance_valid(pistol_1):
-		pistol_1.visible = false
+	# Hide all weapons when player dies
+	for weapon in weapons:
+		if is_instance_valid(weapon):
+			weapon.visible = false
+			weapon.set_process(false)
+			weapon.set_process_input(false)
 	
 	animated_sprite_2d.play("Death")
 	if not animated_sprite_2d.is_connected("animation_finished", Callable(self, "_on_animation_finished")):
@@ -479,11 +547,21 @@ func update_melee_orb_bar() -> void:
 		else:
 			melee_orb_list[i].modulate = Color(1, 1, 1, 0.0)   # Invisible for orbs beyond MAX_MELEE_ORBS
 
-### --- ADD MELEE ORB ON PISTOL HIT --- ###
+### --- ADD MELEE ORB ON WEAPON HIT --- ###
 func add_melee_orb() -> void:
 	if current_orb_charges < MAX_MELEE_ORBS:
 		current_orb_charges += 1
 		update_melee_orb_bar()
+
+func _on_weapon_hit(_collider) -> void:
+	add_melee_orb()
+
+### --- UNLOCK WEAPONS --- ###
+func unlock_weapon(weapon_index: int) -> void:
+	if weapon_index >= 0 and weapon_index < MAX_WEAPONS:
+		unlocked_weapons[weapon_index] = true
+		# Auto-switch to newly unlocked weapon
+		switch_weapon(weapon_index)
 
 ### --- FREE PLAYER PROCESS --- ###
 func _on_animation_finished():

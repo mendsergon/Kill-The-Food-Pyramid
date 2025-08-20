@@ -60,6 +60,8 @@ func make_save_data() -> PlayerSaveData:
 	d.max_melee_orbs = player.MAX_MELEE_ORBS
 	d.current_dash_slabs = player.current_dash_slabs
 	d.max_dash_slabs = player.MAX_DASH_SLABS
+	d.current_weapon_index = player.current_weapon_index
+	d.unlocked_weapons = player.unlocked_weapons
 	return d
 
 ### --- INTERNAL PATH HELPERS --- ###
@@ -171,10 +173,15 @@ func _apply_pending_save():
 	player.MAX_MELEE_ORBS = d.max_melee_orbs
 	player.current_dash_slabs = clamp(d.current_dash_slabs, 0, d.max_dash_slabs)
 	player.MAX_DASH_SLABS = d.max_dash_slabs
+	player.current_weapon_index = d.current_weapon_index
+	player.unlocked_weapons = d.unlocked_weapons
 	player.is_dashing = false
 	player.is_attacking = false
 	player.is_hit = false
 	player.is_dead = false
+	
+	# Switch to the saved weapon
+	player.switch_weapon(d.current_weapon_index)
 
 	print("SaveManager: Save data applied successfully (slot %d)" % current_slot)
 	_pending_save = null

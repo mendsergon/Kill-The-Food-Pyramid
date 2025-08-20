@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://c6eum3n2mgjdb"]
 
-[ext_resource type="Script" uid="uid://c38sx8kth38qx" path="res://Assets/Scripts/pistol_1.gd" id="1_67bkn"]
+[ext_resource type="Script" uid="uid://c38sx8kth38qx" path="res://Assets/Scripts/weapon_1.gd" id="1_67bkn"]
 [ext_resource type="Texture2D" uid="uid://c0uemwtgtjgid" path="res://Assets/Sprites/Weapons/Pistol 1.png" id="2_u2vy2"]
 
-[node name="Pistol 1" type="Node2D"]
+[node name="Weapon_1" type="Node2D"]
 scale = Vector2(0.75, 0.75)
 script = ExtResource("1_67bkn")
 
