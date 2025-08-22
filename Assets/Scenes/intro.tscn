@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=4 uid="uid://dlwxmchh8jxnh"]
+[gd_scene load_steps=14 format=4 uid="uid://dlwxmchh8jxnh"]
 
 [ext_resource type="Script" uid="uid://83pprpq7ux1j" path="res://Assets/Scripts/intro.gd" id="1_lkfso"]
 [ext_resource type="Texture2D" uid="uid://b382m5n4iwqbd" path="res://Assets/Tiles/Tileset.png" id="2_1uye6"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Scenes/interaction_area.tscn" id="5_1uye6"]
 [ext_resource type="Texture2D" uid="uid://c0uemwtgtjgid" path="res://Assets/Sprites/Weapons/Pistol 1.png" id="6_f3ojl"]
 [ext_resource type="PackedScene" uid="uid://d2sth6m1iimd1" path="res://Assets/Scenes/block.tscn" id="7_oupoc"]
-[ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Scenes/bread.tscn" id="7_uww1y"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ce7t1"]
 texture = ExtResource("2_1uye6")
@@ -221,23 +220,14 @@ texture_scale = 0.1
 [node name="Room1" type="Node2D" parent="Rooms"]
 
 [node name="Block1" parent="Rooms/Room1" instance=ExtResource("7_oupoc")]
-position = Vector2(443, 280)
-rotation = 1.57174
-scale = Vector2(1.5, 1.5)
-
-[node name="Block2" parent="Rooms/Room1" instance=ExtResource("7_oupoc")]
 position = Vector2(243, 392)
 rotation = 1.57174
 scale = Vector2(1.5, 1.5)
 
-[node name="Bread1" parent="Rooms/Room1" instance=ExtResource("7_uww1y")]
-position = Vector2(412, 278)
-
-[node name="Bread2" parent="Rooms/Room1" instance=ExtResource("7_uww1y")]
-position = Vector2(408, 380)
-
-[node name="Bread3" parent="Rooms/Room1" instance=ExtResource("7_uww1y")]
-position = Vector2(291, 380)
+[node name="Block2" parent="Rooms/Room1" instance=ExtResource("7_oupoc")]
+position = Vector2(443, 280)
+rotation = 1.57174
+scale = Vector2(1.5, 1.5)
 
 [node name="Room2" type="Node2D" parent="Rooms"]
 
@@ -272,4 +262,3 @@ scale = Vector2(1.5, 1.5)
 
 [connection signal="interacted" from="Pistol1" to="." method="_on_pistol_1_interacted"]
 [connection signal="body_entered" from="Rooms/Room2/Room2Area2D" to="." method="_on_room_2_area_2d_body_entered"]
-[connection signal="body_exited" from="Rooms/Room2/Room2Area2D" to="." method="_on_room_2_area_2d_body_exited"]
