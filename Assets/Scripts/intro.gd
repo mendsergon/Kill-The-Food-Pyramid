@@ -12,11 +12,22 @@ extends Node2D
 @onready var bread_1: CharacterBody2D = $Rooms/Room1/Bread1
 @onready var bread_2: CharacterBody2D = $Rooms/Room1/Bread2
 @onready var bread_3: CharacterBody2D = $Rooms/Room1/Bread3
+@onready var room_2_area_2d: Area2D = $Rooms/Room2/Room2Area2D
+
+var bread_scene: PackedScene = preload("res://Assets/Scenes/bread.tscn")
+var black_bread_scene: PackedScene = preload("res://Assets/Scenes/black_bread.tscn")
 
 # Track if pistol has been interacted with
 var pistol_interacted = false
 # Track if bread enemies are alive
 var breads_alive = false
+
+# Room 2 variables
+var room_2_activated = false
+var room_2_first_batch = []
+var room_2_second_batch = []
+var room_2_enemies_defeated = 0
+var room_2_total_enemies = 10
 
 func _ready() -> void:
 	# Disable all blocks at the beginning by disabling their collision shapes
@@ -28,6 +39,12 @@ func _ready() -> void:
 	# Connect pistol interaction signal if not already connected
 	if not pistol_1.is_connected("interacted", _on_pistol_1_interacted):
 		pistol_1.connect("interacted", _on_pistol_1_interacted)
+	
+	# Connect Room2 area signals
+	if not room_2_area_2d.is_connected("body_entered", _on_room_2_area_2d_body_entered):
+		room_2_area_2d.connect("body_entered", _on_room_2_area_2d_body_entered)
+	if not room_2_area_2d.is_connected("body_exited", _on_room_2_area_2d_body_exited):
+		room_2_area_2d.connect("body_exited", _on_room_2_area_2d_body_exited)
 
 func _process(_delta: float) -> void:
 	if not is_instance_valid(player):
@@ -36,6 +53,10 @@ func _process(_delta: float) -> void:
 	# Check if bread enemies are still alive
 	if breads_alive:
 		check_breads_status()
+	
+	# Check if Room2 enemies are defeated
+	if room_2_activated:
+		check_room_2_enemies()
 
 func disable_all_blocks() -> void:
 	# Disable all blocks by disabling their collision shapes
@@ -150,3 +171,85 @@ func _on_pistol_1_interacted() -> void:
 		# Enable weapon 1 for the player
 		if is_instance_valid(player):
 			player.unlock_weapon(0)
+
+func _on_room_2_area_2d_body_entered(body: Node2D) -> void:
+	if body == player and not room_2_activated:
+		room_2_activated = true
+		
+		# Enable blocks 3 and 4
+		enable_block(block_3)
+		enable_block(block_4)
+		
+		# Spawn first batch of 5 enemies
+		spawn_room_2_enemies(5)
+
+func _on_room_2_area_2d_body_exited(body: Node2D) -> void:
+	# Optional: Handle player exiting the area
+	pass
+
+func spawn_room_2_enemies(count: int) -> void:
+	var room_node = $Rooms/Room2  # Parent node for the enemies
+	
+	for i in range(count):
+		# Randomly choose between bread and black bread
+		var enemy_scene = bread_scene if randf() < 0.5 else black_bread_scene
+		var enemy = enemy_scene.instantiate()
+		
+		# Set random position within Room2 area
+		var area_rect = get_area_rect(room_2_area_2d)
+		enemy.position = Vector2(
+			randf_range(area_rect.position.x, area_rect.end.x),
+			randf_range(area_rect.position.y, area_rect.end.y)
+		)
+		
+		# Add to the appropriate batch
+		if room_2_first_batch.size() < 5:
+			room_2_first_batch.append(enemy)
+		else:
+			room_2_second_batch.append(enemy)
+			# Hide the second batch initially
+			disable_bread(enemy)
+		
+		# Add to scene and set up
+		room_node.add_child(enemy)
+		
+		# Set player reference if the enemy has that method
+		if enemy.has_method("set_player_reference") and is_instance_valid(player):
+			enemy.set_player_reference(player)
+		
+		# Connect to death signal if available
+		if enemy.has_signal("died"):
+			enemy.connect("died", Callable(self, "_on_room_2_enemy_died"))
+
+func get_area_rect(area: Area2D) -> Rect2:
+	# Get the bounding rectangle of the area
+	var collision_shape = area.get_node("CollisionShape2D")
+	if collision_shape and collision_shape.shape is RectangleShape2D:
+		var shape = collision_shape.shape as RectangleShape2D
+		var pos = collision_shape.global_position
+		var size = shape.size
+		return Rect2(pos - size/2, size)
+	
+	# Fallback to a default size if not a rectangle
+	return Rect2(area.global_position, Vector2(300, 300))
+
+func check_room_2_enemies() -> void:
+	# Check if first batch is defeated
+	var first_batch_defeated = true
+	for enemy in room_2_first_batch:
+		if is_instance_valid(enemy) and not enemy.is_queued_for_deletion():
+			first_batch_defeated = false
+			break
+	
+	# Spawn second batch if first is defeated
+	if first_batch_defeated and room_2_second_batch.size() > 0:
+		for enemy in room_2_second_batch:
+			enable_bread(enemy)
+
+func _on_room_2_enemy_died() -> void:
+	room_2_enemies_defeated += 1
+	
+	# Check if all enemies are defeated
+	if room_2_enemies_defeated >= room_2_total_enemies:
+		# Optional: Do something when all enemies are defeated
+		print("All Room 2 enemies defeated!")

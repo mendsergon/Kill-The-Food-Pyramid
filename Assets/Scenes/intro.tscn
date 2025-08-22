@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://dlwxmchh8jxnh"]
+[gd_scene load_steps=15 format=4 uid="uid://dlwxmchh8jxnh"]
 
 [ext_resource type="Script" uid="uid://83pprpq7ux1j" path="res://Assets/Scripts/intro.gd" id="1_lkfso"]
 [ext_resource type="Texture2D" uid="uid://b382m5n4iwqbd" path="res://Assets/Tiles/Tileset.png" id="2_1uye6"]
@@ -169,6 +169,9 @@ gradient = SubResource("Gradient_f3ojl")
 fill = 2
 fill_to = Vector2(0, 1)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oupoc"]
+size = Vector2(252, 204)
+
 [node name="Intro" type="Node2D"]
 script = ExtResource("1_lkfso")
 
@@ -248,6 +251,13 @@ position = Vector2(952, 165)
 rotation = -0.00426856
 scale = Vector2(1.5, 1.5)
 
+[node name="Room2Area2D" type="Area2D" parent="Rooms/Room2"]
+position = Vector2(832, 280)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rooms/Room2/Room2Area2D"]
+position = Vector2(16, 0)
+shape = SubResource("RectangleShape2D_oupoc")
+
 [node name="Room3" type="Node2D" parent="Rooms"]
 
 [node name="Block5" parent="Rooms/Room3" instance=ExtResource("7_oupoc")]
@@ -261,3 +271,5 @@ rotation = 3.14283
 scale = Vector2(1.5, 1.5)
 
 [connection signal="interacted" from="Pistol1" to="." method="_on_pistol_1_interacted"]
+[connection signal="body_entered" from="Rooms/Room2/Room2Area2D" to="." method="_on_room_2_area_2d_body_entered"]
+[connection signal="body_exited" from="Rooms/Room2/Room2Area2D" to="." method="_on_room_2_area_2d_body_exited"]
