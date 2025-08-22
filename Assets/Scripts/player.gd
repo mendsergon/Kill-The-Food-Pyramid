@@ -3,14 +3,14 @@ extends CharacterBody2D
 ### --- WEAPON SYSTEM --- ###
 @export var MAX_WEAPONS: int = 4  # Maximum number of weapon slots
 var current_weapon_index: int = 0  # Currently selected weapon
-var unlocked_weapons: Array[bool] = [true, true, false, false]  # Which weapons are unlocked
+var unlocked_weapons: Array[bool] = [false, false, false, false]  # Which weapons are unlocked
 var weapons: Array[Node] = []  # Array to hold weapon nodes
 
 ### --- CORE CONSTANTS --- ###
 # Movement
-const SPEED = 150.0                     # Normal movement speed
+const SPEED = 125.0                     # Normal movement speed
 # Dash
-const DASH_SPEED = 450.0                # Dash velocity
+const DASH_SPEED = 300.0                # Dash velocity
 const DASH_DURATION = 0.25              # Time dash lasts 
 const DASH_COOLDOWN = 0.05               # Delay between dashes
 # Combat
@@ -30,7 +30,7 @@ var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
 ### --- PLAYER MELEE ORBS --- ###
-@export var MAX_MELEE_ORBS: int = 3      # Maximum number of orbs
+@export var MAX_MELEE_ORBS: int = 2      # Maximum number of orbs
 var current_orb_charges := 0             # Start with zero orbs
 
 ### --- MELEE ORB BAR --- ###
@@ -40,7 +40,7 @@ var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
 ### --- PLAYER DASH SLABS --- ###
-@export var MAX_DASH_SLABS: int = 1
+@export var MAX_DASH_SLABS: int = 0
 var current_dash_slabs := MAX_DASH_SLABS
 
 ### --- DASH SLAB BAR --- ###
@@ -118,14 +118,18 @@ func _ready() -> void:
 			# Add null placeholder if weapon doesn't exist
 			weapons.append(null)
 	
-	# Enable the first weapon if unlocked and exists
-	if unlocked_weapons[0] and weapons.size() > 0 and weapons[0]:
+	# FIXED: Only enable the first weapon if it's actually unlocked
+	# Don't enable any weapon by default if none are unlocked
+	if unlocked_weapons.size() > 0 and unlocked_weapons[0] and weapons.size() > 0 and weapons[0]:
 		weapons[0].visible = true
 		weapons[0].set_process(true)
 		weapons[0].set_process_input(true)
 		# Connect hit signal for melee orb generation
 		if weapons[0].has_signal("hit_target"):
 			weapons[0].connect("hit_target", Callable(self, "_on_weapon_hit"))
+	else:
+		# Ensure no weapon is active if none are unlocked
+		current_weapon_index = -1
 
 	# Initialize hearts_list from hearts_parent children 
 	for heart_node in hearts_parent.get_children():
@@ -159,19 +163,23 @@ func _ready() -> void:
 	update_dash_slab_bar()    # Initial update of dash slab bar display
 
 func _input(event: InputEvent) -> void:
-	# Weapon switching
-	if event.is_action_pressed("weapon_1") and unlocked_weapons[0]:
+	# Weapon switching - only allow switching to unlocked weapons
+	if event.is_action_pressed("weapon_1") and unlocked_weapons.size() > 0 and unlocked_weapons[0]:
 		switch_weapon(0)
-	elif event.is_action_pressed("weapon_2") and unlocked_weapons[1]:
+	elif event.is_action_pressed("weapon_2") and unlocked_weapons.size() > 1 and unlocked_weapons[1]:
 		switch_weapon(1)
-	elif event.is_action_pressed("weapon_3") and unlocked_weapons[2]:
+	elif event.is_action_pressed("weapon_3") and unlocked_weapons.size() > 2 and unlocked_weapons[2]:
 		switch_weapon(2)
-	elif event.is_action_pressed("weapon_4") and unlocked_weapons[3]:
+	elif event.is_action_pressed("weapon_4") and unlocked_weapons.size() > 3 and unlocked_weapons[3]:
 		switch_weapon(3)
 
 func switch_weapon(index: int):
-	# Disable current weapon
-	if weapons.size() > current_weapon_index and weapons[current_weapon_index]:
+	# Don't switch to the same weapon or invalid index
+	if index == current_weapon_index or index < 0 or index >= weapons.size():
+		return
+	
+	# Disable current weapon if it exists
+	if current_weapon_index >= 0 and current_weapon_index < weapons.size() and weapons[current_weapon_index]:
 		weapons[current_weapon_index].visible = false
 		weapons[current_weapon_index].set_process(false)
 		weapons[current_weapon_index].set_process_input(false)
@@ -191,7 +199,7 @@ func switch_weapon(index: int):
 			weapons[current_weapon_index].connect("hit_target", Callable(self, "_on_weapon_hit"))
 
 func get_current_weapon():
-	if weapons.size() > current_weapon_index and weapons[current_weapon_index]:
+	if current_weapon_index >= 0 and weapons.size() > current_weapon_index and weapons[current_weapon_index]:
 		return weapons[current_weapon_index]
 	return null
 
@@ -563,8 +571,9 @@ func _on_weapon_hit(_collider) -> void:
 func unlock_weapon(weapon_index: int) -> void:
 	if weapon_index >= 0 and weapon_index < MAX_WEAPONS:
 		unlocked_weapons[weapon_index] = true
-		# Auto-switch to newly unlocked weapon
-		switch_weapon(weapon_index)
+		# Auto-switch to newly unlocked weapon if no weapon is currently active
+		if current_weapon_index == -1:
+			switch_weapon(weapon_index)
 
 ### --- FREE PLAYER PROCESS --- ###
 func _on_animation_finished():

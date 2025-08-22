@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cxq1b4vcrpqnj"]
 
-[ext_resource type="Script" uid="uid://c38sx8kth38qx" path="res://Assets/Scripts/weapon_1.gd" id="1_jr1ma"]
+[ext_resource type="Script" uid="uid://dkwhmvndmvdfc" path="res://Assets/Scripts/weapon_2.gd" id="1_jr1ma"]
 [ext_resource type="Texture2D" uid="uid://c3kjp6kp414ee" path="res://Assets/Sprites/Weapons/shotgun.png" id="2_bxd1b"]
 
 [node name="Weapon_2" type="Node2D"]
