@@ -3,7 +3,7 @@ extends CharacterBody2D
 ### --- WEAPON SYSTEM --- ###
 @export var MAX_WEAPONS: int = 4  # Maximum number of weapon slots
 var current_weapon_index: int = 0  # Currently selected weapon
-var unlocked_weapons: Array[bool] = [true, false, false, false]  # Which weapons are unlocked
+var unlocked_weapons: Array[bool] = [false, false, false, false]  # Which weapons are unlocked
 var weapons: Array[Node] = []  # Array to hold weapon nodes
 
 ### --- CORE CONSTANTS --- ###
