@@ -223,7 +223,7 @@ texture = SubResource("GradientTexture2D_pcw0e")
 
 [node name="Blocks" type="Node2D" parent="."]
 
-[node name="Block" parent="Blocks" instance=ExtResource("7_oupoc")]
+[node name="Block1" parent="Blocks" instance=ExtResource("7_oupoc")]
 position = Vector2(458, 392)
 rotation = 1.57207
 scale = Vector2(1.5, 1.5)
@@ -243,4 +243,9 @@ position = Vector2(1451, 392)
 rotation = 1.57207
 scale = Vector2(1.5, 1.5)
 
+[node name="Exit" parent="." instance=ExtResource("5_1uye6")]
+position = Vector2(1433, 361)
+scale = Vector2(0.75, 0.75)
+
 [connection signal="interacted" from="Pistol1" to="." method="_on_pistol_1_interacted"]
+[connection signal="interacted" from="Exit" to="." method="_on_exit_interacted"]
