@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://bpbg1hrm0jn1k"]
+
+[ext_resource type="Script" uid="uid://cnim03an8koje" path="res://Assets/Levels/Test/game.gd" id="1_lipum"]
+[ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/NPCs/Cyber Cat/cyber_cat.tscn" id="2_crewr"]
+[ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Player/player.tscn" id="3_p4fur"]
+[ext_resource type="PackedScene" uid="uid://ck4i18vfqajhw" path="res://Assets/Enemies/Sweet Potato/sweet_potato.tscn" id="4_v88xs"]
+
+[node name="Game" type="Node2D"]
+script = ExtResource("1_lipum")
+
+[node name="Cyber Cat" parent="." instance=ExtResource("2_crewr")]
+position = Vector2(61, -11)
+
+[node name="Player" parent="." instance=ExtResource("3_p4fur")]
+position = Vector2(14, -15)
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2(0, 7)
+zoom = Vector2(4, 4)
+
+[node name="Sweet Potato" parent="." instance=ExtResource("4_v88xs")]
+position = Vector2(3.04363, 13.9409)

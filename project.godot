@@ -17,7 +17,7 @@ config/icon="uid://byxvv6a3aouy7"
 
 [autoload]
 
-SaveManager="*res://Assets/Scenes/save_manager.tscn"
+SaveManager="*res://Assets/Save Manager/SaveManager.gd"
 
 [display]
 
