@@ -1,10 +1,11 @@
-[gd_scene load_steps=16 format=4 uid="uid://dlwxmchh8jxnh"]
+[gd_scene load_steps=18 format=4 uid="uid://dlwxmchh8jxnh"]
 
 [ext_resource type="Script" uid="uid://83pprpq7ux1j" path="res://Assets/Levels/0/0-0/0-0.gd" id="1_lkfso"]
 [ext_resource type="Texture2D" uid="uid://b382m5n4iwqbd" path="res://Assets/Tiles/Tileset.png" id="2_1uye6"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Player/player.tscn" id="3_f3ojl"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="5_1uye6"]
 [ext_resource type="Texture2D" uid="uid://c0uemwtgtjgid" path="res://Assets/Weapons/Pistol 1/Pistol 1.png" id="6_f3ojl"]
+[ext_resource type="PackedScene" uid="uid://qialsg1tuoxg" path="res://Assets/Elements/Flash Layer/flash_layer.tscn" id="6_pcw0e"]
 [ext_resource type="PackedScene" uid="uid://d2sth6m1iimd1" path="res://Assets/Elements/Block/block.tscn" id="7_oupoc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ce7t1"]
@@ -177,6 +178,9 @@ noise = SubResource("FastNoiseLite_hewoy")
 gradient = SubResource("Gradient_hewoy")
 fill = 1
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hewoy"]
+size = Vector2(316, 306)
+
 [node name="Intro" type="Node2D"]
 script = ExtResource("1_lkfso")
 
@@ -221,6 +225,12 @@ color = Color(1, 0, 0, 1)
 energy = 0.57
 texture = SubResource("GradientTexture2D_pcw0e")
 
+[node name="Room1Area2D" type="Area2D" parent="Rooms"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rooms/Room1Area2D"]
+position = Vector2(1074, 392)
+shape = SubResource("RectangleShape2D_hewoy")
+
 [node name="Blocks" type="Node2D" parent="."]
 
 [node name="Block1" parent="Blocks" instance=ExtResource("7_oupoc")]
@@ -247,5 +257,9 @@ scale = Vector2(1.5, 1.5)
 position = Vector2(1433, 361)
 scale = Vector2(0.75, 0.75)
 
+[node name="FlashLayer" parent="." instance=ExtResource("6_pcw0e")]
+visible = false
+
 [connection signal="interacted" from="Pistol1" to="." method="_on_pistol_1_interacted"]
+[connection signal="body_entered" from="Rooms/Room1Area2D" to="." method="_on_room_1_area_2d_body_entered"]
 [connection signal="interacted" from="Exit" to="." method="_on_exit_interacted"]

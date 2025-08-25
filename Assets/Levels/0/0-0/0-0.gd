@@ -7,7 +7,9 @@ extends Node2D
 @onready var block_2: StaticBody2D = $Blocks/Block2
 @onready var block_3: StaticBody2D = $Blocks/Block3
 @onready var block_4: StaticBody2D = $Blocks/Block4
+@onready var room_1_area_2d: Area2D = $Rooms/Room1Area2D
 @onready var exit: Area2D = $Exit
+@onready var flash_layer: CanvasLayer = $FlashLayer
 
 # Track if pistol has been interacted with
 var pistol_interacted = false
@@ -61,3 +63,7 @@ func _on_pistol_1_interacted() -> void:
 
 func _on_exit_interacted() -> void:
 		pass # Replace with function body.
+
+
+func _on_room_1_area_2d_body_entered(_body: Node2D) -> void:
+	pass # Replace with function body.
