@@ -9,7 +9,7 @@ extends Node2D
 @onready var block_4: StaticBody2D = $Blocks/Block4
 @onready var room_1_area_2d: Area2D = $Rooms/Room1Area2D
 @onready var exit: Area2D = $Exit
-@onready var flash_layer: CanvasLayer = $FlashLayer
+@onready var flash_layer: CanvasLayer = $Player/Camera2D/FlashLayer
 
 # Track if pistol has been interacted with
 var pistol_interacted = false
@@ -66,4 +66,8 @@ func _on_exit_interacted() -> void:
 
 
 func _on_room_1_area_2d_body_entered(_body: Node2D) -> void:
-	pass # Replace with function body.
+	if flash_layer:
+		# Trigger the flash effect on the flash layer
+		flash_layer.trigger_flash()
+	else:
+		print("FlashLayer node is not available")
