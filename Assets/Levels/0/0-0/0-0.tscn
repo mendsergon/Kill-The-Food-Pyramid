@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://qialsg1tuoxg" path="res://Assets/Elements/Flash Layer/flash_layer.tscn" id="6_pcw0e"]
 [ext_resource type="PackedScene" uid="uid://d2sth6m1iimd1" path="res://Assets/Elements/Block/block.tscn" id="7_oupoc"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ce7t1"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pcw0e"]
 texture = ExtResource("2_1uye6")
 0:0/0 = 0
 1:0/0 = 0
@@ -76,9 +76,9 @@ texture = ExtResource("2_1uye6")
 physics_layer_0/collision_layer = 128
 physics_layer_0/collision_mask = 135
 physics_layer_1/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_ce7t1")
+sources/0 = SubResource("TileSetAtlasSource_pcw0e")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s3gni"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_70fni"]
 texture = ExtResource("2_1uye6")
 0:0/0 = 0
 1:0/0 = 0
@@ -160,7 +160,7 @@ texture = ExtResource("2_1uye6")
 [sub_resource type="TileSet" id="TileSet_rmn8u"]
 physics_layer_0/collision_layer = 128
 physics_layer_0/collision_mask = 135
-sources/0 = SubResource("TileSetAtlasSource_s3gni")
+sources/0 = SubResource("TileSetAtlasSource_70fni")
 
 [sub_resource type="Gradient" id="Gradient_bfdt7"]
 offsets = PackedFloat32Array(0.025974, 0.0324675, 0.0454545, 0.798701, 1)
