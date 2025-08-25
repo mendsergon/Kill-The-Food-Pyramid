@@ -196,13 +196,11 @@ tile_set = SubResource("TileSet_rmn8u")
 position = Vector2(-7, -22)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
-zoom = Vector2(3, 3)
+zoom = Vector2(6, 6)
 
-[node name="FlashLayer" parent="Player/Camera2D" instance=ExtResource("6_pcw0e")]
+[node name="Camera2D2" type="Camera2D" parent="Player"]
 visible = false
-offset = Vector2(-200, -150)
-scale = Vector2(50, 50)
-transform = Transform2D(50, 0, 0, 50, -200, -150)
+zoom = Vector2(3, 3)
 
 [node name="Pistol1" parent="." instance=ExtResource("5_1uye6")]
 position = Vector2(407, 392)
@@ -262,6 +260,12 @@ scale = Vector2(1.5, 1.5)
 [node name="Exit" parent="." instance=ExtResource("5_1uye6")]
 position = Vector2(1433, 361)
 scale = Vector2(0.75, 0.75)
+
+[node name="FlashLayer" parent="." instance=ExtResource("6_pcw0e")]
+visible = false
+offset = Vector2(-200, -150)
+scale = Vector2(10000, 100000)
+transform = Transform2D(10000, 0, 0, 100000, -200, -150)
 
 [connection signal="interacted" from="Pistol1" to="." method="_on_pistol_1_interacted"]
 [connection signal="body_entered" from="Rooms/Room1Area2D" to="." method="_on_room_1_area_2d_body_entered"]

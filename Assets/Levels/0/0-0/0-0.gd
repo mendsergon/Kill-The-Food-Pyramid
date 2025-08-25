@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var player: CharacterBody2D = $Player
 @onready var camera_2d: Camera2D = $Player/Camera2D
+@onready var camera_2d_2: Camera2D = $Player/Camera2D2
 @onready var pistol_1: Area2D = $Pistol1
 @onready var block_1: StaticBody2D = $Blocks/Block1
 @onready var block_2: StaticBody2D = $Blocks/Block2
@@ -9,7 +10,7 @@ extends Node2D
 @onready var block_4: StaticBody2D = $Blocks/Block4
 @onready var room_1_area_2d: Area2D = $Rooms/Room1Area2D
 @onready var exit: Area2D = $Exit
-@onready var flash_layer: CanvasLayer = $Player/Camera2D/FlashLayer
+@onready var flash_layer: CanvasLayer = $FlashLayer
 
 # Track if pistol has been interacted with
 var pistol_interacted = false
@@ -61,13 +62,25 @@ func _on_pistol_1_interacted() -> void:
 				# Disable block 1 on pistol interaction
 				disable_block(block_1)
 
-func _on_exit_interacted() -> void:
-		pass # Replace with function body.
-
-
 func _on_room_1_area_2d_body_entered(_body: Node2D) -> void:
+	enable_block(block_2)
+	
+	# Hide main camera and enable secondary camera
+	if camera_2d:
+		camera_2d.enabled = false
+	
+	if camera_2d_2:
+		camera_2d_2.enabled = true
+	
+	# Disconnect the signal to prevent retriggering
+	if room_1_area_2d and room_1_area_2d.is_connected("body_entered", _on_room_1_area_2d_body_entered):
+		room_1_area_2d.disconnect("body_entered", _on_room_1_area_2d_body_entered)
+	
 	if flash_layer:
 		# Trigger the flash effect on the flash layer
 		flash_layer.trigger_flash()
 	else:
 		print("FlashLayer node is not available")
+
+func _on_exit_interacted() -> void:
+		pass # Replace with function body.
