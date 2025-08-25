@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://qialsg1tuoxg"]
+
+[ext_resource type="Script" uid="uid://dwal7t7e71bmo" path="res://Assets/Elements/Flash Layer/flash_layer.gd" id="1_m6tqe"]
+
+[node name="FlashLayer" type="CanvasLayer"]
+script = ExtResource("1_m6tqe")
+
+[node name="FlashRect" type="ColorRect" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
