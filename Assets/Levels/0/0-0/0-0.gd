@@ -24,6 +24,7 @@ func _ready() -> void:
 		# Disable block 2 by default and enable block 1
 		disable_block(block_2)
 		enable_block(block_1)
+		
 
 func _process(_delta: float) -> void:
 		if not is_instance_valid(player):

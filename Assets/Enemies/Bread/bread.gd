@@ -14,23 +14,26 @@ var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D  # Enemy sprite
+@onready var area_2d: Area2D = $Area2D
 
 ### --- STATE --- ###
 var player: CharacterBody2D = null       # Reference to player node
-var is_moving := true                    # Currently chasing player
+var is_moving := false                   # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether bread is in death state
+var player_detected := false             # Whether player is in detection area
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
 
 func _ready() -> void:
-	animated_sprite_2d.play("Run")         # Start with walking animation immediately
+	animated_sprite_2d.play("Idle")        # Start with idle animation
 	health = max_health                    # Set starting HP
+	
 
 func _physics_process(delta: float) -> void:
 	### --- DEATH TIMER --- ###
@@ -40,7 +43,10 @@ func _physics_process(delta: float) -> void:
 			queue_free()                  # Remove bread after death delay
 		return                            # Skip logic while dead
 
-	if player == null:
+	if player == null or not player_detected:
+		velocity = Vector2.ZERO
+		if not is_dying:
+			animated_sprite_2d.play("Idle")
 		return
 
 	### --- TIMER MANAGEMENT --- ###
@@ -84,6 +90,15 @@ func _physics_process(delta: float) -> void:
 		flash_timer -= delta
 		if flash_timer <= 0.0:
 			animated_sprite_2d.modulate = Color(1, 1, 1)  # Reset color to normal
+
+### --- AREA2D SIGNAL HANDLERS --- ###
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body == player:
+		player_detected = true
+		is_moving = true
+		behavior_timer = 0.0
+		animated_sprite_2d.play("Run")
+
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
