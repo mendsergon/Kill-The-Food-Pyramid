@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d2sth6m1iimd1"]
 
-[ext_resource type="Texture2D" uid="uid://d31026ny0lym3" path="res://Assets/Tiles/Fence.png" id="1_x5qdi"]
+[ext_resource type="Texture2D" uid="uid://d31026ny0lym3" path="res://Assets/Elements/Block/Fence.png" id="1_x5qdi"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xek8j"]
 size = Vector2(32, 15)

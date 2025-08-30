@@ -18,17 +18,18 @@ var health: int                          # Current HP
 
 ### --- STATE --- ###
 var player: CharacterBody2D = null       # Reference to player node
+var detection_manager: Node = null       # Reference to manager (main scene)
 var is_moving := false                   # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether bread is in death state
-var player_detected := false             # Whether player is in detection area
 
 ### --- PUBLIC SETUP --- ###
-func set_player_reference(player_ref: CharacterBody2D) -> void:
+func set_player_reference(player_ref: CharacterBody2D, manager_ref: Node) -> void:
 	player = player_ref
+	detection_manager = manager_ref
 
 func _ready() -> void:
 	animated_sprite_2d.play("Idle")        # Start with idle animation
@@ -43,7 +44,8 @@ func _physics_process(delta: float) -> void:
 			queue_free()                  # Remove bread after death delay
 		return                            # Skip logic while dead
 
-	if player == null or not player_detected:
+	### --- SHARED DETECTION CHECK --- ###
+	if player == null or not detection_manager.player_detected:
 		velocity = Vector2.ZERO
 		if not is_dying:
 			animated_sprite_2d.play("Idle")
@@ -94,11 +96,11 @@ func _physics_process(delta: float) -> void:
 ### --- AREA2D SIGNAL HANDLERS --- ###
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body == player:
-		player_detected = true
+		# ✅ tell the manager that the player has been spotted
+		detection_manager.set_player_detected(true)
 		is_moving = true
 		behavior_timer = 0.0
 		animated_sprite_2d.play("Run")
-
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
