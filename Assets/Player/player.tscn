@@ -334,7 +334,7 @@ size = Vector2(32, 16)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 141
 script = ExtResource("1_7dd06")
-MAX_MELEE_ORBS = 0
+MAX_MELEE_ORBS = 3
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
@@ -362,7 +362,6 @@ position = Vector2(16, -8)
 shape = SubResource("RectangleShape2D_38rej")
 
 [node name="HealthBar" type="CanvasLayer" parent="."]
-visible = false
 scale = Vector2(2, 2)
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 
@@ -407,7 +406,6 @@ layout_mode = 2
 position = Vector2(17, -8)
 
 [node name="MeleeOrbBar" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MeleeOrbBar"]
 offset_right = 40.0
@@ -456,7 +454,6 @@ position = Vector2(54, 17)
 scale = Vector2(2, 1.925)
 
 [node name="DashSlabBar" type="CanvasLayer" parent="."]
-visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="DashSlabBar"]
 offset_right = 40.0

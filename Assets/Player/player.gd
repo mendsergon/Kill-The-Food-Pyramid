@@ -30,8 +30,8 @@ var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
 ### --- PLAYER MELEE ORBS --- ###
-@export var MAX_MELEE_ORBS: int = 2      # Maximum number of orbs
-var current_orb_charges := 0             # Start with zero orbs
+@export var MAX_MELEE_ORBS: int = 6      # Maximum number of orbs
+var current_orb_charges := 3             # Start with zero orbs
 
 ### --- MELEE ORB BAR --- ###
 var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
