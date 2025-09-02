@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=4 uid="uid://cobnyu8xxfa7g"]
+[gd_scene load_steps=18 format=4 uid="uid://cobnyu8xxfa7g"]
 
 [ext_resource type="Script" uid="uid://bf4vlyoy6pgfl" path="res://Assets/Levels/0/0-1/0_1.gd" id="1_nmr6b"]
 [ext_resource type="Texture2D" uid="uid://b382m5n4iwqbd" path="res://Assets/Tiles/Tileset.png" id="1_yvj2v"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://5tl40wywy0vd" path="res://Assets/Tiles/Tileset3.png" id="3_6on3r"]
 [ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Enemies/Bread/bread.tscn" id="5_ergrt"]
 [ext_resource type="PackedScene" uid="uid://d2sth6m1iimd1" path="res://Assets/Elements/Block/block.tscn" id="7_rnkgk"]
+[ext_resource type="PackedScene" uid="uid://dx6xvy3qsu862" path="res://Assets/Enemies/Baguette/baguette.tscn" id="8_slfs2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ak3gp"]
 texture = ExtResource("1_yvj2v")
@@ -344,3 +345,6 @@ position = Vector2(1127, -94)
 
 [node name="Bread5" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1302, -140)
+
+[node name="Baguette" parent="EnemyGroup1" instance=ExtResource("8_slfs2")]
+position = Vector2(1144, 88)

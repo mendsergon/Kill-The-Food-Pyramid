@@ -3,7 +3,7 @@ extends CharacterBody2D
 ### --- CORE CONSTANTS --- ###
 const MOVE_SPEED = 50.0                  # Enemy walk speed
 const MOVE_DURATION = 4.0                # Active chase time
-const IDLE_COOLDOWN = 2.0                # Pause duration between chases
+const IDLE_COOLDOWN = 0.5                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
 const STAGGER_DURATION = 0.1             # Time frozen after taking hit
 const DEATH_DURATION = 0.5               # Time before removing dead bread

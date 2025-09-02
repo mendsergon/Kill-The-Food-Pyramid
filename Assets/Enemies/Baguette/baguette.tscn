@@ -1,7 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://dx6xvy3qsu862"]
+[gd_scene load_steps=13 format=3 uid="uid://dx6xvy3qsu862"]
 
-[ext_resource type="Texture2D" uid="uid://dk7br8565u7c8" path="res://Assets/Sprites/Baguette/Baguette.png" id="1_3v13v"]
-[ext_resource type="Script" uid="uid://cig23pfn3nc44" path="res://Assets/Scripts/baguette.gd" id="1_ph281"]
+[ext_resource type="Texture2D" uid="uid://dk7br8565u7c8" path="res://Assets/Enemies/Baguette/Baguette.png" id="1_3v13v"]
+[ext_resource type="Script" uid="uid://cig23pfn3nc44" path="res://Assets/Enemies/Baguette/baguette.gd" id="1_ph281"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ph281"]
 atlas = ExtResource("1_3v13v")
@@ -69,7 +69,10 @@ animations = [{
 radius = 5.0
 height = 24.0
 
-[node name="Baguette" type="CharacterBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_th3ub"]
+radius = 150.12
+
+[node name="Baguette" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 4
 collision_mask = 131
 script = ExtResource("1_ph281")
@@ -83,3 +86,8 @@ frame_progress = 0.72759
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 3)
 shape = SubResource("CapsuleShape2D_r4j1s")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_th3ub")
