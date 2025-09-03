@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=4 uid="uid://cobnyu8xxfa7g"]
+[gd_scene load_steps=17 format=4 uid="uid://cobnyu8xxfa7g"]
 
 [ext_resource type="Script" uid="uid://bf4vlyoy6pgfl" path="res://Assets/Levels/0/0-1/0_1.gd" id="1_nmr6b"]
 [ext_resource type="Texture2D" uid="uid://b382m5n4iwqbd" path="res://Assets/Tiles/Tileset.png" id="1_yvj2v"]
@@ -7,7 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://5tl40wywy0vd" path="res://Assets/Tiles/Tileset3.png" id="3_6on3r"]
 [ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Enemies/Bread/bread.tscn" id="5_ergrt"]
 [ext_resource type="PackedScene" uid="uid://d2sth6m1iimd1" path="res://Assets/Elements/Block/block.tscn" id="7_rnkgk"]
-[ext_resource type="PackedScene" uid="uid://dx6xvy3qsu862" path="res://Assets/Enemies/Baguette/baguette.tscn" id="8_slfs2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ak3gp"]
 texture = ExtResource("1_yvj2v")
@@ -329,22 +328,40 @@ position = Vector2(-50, 31)
 rotation = 1.5708
 scale = Vector2(1.5, 1.5)
 
-[node name="EnemyGroup1" type="Node2D" parent="."]
+[node name="Area1" type="Area2D" parent="."]
 
-[node name="Bread1" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area1"]
+visible = false
+polygon = PackedVector2Array(862, 58, 861, 133, 877, 132, 876, 147, 970, 149, 972, 164, 1030, 165, 1031, 147, 1165, 148, 1164, 164, 1190, 165, 1191, 145, 1207, 147, 1207, 115, 1224, 117, 1224, 84, 1240, 84, 1239, 67, 1256, 69, 1257, 36, 1272, 36, 1272, 19, 1287, 20, 1288, -13, 1304, -11, 1304, -45, 1319, -45, 1321, -60, 1335, -60, 1337, -92, 1353, -92, 1353, -105, 1352, -169, 1307, -168, 1307, -153, 1179, -151, 1179, -135, 1050, -134, 1050, -118, 1020, -119, 1020, -89, 1003, -87, 1004, -70, 988, -71, 988, -39, 972, -39, 972, -9, 956, -6, 955, 9, 907, 9, 908, 40, 891, 41, 890, 57)
+
+[node name="EnemyGroup1" type="Node2D" parent="Area1"]
+
+[node name="Bread1" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1166, 29)
 
-[node name="Bread2" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
+[node name="Bread2" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1100, -103)
 
-[node name="Bread3" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
+[node name="Bread3" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1191, -6)
 
-[node name="Bread4" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
+[node name="Bread4" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1127, -94)
 
-[node name="Bread5" parent="EnemyGroup1" instance=ExtResource("5_ergrt")]
+[node name="Bread5" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
 position = Vector2(1302, -140)
 
-[node name="Baguette" parent="EnemyGroup1" instance=ExtResource("8_slfs2")]
-position = Vector2(1144, 88)
+[node name="Bread6" parent="Area1/EnemyGroup1" instance=ExtResource("5_ergrt")]
+position = Vector2(1002, 209)
+
+[node name="Block1" parent="Area1" instance=ExtResource("7_rnkgk")]
+position = Vector2(830, 95)
+rotation = 1.5708
+scale = Vector2(1.5, 1.5)
+
+[node name="Block2" parent="Area1" instance=ExtResource("7_rnkgk")]
+position = Vector2(1361, -129)
+rotation = 1.5708
+scale = Vector2(1.5, 1.5)
+
+[connection signal="body_entered" from="Area1" to="." method="_on_area_1_body_entered"]
