@@ -355,7 +355,7 @@ position = Vector2(1302, -140)
 position = Vector2(1002, 209)
 
 [node name="Block1" parent="Area1" instance=ExtResource("7_rnkgk")]
-position = Vector2(830, 95)
+position = Vector2(829, 94)
 rotation = 1.5708
 scale = Vector2(1.5, 1.5)
 
@@ -371,7 +371,7 @@ visible = false
 polygon = PackedVector2Array(1580, -185, 1581, -108, 1547, -106, 1547, -71, 1532, -71, 1532, -40, 1515, -38, 1515, 4, 1564, 4, 1563, 21, 1692, 21, 1692, 36, 1819, 36, 1819, 53, 1947, 52, 1947, 69, 2008, 68, 2008, 25, 1991, 24, 1992, -25, 1975, -25, 1977, -105, 1925, -105, 1928, -119, 1846, -120, 1848, -136, 1799, -137, 1800, -152, 1736, -152, 1736, -168, 1653, -168, 1656, -185)
 
 [node name="Block3" parent="Area2" instance=ExtResource("7_rnkgk")]
-position = Vector2(1539, -130)
+position = Vector2(1532, -130)
 rotation = 1.5708
 scale = Vector2(1.5, 1.5)
 

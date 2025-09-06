@@ -101,7 +101,7 @@ func _disable_all_blocks() -> void:
 
 ### --- POLLING (REPLACES SIGNAL CONNECTS) --- ###
 # We poll area overlap and enemy counts once per physics frame to avoid connect() overload issues.
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	for area_name in areas:
 		var area_data = areas[area_name]
 		if not area_data:
@@ -143,7 +143,7 @@ func _on_area_body_entered(body: Node, area_name: String) -> void:
 ### --- ENEMY HANDLING (kept for compatibility) --- ###
 # If you keep child_exiting_tree signals in the scene, they'll call this.
 # We still do nothing here because the polling handles the removal flow.
-func _on_enemy_removed(_node: Node, area_name: String) -> void:
+func _on_enemy_removed(_node: Node, _area_name: String) -> void:
 	# No-op (polling handles the logic). Kept for compatibility.
 	pass
 
