@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=3 uid="uid://dt8cbustd2vjr"]
 
-[ext_resource type="Script" uid="uid://5u5uw1codvt4" path="res://Assets/Scripts/black_bread.gd" id="1_nunvc"]
-[ext_resource type="Texture2D" uid="uid://bqgs7ic7rd7nb" path="res://Assets/Sprites/Bread/blackbread.png" id="2_nunvc"]
+[ext_resource type="Script" uid="uid://cmxutb1lroesk" path="res://Assets/Enemies/Bread/black_bread.gd" id="1_nunvc"]
+[ext_resource type="Texture2D" uid="uid://bqgs7ic7rd7nb" path="res://Assets/Enemies/Bread/blackbread.png" id="2_nunvc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w4rp5"]
 atlas = ExtResource("2_nunvc")
