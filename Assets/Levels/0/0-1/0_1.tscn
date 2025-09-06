@@ -379,4 +379,37 @@ scale = Vector2(1.5, 1.5)
 position = Vector2(1978, 73)
 rotation = 3.14159
 
-[connection signal="body_entered" from="Area1" to="." method="_on_area_1_body_entered"]
+[node name="EnemyGroup2" type="Node2D" parent="Area2"]
+
+[node name="Bread7" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1694, -55)
+
+[node name="Bread8" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1708, -131)
+
+[node name="Bread9" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1712, 15)
+
+[node name="Bread10" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1729, -18)
+
+[node name="Bread11" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1772, -130)
+
+[node name="Bread12" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1810, -53)
+
+[node name="Bread13" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1894, -93)
+
+[node name="Bread14" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1882, -34)
+
+[node name="Bread15" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1950, -77)
+
+[node name="Bread16" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1939, -5)
+
+[node name="Bread17" parent="Area2/EnemyGroup2" instance=ExtResource("5_ergrt")]
+position = Vector2(1654, 1)

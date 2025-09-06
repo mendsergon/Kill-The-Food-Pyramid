@@ -25,16 +25,30 @@ var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether bread is in death state
+var is_alerted := false                  # Whether this enemy is alerted
+var area_name: String = ""               # Area this enemy belongs to
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D, manager_ref: Node) -> void:
 	player = player_ref
 	detection_manager = manager_ref
+	# Get area name from metadata
+	area_name = get_meta("area_name", "")
 
 func _ready() -> void:
 	animated_sprite_2d.play("Idle")        # Start with idle animation
 	health = max_health                    # Set starting HP
-	
+
+func set_alert_status(value: bool) -> void:
+	is_alerted = value
+	if value:
+		is_moving = true
+		behavior_timer = 0.0
+		animated_sprite_2d.play("Run")
+	else:
+		is_moving = false
+		behavior_timer = 0.0
+		animated_sprite_2d.play("Idle")
 
 func _physics_process(delta: float) -> void:
 	### --- DEATH TIMER --- ###
@@ -44,8 +58,8 @@ func _physics_process(delta: float) -> void:
 			queue_free()                  # Remove bread after death delay
 		return                            # Skip logic while dead
 
-	### --- SHARED DETECTION CHECK --- ###
-	if player == null or not detection_manager.player_detected:
+	### --- ALERT CHECK --- ###
+	if player == null or not is_alerted:
 		velocity = Vector2.ZERO
 		if not is_dying:
 			animated_sprite_2d.play("Idle")
@@ -96,11 +110,9 @@ func _physics_process(delta: float) -> void:
 ### --- AREA2D SIGNAL HANDLERS --- ###
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body == player:
-		# ✅ tell the manager that the player has been spotted
-		detection_manager.set_player_detected(true)
-		is_moving = true
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Run")
+		# Tell the manager to alert all enemies in this area
+		if detection_manager and detection_manager.has_method("alert_area_enemies"):
+			detection_manager.alert_area_enemies(area_name)
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
