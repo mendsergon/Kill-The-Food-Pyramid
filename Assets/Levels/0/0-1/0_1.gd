@@ -15,6 +15,12 @@ extends Node2D
 @onready var block_4: StaticBody2D = $Area2/Block4
 @onready var area_2: Area2D = $Area2
 
+## Area 3
+@onready var enemy_group_3: Node2D = $Area3/EnemyGroup3
+@onready var block_5: StaticBody2D = $Area3/Block5
+@onready var block_6: StaticBody2D = $Area3/Block6
+@onready var area_3: Area2D = $Area3
+
 # Dictionary to store all area data
 var areas := {}
 var area_alert_states := {}  # Track alert status per area
@@ -53,6 +59,16 @@ func _setup_areas() -> void:
 			"cleared": false
 		}
 		area_alert_states["Area2"] = false
+	
+	if is_instance_valid(area_3) and is_instance_valid(enemy_group_3):
+		areas["Area3"] = {
+			"area_node": area_3,
+			"enemy_group": enemy_group_3,
+			"blocks": [block_5, block_6],
+			"active": false,
+			"cleared": false
+		}
+		area_alert_states["Area3"] = false
 	
 	# Set up enemies for each area
 	for area_name in areas:
