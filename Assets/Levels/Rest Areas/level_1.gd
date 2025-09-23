@@ -94,7 +94,7 @@ func _save_player_on_scene_start() -> void:
 	current_tween.tween_property(save, "modulate:a", 1.0, 0.2).from(0.0)
 
 func _on_interaction_area_1_interacted() -> void:
-	fade_layer.start_fade("res://Assets/Scenes/floor_2.tscn")
+	fade_layer.start_fade("res://Assets/Levels/0-2/0_2.tscn")
 
 func _on_interaction_area_2_interacted() -> void:
 	if current_tween:
