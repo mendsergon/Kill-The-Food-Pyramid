@@ -358,8 +358,8 @@ sources/0 = SubResource("TileSetAtlasSource_6on3r")
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ergrt"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nmr6b"]
-color_ramp = SubResource("Gradient_6on3r")
 noise = SubResource("FastNoiseLite_ergrt")
+color_ramp = SubResource("Gradient_6on3r")
 
 [node name="0-1" type="Node2D"]
 script = ExtResource("1_nmr6b")
@@ -381,6 +381,7 @@ position = Vector2(-30, 36)
 zoom = Vector2(3, 3)
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(32, 22)
 color = Color(1, 0.0509804, 0, 1)
 energy = 0.84
 texture = SubResource("NoiseTexture2D_nmr6b")

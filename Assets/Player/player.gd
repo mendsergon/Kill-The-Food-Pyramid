@@ -1,5 +1,10 @@
 extends CharacterBody2D
 
+### --- STATE MACHINE --- ###
+enum PlayerState { IDLE, RUN, DASH, ATTACK, HIT, DEAD }
+var current_state: PlayerState = PlayerState.IDLE
+var previous_state: PlayerState = PlayerState.IDLE
+
 ### --- WEAPON SYSTEM --- ###
 @export var MAX_WEAPONS: int = 4  # Maximum number of weapon slots
 var current_weapon_index: int = 0  # Currently selected weapon
@@ -30,8 +35,8 @@ var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
 ### --- PLAYER MELEE ORBS --- ###
-@export var MAX_MELEE_ORBS: int = 6      # Maximum number of orbs
-var current_orb_charges := 3             # Start with zero orbs
+@export var MAX_MELEE_ORBS: int = 0      # Maximum number of orbs
+var current_orb_charges := 0             # Start with zero orbs
 
 ### --- MELEE ORB BAR --- ###
 var melee_orb_list: Array[TextureRect] = [] # List of melee orb UI nodes
@@ -40,7 +45,7 @@ var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
 ### --- PLAYER DASH SLABS --- ###
-@export var MAX_DASH_SLABS: int = 1
+@export var MAX_DASH_SLABS: int = 0
 var current_dash_slabs := MAX_DASH_SLABS
 
 ### --- DASH SLAB BAR --- ###
@@ -57,15 +62,12 @@ var is_invulnerable := false            # True while invulnerable
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
 @onready var melee_area: Area2D = $MeleeArea2D # Melee hit area
-# Note: Removed pistol_1 reference as we'll use the weapons array instead
 
-### --- MOVEMENT STATE --- ###
-var is_dashing := false                 # True during dash
+### --- STATE TIMERS --- ###
 var dash_timer := 0.0                   # Counts down dash duration
 var dash_cooldown_timer := 0.0          # Time until next dash
-var can_dash := true                    # Dash available
-# Queued actions
-var attack_after_dash := false          # Attack after dash ends
+var attack_timer := 0.0                 # Attack duration countdown
+var hit_timer := 0.0                    # Hit animation countdown
 
 ### --- INPUT TRACKING --- ###
 var move_direction := Vector2.ZERO      # Combined movement input
@@ -76,12 +78,8 @@ var is_direction_locked := false        # True while dash/attack in progress
 var locked_aim_direction := Vector2.RIGHT  # Stored direction at action start
 
 ### --- COMBAT STATE --- ###
-var is_attacking := false               # During attack animation
-var attack_timer := 0.0                 # Attack duration countdown
 var current_attack_animation := ""      # Attack animation name
-var is_dead := false                    # True after death initiated
-var is_hit := false                     # True during hit animation
-var hit_timer := 0.0                    # Hit animation countdown
+var attack_after_dash := false          # Attack after dash ends
 
 ### --- COLLISION MASK STATE --- ###
 var original_collision_mask := 0        # Stores default collision mask
@@ -105,7 +103,7 @@ func _ready() -> void:
 	original_collision_mask = collision_mask
 	original_collision_layer = collision_layer
 
-	# Initialize weapons array - FIXED: Ensure weapons are in correct order
+	# Initialize weapons array
 	for i in range(MAX_WEAPONS):
 		var weapon_node = get_node_or_null("Weapon_" + str(i + 1))
 		if weapon_node:
@@ -118,8 +116,7 @@ func _ready() -> void:
 			# Add null placeholder if weapon doesn't exist
 			weapons.append(null)
 	
-	# FIXED: Only enable the first weapon if it's actually unlocked
-	# Don't enable any weapon by default if none are unlocked
+	# Only enable the first weapon if it's actually unlocked
 	if unlocked_weapons.size() > 0 and unlocked_weapons[0] and weapons.size() > 0 and weapons[0]:
 		weapons[0].visible = true
 		weapons[0].set_process(true)
@@ -161,6 +158,37 @@ func _ready() -> void:
 	update_health_bar()       # Initial update of health bar display
 	update_melee_orb_bar()    # Initial update of melee orb bar display
 	update_dash_slab_bar()    # Initial update of dash slab bar display
+	
+	# Start in IDLE state
+	change_state(PlayerState.IDLE)
+
+func change_state(new_state: PlayerState) -> void:
+	# Exit current state
+	match current_state:
+		PlayerState.ATTACK:
+			_exit_attack_state()
+		PlayerState.DASH:
+			_exit_dash_state()
+		PlayerState.HIT:
+			_exit_hit_state()
+	
+	previous_state = current_state
+	current_state = new_state
+	
+	# Enter new state
+	match new_state:
+		PlayerState.IDLE:
+			_enter_idle_state()
+		PlayerState.RUN:
+			_enter_run_state()
+		PlayerState.DASH:
+			_enter_dash_state()
+		PlayerState.ATTACK:
+			_enter_attack_state()
+		PlayerState.HIT:
+			_enter_hit_state()
+		PlayerState.DEAD:
+			_enter_dead_state()
 
 func _input(event: InputEvent) -> void:
 	# Weapon switching - only allow switching to unlocked weapons
@@ -231,170 +259,266 @@ func _process(delta: float) -> void:
 				hearts_list[i].modulate = Color(1, 1, 1, 0.0)  # fully invisible for hearts above max_health
 
 func _physics_process(delta: float) -> void:
-	# --- SKIP EVERYTHING IF DEAD --- #
-	if is_dead:
-		move_and_slide()  # Allow any last motion to complete
+	# Update common systems
+	_update_common_systems(delta)
+	
+	# Skip state processing if dead
+	if current_state == PlayerState.DEAD:
+		move_and_slide()
 		return
+	
+	# Process current state
+	match current_state:
+		PlayerState.IDLE:
+			_process_idle_state(delta)
+		PlayerState.RUN:
+			_process_run_state(delta)
+		PlayerState.DASH:
+			_process_dash_state(delta)
+		PlayerState.ATTACK:
+			_process_attack_state(delta)
+		PlayerState.HIT:
+			_process_hit_state(delta)
+	
+	# Apply knockback and movement
+	_apply_movement_and_knockback(delta)
+	
+	# Update animations
+	update_animations()
+	
+	# Update weapon visibility based on state
+	_update_weapon_visibility()
 
-	# --- INVULNERABILITY TIMER --- #
+func _update_common_systems(delta: float) -> void:
+	# Get input
+	move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	_update_aim_direction()
+	
+	# Update invulnerability timers
 	if is_invulnerable:
 		invuln_timer -= delta
-	if invuln_timer <= 0.0:
-		is_invulnerable = false
+		if invuln_timer <= 0.0:
+			is_invulnerable = false
 
-	# --- DASH INVULN TIMER --- #
 	if dash_invuln_timer > 0.0:
 		dash_invuln_timer -= delta
-	if dash_invuln_timer <= 0.0:
-		dash_invuln_timer = 0.0  # Just to be sure it doesn't go negative
+		if dash_invuln_timer <= 0.0:
+			dash_invuln_timer = 0.0
 
-	# --- Manage collision layers based on invulnerability states --- #
+	# Update collision layers based on invulnerability
 	if dash_invuln_timer > 0.0 or is_invulnerable:
 		collision_layer = LAYER_3_MASK
 		collision_mask = IGNORE_LAYER_3_MASK
 	else:
 		collision_layer = original_collision_layer
 		collision_mask = original_collision_mask
-
-	### --- INPUT PROCESSING --- ###
-	# Get combined movement input (4-directional)
-	move_direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
-	# Get mouse position for aiming
-	_update_aim_direction()
-	
-	### --- TIMER MANAGEMENT --- ###
-	# Handle attack duration
-	if is_attacking:
-		attack_timer -= delta
-		if attack_timer <= 0.0:
-			is_attacking = false
-			current_attack_animation = ""
-			# Disable melee hit detection
-			melee_area.monitoring = false
-			melee_area.visible = false
-			# Unlock look direction at end of attack
-			is_direction_locked = false
-
-	# Handle hit animation duration
-	if is_hit:
-		hit_timer -= delta
-		if hit_timer <= 0.0:
-			is_hit = false
-
-	### --- ORB RESET TIMER --- ###
+	# Update orb reset timer
 	if orb_reset_timer > 0.0:
 		orb_reset_timer -= delta
 		if orb_reset_timer <= 0.0:
-			# CONSUME ALL ORBS ON MELEE after delay
 			current_orb_charges = 0
 			update_melee_orb_bar()
-
-	### --- ACTION INITIATION --- ###
-	# Start dash if available AND dash slabs are present
-	if Input.is_action_just_pressed("dash") and can_dash and not is_attacking and not is_hit and current_dash_slabs > 0:
-		start_dash()
-		# Lock look direction at dash start
-		locked_aim_direction = aim_direction
-		is_direction_locked = true
-
-	# Queue melee **during** dash → Swing_2
-	if is_dashing and Input.is_action_just_pressed("melee") and not is_hit:
-		if current_orb_charges > 0:
-			attack_after_dash = true
-
-	# Normal attack
-	if Input.is_action_just_pressed("melee") and not is_dashing and not is_attacking and not is_hit:
-		if current_orb_charges > 0:
-			start_attack()
-			current_attack_animation = "Swing_1"
-			_enable_melee()
-			# Start timer to consume orbs shortly after melee starts (instead of instantly)
-			orb_reset_timer = ORB_RESET_DELAY
-			# Lock look direction at attack start
-			locked_aim_direction = aim_direction
-			is_direction_locked = true
-
-	### --- DASH PHYSICS --- ###
-	if is_dashing:
-		# End dash when timer expires
-		dash_timer -= delta
-		if dash_timer <= 0.0:
-			is_dashing = false
-			dash_cooldown_timer = DASH_COOLDOWN
-
-			
-			# Execute queued attack
-			if attack_after_dash and current_orb_charges > 0:
-				start_attack()
-				current_attack_animation = "Swing_2"
-				_enable_melee()
-				# Start timer to consume orbs shortly after melee starts (instead of instantly)
-				orb_reset_timer = ORB_RESET_DELAY
-				attack_after_dash = false
-				# Lock look direction for the queued attack
-				locked_aim_direction = aim_direction
-				is_direction_locked = true
-
-	### --- REGULAR MOVEMENT --- ###
-	else:
-		# Apply movement if not attacking or hit
-		if not is_attacking and not is_hit:
-			velocity = move_direction * SPEED
-		else:
-			velocity = Vector2.ZERO  # Freeze movement during attack or hit
-
-	### --- APPLY KNOCKBACK VELOCITY --- ###
-	# Knockback overrides movement velocity additively, decays over time
-	if knockback_velocity.length() > 0:
-		velocity += knockback_velocity
-		var decay_amount = KNOCKBACK_DECAY * delta
-		if knockback_velocity.length() <= decay_amount:
-			knockback_velocity = Vector2.ZERO
-		else:
-			knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, decay_amount)
 	
-	### --- PHYSICS UPDATE --- ###
-	move_and_slide()
-
-	### --- DASH COOLDOWN TIMER --- ###
-	if dash_cooldown_timer > 0.0:
-		dash_cooldown_timer -= delta
-		if dash_cooldown_timer <= 0.0:
-			dash_cooldown_timer = 0.0
-			# Allow dash if slabs available
-			if current_dash_slabs > 0:
-				can_dash = true
-
-	### --- DASH SLAB RECHARGE --- ###
+	# Update dash slab recharge
 	if current_dash_slabs < MAX_DASH_SLABS:
 		dash_recharge_timer += delta
 		if dash_recharge_timer >= DASH_SLAB_RECHARGE_TIME:
 			current_dash_slabs += 1
 			dash_recharge_timer = 0.0
 			update_dash_slab_bar()
-			# If cooldown finished, allow dash immediately
-			if dash_cooldown_timer <= 0.0:
-				can_dash = true
+	
+	# Update dash cooldown
+	if dash_cooldown_timer > 0.0:
+		dash_cooldown_timer -= delta
+		if dash_cooldown_timer <= 0.0:
+			dash_cooldown_timer = 0.0
 
-	### --- ANIMATION SYSTEM --- ###
-	update_animations()
+func _apply_movement_and_knockback(delta: float) -> void:
+	# Apply knockback decay
+	if knockback_velocity.length() > 0:
+		var decay_amount = KNOCKBACK_DECAY * delta
+		if knockback_velocity.length() <= decay_amount:
+			knockback_velocity = Vector2.ZERO
+		else:
+			knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, decay_amount)
+	
+	# Combine movement and knockback
+	velocity += knockback_velocity
+	move_and_slide()
 
-	### --- WEAPON STATE --- ###
+### --- STATE ENTER/EXIT/PROCESS FUNCTIONS --- ###
+
+func _enter_idle_state() -> void:
+	velocity = Vector2.ZERO
+
+func _enter_run_state() -> void:
+	pass
+
+func _enter_dash_state() -> void:
+	if current_dash_slabs <= 0:
+		change_state(PlayerState.IDLE)
+		return
+
+	# Consume one dash slab
+	current_dash_slabs -= 1
+	dash_recharge_timer = 0.0
+	update_dash_slab_bar()
+
+	# Set dash velocity and timer
+	dash_timer = DASH_DURATION
+	velocity = aim_direction * DASH_SPEED
+	
+	# Set invulnerability
+	dash_invuln_timer = DASH_INVULN_DURATION
+	
+	# Lock direction
+	locked_aim_direction = aim_direction
+	is_direction_locked = true
+
+func _exit_dash_state() -> void:
+	dash_cooldown_timer = DASH_COOLDOWN
+	is_direction_locked = false
+
+func _enter_attack_state() -> void:
+	attack_timer = ATTACK_DURATION
+	velocity = Vector2.ZERO
+	
+	# Enable melee area
+	melee_area.position = aim_direction * 20
+	melee_area.monitoring = true
+	melee_area.visible = true
+	
+	# Lock direction
+	locked_aim_direction = aim_direction
+	is_direction_locked = true
+	
+	# Start orb reset timer
+	orb_reset_timer = ORB_RESET_DELAY
+
+func _exit_attack_state() -> void:
+	# Disable melee area
+	melee_area.monitoring = false
+	melee_area.visible = false
+	is_direction_locked = false
+	current_attack_animation = ""
+
+func _enter_hit_state() -> void:
+	hit_timer = 0.5
+	velocity = Vector2.ZERO
+
+func _exit_hit_state() -> void:
+	pass
+
+func _enter_dead_state() -> void:
+	velocity = Vector2.ZERO
+	knockback_velocity = Vector2.ZERO
+	
+	# Hide all weapons
+	for weapon in weapons:
+		if is_instance_valid(weapon):
+			weapon.visible = false
+			weapon.set_process(false)
+			weapon.set_process_input(false)
+	
+	animated_sprite_2d.play("Death")
+	if not animated_sprite_2d.is_connected("animation_finished", Callable(self, "_on_animation_finished")):
+		animated_sprite_2d.connect("animation_finished", Callable(self, "_on_animation_finished"))
+
+func _process_idle_state(_delta: float) -> void:
+	# Check for state transitions
+	if Input.is_action_just_pressed("dash") and dash_cooldown_timer <= 0.0 and current_dash_slabs > 0:
+		change_state(PlayerState.DASH)
+		return
+	
+	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
+		current_attack_animation = "Swing_1"
+		change_state(PlayerState.ATTACK)
+		return
+	
+	if move_direction.length() > 0.1:
+		change_state(PlayerState.RUN)
+		return
+	
+	# Process idle state
+	velocity = move_direction * SPEED
+
+func _process_run_state(_delta: float) -> void:
+	# Check for state transitions
+	if Input.is_action_just_pressed("dash") and dash_cooldown_timer <= 0.0 and current_dash_slabs > 0:
+		change_state(PlayerState.DASH)
+		return
+	
+	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
+		current_attack_animation = "Swing_1"
+		change_state(PlayerState.ATTACK)
+		return
+	
+	if move_direction.length() <= 0.1:
+		change_state(PlayerState.IDLE)
+		return
+	
+	# Process run state
+	velocity = move_direction * SPEED
+
+func _process_dash_state(delta: float) -> void:
+	# Update dash timer
+	dash_timer -= delta
+	
+	# Check for queued attack during dash
+	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
+		attack_after_dash = true
+	
+	# Check for state transition
+	if dash_timer <= 0.0:
+		if attack_after_dash:
+			current_attack_animation = "Swing_2"
+			change_state(PlayerState.ATTACK)
+			attack_after_dash = false
+		else:
+			change_state(PlayerState.IDLE)
+		return
+
+func _process_attack_state(delta: float) -> void:
+	# Update attack timer
+	attack_timer -= delta
+	
+	# Check for state transition
+	if attack_timer <= 0.0:
+		change_state(PlayerState.IDLE)
+		return
+
+func _process_hit_state(delta: float) -> void:
+	# Update hit timer
+	hit_timer -= delta
+	
+	# Check for state transition
+	if hit_timer <= 0.0:
+		change_state(PlayerState.IDLE)
+		return
+
+func _update_aim_direction() -> void:
+	var mouse_pos = get_global_mouse_position()
+	aim_direction = (mouse_pos - global_position).normalized()
+
+func _update_weapon_visibility() -> void:
 	var current_weapon = get_current_weapon()
-	if is_dashing or is_attacking or is_hit:
-		if current_weapon:
-			current_weapon.visible = false
-			current_weapon.set_process(false)
-			current_weapon.set_process_input(false)
+	if not current_weapon:
+		return
+	
+	# Hide weapon during certain states
+	if current_state == PlayerState.DASH or current_state == PlayerState.ATTACK or current_state == PlayerState.HIT:
+		current_weapon.visible = false
+		current_weapon.set_process(false)
+		current_weapon.set_process_input(false)
 	else:
-		if current_weapon:
-			current_weapon.visible = true
-			current_weapon.set_process(true)
-			current_weapon.set_process_input(true)
+		current_weapon.visible = true
+		current_weapon.set_process(true)
+		current_weapon.set_process_input(true)
 
-	### --- SPRITE ORIENTATION --- ###
-	if is_dashing or is_attacking:
+func update_animations() -> void:
+	# Handle sprite orientation
+	if is_direction_locked:
 		var dir = locked_aim_direction
 		animated_sprite_2d.rotation = dir.angle()                 
 		animated_sprite_2d.rotation_degrees = wrap(animated_sprite_2d.rotation_degrees, 0, 360)  
@@ -408,137 +532,42 @@ func _physics_process(delta: float) -> void:
 		animated_sprite_2d.scale.y = 1
 		if move_direction.x != 0:
 			animated_sprite_2d.flip_h = move_direction.x < 0
-
-func _update_aim_direction() -> void:
-	var mouse_pos = get_global_mouse_position()
-	aim_direction = (mouse_pos - global_position).normalized()
-
-func start_dash():
-	if current_dash_slabs <= 0:
-		return  # No dash slabs left, can't dash
-
-	# Consume one dash slab and reset recharge timer
-	current_dash_slabs -= 1
-	dash_recharge_timer = 0.0
-
-	# Start dash state
-	is_dashing = true
-	dash_timer = DASH_DURATION
-	can_dash = false
-
-	# Set dash velocity in aim direction
-	velocity = aim_direction * DASH_SPEED
-
-	# Temporarily move to ghost collision layer during dash
-	collision_layer = LAYER_3_MASK
-	collision_mask = IGNORE_LAYER_3_MASK
-
-	# Set the invulnerability timer for dash
-	dash_invuln_timer = DASH_INVULN_DURATION
-
-	# Update the dash slab UI
-	update_dash_slab_bar()
-
-	# Queue melee attack if melee input pressed and orbs available
-	if Input.is_action_just_pressed("melee") and current_orb_charges > 0:
-		attack_after_dash = true
-	else:
-		attack_after_dash = false
-
-func update_dash_recharge(delta: float) -> void:
-	if current_dash_slabs < MAX_DASH_SLABS:
-		dash_recharge_timer += delta
-		if dash_recharge_timer >= DASH_COOLDOWN:
-			current_dash_slabs += 1
-			dash_recharge_timer = 0.0
-			update_dash_slab_bar()
-
-func start_attack():
-	is_attacking = true
-	attack_timer = ATTACK_DURATION
-	velocity = Vector2.ZERO  
-
-func _enable_melee():
-	melee_area.position = aim_direction * 20
-	melee_area.monitoring = true
-	melee_area.visible = true
-
-func _on_melee_area_body_entered(body: Node) -> void:
-	if body == self:
-		return  # Don't hit yourself
-
-	if body.has_method("apply_damage"):
-		var damage = 2 + current_orb_charges
-		body.apply_damage(damage)
-		print("Melee hit:", body.name, "Damage:", damage)
-
-
-func update_dash_cooldown(delta: float) -> void:
-	if dash_cooldown_timer > 0.0:
-		dash_cooldown_timer = max(dash_cooldown_timer - delta, 0.0)
-		if dash_cooldown_timer == 0.0:
-			can_dash = true
-	update_dash_slab_bar()                      # Always refresh dash slab UI
-
-func update_dash_slab_bar() -> void:
-	for i in range(dash_slab_list.size()):
-		if i < current_dash_slabs:
-			dash_slab_list[i].modulate = Color(1, 1, 1, 1)    # Fully visible for available slabs
-		elif i < MAX_DASH_SLABS:
-			dash_slab_list[i].modulate = Color(1, 1, 1, 0.15) # Dimmed for used slabs within max slabs
-		else:
-			dash_slab_list[i].modulate = Color(1, 1, 1, 0)    # Fully invisible for slabs above max slabs
-
-func update_animations() -> void:
-	if is_dead:
-		animated_sprite_2d.play("Death")
-	elif is_hit:
-		animated_sprite_2d.play("Hit")
-	elif is_attacking and current_attack_animation != "":
-		animated_sprite_2d.play(current_attack_animation)
-	elif is_dashing:
-		animated_sprite_2d.play("Dash")
-	elif move_direction.length() > 0.1:
-		animated_sprite_2d.play("Run")
-	else:
-		animated_sprite_2d.play("Idle")
+	
+	# Play appropriate animation based on state
+	match current_state:
+		PlayerState.DEAD:
+			animated_sprite_2d.play("Death")
+		PlayerState.HIT:
+			animated_sprite_2d.play("Hit")
+		PlayerState.ATTACK:
+			animated_sprite_2d.play(current_attack_animation)
+		PlayerState.DASH:
+			animated_sprite_2d.play("Dash")
+		PlayerState.RUN:
+			animated_sprite_2d.play("Run")
+		PlayerState.IDLE:
+			animated_sprite_2d.play("Idle")
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
-	if is_invulnerable or is_dead or dash_invuln_timer > 0.0:
+	if is_invulnerable or current_state == PlayerState.DEAD or dash_invuln_timer > 0.0:
 		return
+	
 	health -= amount
 	update_health_bar()
 
 	is_invulnerable = true
 	invuln_timer = INVULN_DURATION
 
-	collision_layer = 0
-	collision_mask = 0
-
 	knockback_velocity = knockback_dir.normalized() * 350
 
-	is_hit = true
-	hit_timer = 0.5
+	change_state(PlayerState.HIT)
 
 	if health <= 0:
-		die()
+		change_state(PlayerState.DEAD)
 
 func die() -> void:
-	is_dead = true
-	velocity = Vector2.ZERO
-	knockback_velocity = Vector2.ZERO
-	
-	# Hide all weapons when player dies
-	for weapon in weapons:
-		if is_instance_valid(weapon):
-			weapon.visible = false
-			weapon.set_process(false)
-			weapon.set_process_input(false)
-	
-	animated_sprite_2d.play("Death")
-	if not animated_sprite_2d.is_connected("animation_finished", Callable(self, "_on_animation_finished")):
-		animated_sprite_2d.connect("animation_finished", Callable(self, "_on_animation_finished"))
+	change_state(PlayerState.DEAD)
 
 func update_health_bar() -> void:
 	for i in range(hearts_list.size()):
@@ -567,6 +596,24 @@ func add_melee_orb() -> void:
 func _on_weapon_hit(_collider) -> void:
 	add_melee_orb()
 
+func _on_melee_area_body_entered(body: Node) -> void:
+	if body == self:
+		return  # Don't hit yourself
+
+	if body.has_method("apply_damage"):
+		var damage = 2 + current_orb_charges
+		body.apply_damage(damage)
+		print("Melee hit:", body.name, "Damage:", damage)
+
+func update_dash_slab_bar() -> void:
+	for i in range(dash_slab_list.size()):
+		if i < current_dash_slabs:
+			dash_slab_list[i].modulate = Color(1, 1, 1, 1)    # Fully visible for available slabs
+		elif i < MAX_DASH_SLABS:
+			dash_slab_list[i].modulate = Color(1, 1, 1, 0.15) # Dimmed for used slabs within max slabs
+		else:
+			dash_slab_list[i].modulate = Color(1, 1, 1, 0)    # Fully invisible for slabs above max slabs
+
 ### --- UNLOCK WEAPONS --- ###
 func unlock_weapon(weapon_index: int) -> void:
 	if weapon_index >= 0 and weapon_index < MAX_WEAPONS:
@@ -577,5 +624,5 @@ func unlock_weapon(weapon_index: int) -> void:
 
 ### --- FREE PLAYER PROCESS --- ###
 func _on_animation_finished():
-	if is_dead:
+	if current_state == PlayerState.DEAD:
 		queue_free()  # Removes the player node

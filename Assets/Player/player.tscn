@@ -334,14 +334,12 @@ size = Vector2(32, 16)
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 collision_mask = 141
 script = ExtResource("1_7dd06")
-MAX_MELEE_ORBS = 3
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -8)
 sprite_frames = SubResource("SpriteFrames_w3t24")
-animation = &"Idle"
+animation = &"Jump"
 autoplay = "Idle"
-frame_progress = 0.320296
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, -5)
