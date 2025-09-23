@@ -303,7 +303,7 @@ func _on_enemy_died() -> void:
 			# All waves complete, wait 5 seconds, then fade
 			await get_tree().create_timer(5.0).timeout
 			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
-				fade_layer.start_fade("res://Assets/Scenes/level_1.tscn")
+				fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_1.tscn")
 		else:
 			# Wave is truly complete (all spawned enemies are dead), start next wave after 3 seconds
 			await get_tree().create_timer(3.0).timeout

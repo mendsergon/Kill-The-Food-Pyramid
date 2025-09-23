@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 ### --- CORE CONSTANTS --- ###
-const MOVE_SPEED = 50.0                  # Enemy walk speed
+const MOVE_SPEED = 75.0                  # Enemy walk speed
 const MOVE_DURATION = 4.0                # Active chase time
 const IDLE_COOLDOWN = 0.5                # Pause duration between chases
 const FLASH_DURATION = 0.25              # Duration of red flash on damage
@@ -14,41 +14,23 @@ var health: int                          # Current HP
 
 ### --- NODE REFERENCES --- ###
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D  # Enemy sprite
-@onready var area_2d: Area2D = $Area2D
 
 ### --- STATE --- ###
 var player: CharacterBody2D = null       # Reference to player node
-var detection_manager: Node = null       # Reference to manager (main scene)
-var is_moving := false                   # Currently chasing player
+var is_moving := true                    # Currently chasing player
 var behavior_timer := 0.0                # Tracks chase/idle timing
 var flash_timer := 0.0                   # Timer for red flash effect
 var stagger_timer := 0.0                 # Timer to freeze movement briefly after hit
 var death_timer := 0.0                   # Timer after death before deletion
 var is_dying := false                    # Whether bread is in death state
-var is_alerted := false                  # Whether this enemy is alerted
-var area_name: String = ""               # Area this enemy belongs to
 
 ### --- PUBLIC SETUP --- ###
-func set_player_reference(player_ref: CharacterBody2D, manager_ref: Node) -> void:
+func set_player_reference(player_ref: CharacterBody2D) -> void:
 	player = player_ref
-	detection_manager = manager_ref
-	# Get area name from metadata
-	area_name = get_meta("area_name", "")
 
 func _ready() -> void:
-	animated_sprite_2d.play("Idle")        # Start with idle animation
+	animated_sprite_2d.play("Run")         # Start with walking animation immediately
 	health = max_health                    # Set starting HP
-
-func set_alert_status(value: bool) -> void:
-	is_alerted = value
-	if value:
-		is_moving = true
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Run")
-	else:
-		is_moving = false
-		behavior_timer = 0.0
-		animated_sprite_2d.play("Idle")
 
 func _physics_process(delta: float) -> void:
 	### --- DEATH TIMER --- ###
@@ -58,11 +40,7 @@ func _physics_process(delta: float) -> void:
 			queue_free()                  # Remove bread after death delay
 		return                            # Skip logic while dead
 
-	### --- ALERT CHECK --- ###
-	if player == null or not is_alerted:
-		velocity = Vector2.ZERO
-		if not is_dying:
-			animated_sprite_2d.play("Idle")
+	if player == null:
 		return
 
 	### --- TIMER MANAGEMENT --- ###
@@ -107,17 +85,10 @@ func _physics_process(delta: float) -> void:
 		if flash_timer <= 0.0:
 			animated_sprite_2d.modulate = Color(1, 1, 1)  # Reset color to normal
 
-### --- AREA2D SIGNAL HANDLERS --- ###
-func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body == player:
-		# Tell the manager to alert all enemies in this area
-		if detection_manager and detection_manager.has_method("alert_area_enemies"):
-			detection_manager.alert_area_enemies(area_name)
-
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
 	health -= amount                                 # Subtract incoming damage
-	print("Bread took %d damage, %d HP remaining" % [amount, health])
+	print("Black bread took %d damage, %d HP remaining" % [amount, health])
 	animated_sprite_2d.modulate = Color(1, 0, 0)     # Tint sprite red
 	flash_timer = FLASH_DURATION                    # Start flash timer
 	stagger_timer = STAGGER_DURATION                # Freeze movement briefly

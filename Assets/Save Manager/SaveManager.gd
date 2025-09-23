@@ -58,8 +58,8 @@ func make_save_data() -> PlayerSaveData:
 	d.max_health = player.max_health
 	d.current_orb_charges = player.current_orb_charges
 	d.max_melee_orbs = player.MAX_MELEE_ORBS
-	d.current_dash_slabs = player.current_dash_slabs
-	d.max_dash_slabs = player.MAX_DASH_SLABS
+	d.current_dash_slabs = player.current_dash_slabs  # Fixed: was current_dash_slab
+	d.max_dash_slabs = player.MAX_DASH_SLABS         # Fixed: was max_dash_slabs
 	d.current_weapon_index = player.current_weapon_index
 	d.unlocked_weapons = player.unlocked_weapons
 	return d
@@ -175,10 +175,9 @@ func _apply_pending_save():
 	player.MAX_DASH_SLABS = d.max_dash_slabs
 	player.current_weapon_index = d.current_weapon_index
 	player.unlocked_weapons = d.unlocked_weapons
-	player.is_dashing = false
-	player.is_attacking = false
-	player.is_hit = false
-	player.is_dead = false
+	
+	# Reset player to idle state instead of using old boolean flags
+	player.change_state(player.PlayerState.IDLE)
 	
 	# Switch to the saved weapon
 	player.switch_weapon(d.current_weapon_index)

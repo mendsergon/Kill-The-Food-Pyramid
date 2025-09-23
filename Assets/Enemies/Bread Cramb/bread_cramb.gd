@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 ### --- CORE CONSTANTS --- ###
-const MOVE_SPEED = 100.0                 # Speed of breadcrumb
+const MOVE_SPEED = 150.0                 # Speed of breadcrumb
 const FLASH_DURATION = 0.1               # Duration of red flash after taking damage
 const DEATH_DURATION = 0.2               # Delay before removing breadcrumb after death
 const MAX_DISTANCE_FROM_PLAYER = 800.0   # Auto-despawn distance from player

@@ -43,7 +43,7 @@ func _start_new_game(slot: int) -> void:
 
 	# 2) Create initial PlayerSaveData
 	var initial := PlayerSaveData.new()
-	initial.scene_path = "res://Assets/Levels/0/0-0/0-0.tscn"
+	initial.scene_path = "res://Assets/Levels/0-0/0-0.tscn"
 	initial.position = Vector2.ZERO
 	# Default save names per slot
 	match slot:

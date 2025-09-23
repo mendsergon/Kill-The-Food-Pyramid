@@ -35,7 +35,7 @@ var hearts_list: Array[TextureRect] = []   # List of heart UI nodes
 @onready var hearts_parent: HBoxContainer = $HealthBar/HBoxContainer  # Reference to the container holding heart UI elements
 
 ### --- PLAYER MELEE ORBS --- ###
-@export var MAX_MELEE_ORBS: int = 0      # Maximum number of orbs
+@export var MAX_MELEE_ORBS: int = 3      # Maximum number of orbs
 var current_orb_charges := 0             # Start with zero orbs
 
 ### --- MELEE ORB BAR --- ###
@@ -45,7 +45,7 @@ var orb_reset_timer := 0.0               # Timer for delaying orb consumption
 const ORB_RESET_DELAY := 0.1             # Delay time before orbs reset
 
 ### --- PLAYER DASH SLABS --- ###
-@export var MAX_DASH_SLABS: int = 0
+@export var MAX_DASH_SLABS: int = 1
 var current_dash_slabs := MAX_DASH_SLABS
 
 ### --- DASH SLAB BAR --- ###
@@ -559,13 +559,12 @@ func apply_damage(amount: int, knockback_dir: Vector2 = Vector2.ZERO) -> void:
 	is_invulnerable = true
 	invuln_timer = INVULN_DURATION
 
-	knockback_velocity = knockback_dir.normalized() * 350
+	knockback_velocity = +knockback_dir.normalized() * 100  
 
 	change_state(PlayerState.HIT)
 
 	if health <= 0:
 		change_state(PlayerState.DEAD)
-
 func die() -> void:
 	change_state(PlayerState.DEAD)
 
