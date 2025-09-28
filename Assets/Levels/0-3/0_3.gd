@@ -38,6 +38,31 @@ var waves := [
 			"black_bread": 15,
 			"baguette": 5,
 			"spaghetti": 10
+	}
+	},
+	{
+		"enemy_type": "mixed_third_wave",
+		"total": 75,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 20,
+			"bread": 20,      
+			"black_bread": 20,
+			"baguette": 10,
+			"sweet_potato": 5
+		}
+	},
+	{
+		"enemy_type": "mixed_third_wave",
+		"total": 100,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 20,
+			"bread": 25,      
+			"black_bread": 25,
+			"sweet_potato": 30
 		}
 	}
 ]
