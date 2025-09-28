@@ -18,6 +18,7 @@ var baguette_scene: PackedScene = preload("res://Assets/Enemies/Baguette/baguett
 var potato_scene: PackedScene = preload("res://Assets/Enemies/Potato/potato.tscn")
 var sweet_potato_scene: PackedScene = preload("res://Assets/Enemies/Sweet Potato/sweet_potato.tscn")
 var spaghetti_scene: PackedScene = preload("res://Assets/Enemies/Spaghetti/spaghetti.tscn")
+var spaghetti_mini_scene: PackedScene = preload("res://Assets/Enemies/Spaghetti/spaghetti_mini.tscn")
 
 	### --- WAVE SETTINGS --- ###
 var waves := [
@@ -64,6 +65,12 @@ var waves := [
 			"black_bread": 25,
 			"sweet_potato": 30
 		}
+	},
+	{
+		"enemy_type": "spaghetti_mini",
+		"total": 100,
+		"batch_size": 2,
+		"spawn_rate": 0.75,
 	}
 ]
 
@@ -231,7 +238,8 @@ func _spawn_wave_batch() -> void:
 			"baguette": enemy_scene = baguette_scene
 			"potato": enemy_scene = potato_scene
 			"sweet_potato": enemy_scene = sweet_potato_scene
-			"spaghetti": enemy_scene = spaghetti_scene  # ADD THIS
+			"spaghetti": enemy_scene = spaghetti_scene  
+			"spaghetti_mini": enemy_scene = spaghetti_mini_scene
 			_: enemy_scene = bread_scene
 
 		var enemy = enemy_scene.instantiate()
