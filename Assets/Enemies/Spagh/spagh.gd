@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 ### --- CORE CONSTANTS --- ###
-const MOVE_SPEED = 150.0
+const MOVE_SPEED = 175.0
 const FLASH_DURATION = 0.1
 const DEATH_DURATION = 0.2
 const MAX_DISTANCE_FROM_PLAYER = 800.0
