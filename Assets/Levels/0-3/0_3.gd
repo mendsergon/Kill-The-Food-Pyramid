@@ -26,6 +26,19 @@ var waves := [
 		"total": 10,                # Total enemies to spawn
 		"batch_size": 2,            # Number of enemies to spawn per batch
 		"spawn_rate": 1.0           # Seconds between each batch
+	},
+	{
+		"enemy_type": "mixed_second_wave",
+		"total": 60,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 10,
+			"bread": 20,      
+			"black_bread": 15,
+			"baguette": 5,
+			"spaghetti": 10
+		}
 	}
 ]
 
