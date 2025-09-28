@@ -17,64 +17,18 @@ var black_bread_scene: PackedScene = preload("res://Assets/Enemies/Bread/black_b
 var baguette_scene: PackedScene = preload("res://Assets/Enemies/Baguette/baguette.tscn")
 var potato_scene: PackedScene = preload("res://Assets/Enemies/Potato/potato.tscn")
 var sweet_potato_scene: PackedScene = preload("res://Assets/Enemies/Sweet Potato/sweet_potato.tscn")
+var spaghetti_scene: PackedScene = preload("res://Assets/Enemies/Spaghetti/spaghetti.tscn")
 
-### --- WAVE SETTINGS --- ###
+	### --- WAVE SETTINGS --- ###
 var waves := [
 	{
-		"enemy_type": "potato",
-		"total": 20,
-		"batch_size": 2,    
-		"spawn_rate": 2.0   
-	},
-	{
-		"enemy_type": "mixed_second_wave",
-		"total": 50,
-		"batch_size": 5,
-		"spawn_rate": 5.0,
-		"composition": {
-			"potato": 15,
-			"bread": 12,      
-			"black_bread": 13,
-			"baguette": 10
-		}
-	},
-	{
-		"enemy_type": "mixed_third_wave",
-		"total": 45,  
-		"batch_size": 5,
-		"spawn_rate": 5.0,
-		"composition": {
-			"potato": 25,
-			"sweet_potato": 20
-		}
-	},
-	{
-		"enemy_type": "mixed_fourth_wave",
-		"total": 75,
-		"batch_size": 5,
-		"spawn_rate": 5.0,
-		"composition": {
-			"baguette": 15,
-			"potato": 20,
-			"sweet_potato": 10,
-			"bread": 15,
-			"black_bread": 15
-		}
-	},
-	{
-		"enemy_type": "mixed_fifth_wave",
-		"total": 100,
-		"batch_size": 5,
-		"spawn_rate": 5.0,
-		"composition": {
-			"bread": 25,
-			"black_bread": 25,
-			"baguette": 20,
-			"potato": 15,
-			"sweet_potato": 15
-		}
+		"enemy_type": "spaghetti",  # Only enemy type for this wave
+		"total": 10,                # Total enemies to spawn
+		"batch_size": 2,            # Number of enemies to spawn per batch
+		"spawn_rate": 1.0           # Seconds between each batch
 	}
 ]
+
 
 var current_wave := 0
 var spawned_count := 0
@@ -231,7 +185,7 @@ func _spawn_wave_batch() -> void:
 		if wave.get("enemy_type").begins_with("mixed_"):
 			enemy_type = second_wave_spawn_list.pop_back()
 		else:
-			enemy_type = wave.get("enemy_type", "bread")
+			enemy_type = wave.get("enemy_type")
 
 		match enemy_type:
 			"bread": enemy_scene = bread_scene
@@ -239,6 +193,7 @@ func _spawn_wave_batch() -> void:
 			"baguette": enemy_scene = baguette_scene
 			"potato": enemy_scene = potato_scene
 			"sweet_potato": enemy_scene = sweet_potato_scene
+			"spaghetti": enemy_scene = spaghetti_scene  # ADD THIS
 			_: enemy_scene = bread_scene
 
 		var enemy = enemy_scene.instantiate()
