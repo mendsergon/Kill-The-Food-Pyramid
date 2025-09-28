@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0ff47d3i0fmr"]
+
+[ext_resource type="Texture2D" uid="uid://chgjcdgcsrn2r" path="res://Assets/Enemies/Spagh/spagh.png" id="1_1s8ii"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_41j1i"]
+size = Vector2(2, 22)
+
+[node name="Spagh" type="CharacterBody2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1.75, 1.75)
+texture = ExtResource("1_1s8ii")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, -1)
+shape = SubResource("RectangleShape2D_41j1i")

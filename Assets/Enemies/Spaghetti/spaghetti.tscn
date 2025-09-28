@@ -1,0 +1,79 @@
+[gd_scene load_steps=11 format=3 uid="uid://b1wygwftmhfsp"]
+
+[ext_resource type="Texture2D" uid="uid://oka5sb0u3xde" path="res://Assets/Enemies/Spaghetti/Spaghetti.png" id="1_daihq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wmpr5"]
+atlas = ExtResource("1_daihq")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nw63b"]
+atlas = ExtResource("1_daihq")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_obaxx"]
+atlas = ExtResource("1_daihq")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_daihq"]
+atlas = ExtResource("1_daihq")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wr2oa"]
+atlas = ExtResource("1_daihq")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j1vpm"]
+atlas = ExtResource("1_daihq")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6i7vy"]
+atlas = ExtResource("1_daihq")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wr2oa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wmpr5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nw63b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_obaxx")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_daihq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wr2oa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j1vpm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6i7vy")
+}],
+"loop": true,
+"name": &"Run",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_j1vpm"]
+size = Vector2(11, 20)
+
+[node name="Spaghetti" type="CharacterBody2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_wr2oa")
+animation = &"Idle"
+autoplay = "Idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 3)
+shape = SubResource("RectangleShape2D_j1vpm")
