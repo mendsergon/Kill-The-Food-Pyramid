@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://b1wygwftmhfsp"]
+[gd_scene load_steps=12 format=3 uid="uid://b1wygwftmhfsp"]
 
 [ext_resource type="Texture2D" uid="uid://oka5sb0u3xde" path="res://Assets/Enemies/Spaghetti/Spaghetti.png" id="1_daihq"]
+[ext_resource type="Script" uid="uid://c55etjojvmenj" path="res://Assets/Enemies/Spaghetti/spaghetti.gd" id="1_wmpr5"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wmpr5"]
 atlas = ExtResource("1_daihq")
@@ -68,6 +69,9 @@ animations = [{
 size = Vector2(11, 20)
 
 [node name="Spaghetti" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 131
+script = ExtResource("1_wmpr5")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_wr2oa")
