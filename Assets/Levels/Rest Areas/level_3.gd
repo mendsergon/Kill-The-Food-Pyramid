@@ -88,12 +88,12 @@ func _save_player_on_scene_start() -> void:
 
 	var save_res = load(path)
 	if save_res and save_res is PlayerSaveData:
-		save_res.save_name = " 0-2"
+		save_res.save_name = " 0-3"
 		var err = ResourceSaver.save(save_res, path)
 		if err != OK:
 			printerr("Failed to rewrite save with new name:", error_string(err))
 		else:
-			print("Save renamed to 0-2 at %s" % path)
+			print("Save renamed to 0-3 at %s" % path)
 	else:
 		printerr("Save resource corrupted or missing")
 
@@ -106,7 +106,7 @@ func _save_player_on_scene_start() -> void:
 	current_tween.tween_property(save, "modulate:a", 1.0, 0.2).from(0.0)
 
 func _on_interaction_area_1_interacted() -> void:
-	fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
+	fade_layer.start_fade("res://Assets/Scenes/floor_2.tscn")
 
 # --- Teleportation handlers with temporary disable ---
 func _on_interaction_area_2_interacted() -> void:
