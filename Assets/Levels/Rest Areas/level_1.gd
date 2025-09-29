@@ -24,40 +24,8 @@ func _ready() -> void:
 	locked.modulate.a = 0.0  # Start fully transparent
 	locked.visible = false
 	
-	
-	_load_player_stats()
 	# --- Save immediately on scene start ---
 	_save_player_on_scene_start()
-
-func _load_player_stats() -> void:
-	if not has_node("/root/SaveManager"):
-		printerr("SaveManager autoload not found")
-		return
-
-	var save_data := SaveManager.load_save_resource()
-	if save_data == null:
-		print("No save data found for this slot — starting fresh")
-		return
-
-	if not is_instance_valid(player):
-		printerr("Player node not found, cannot apply stats")
-		return
-
-	player.health = clamp(save_data.health, 0, save_data.max_health)
-	player.max_health = save_data.max_health
-	player.current_orb_charges = clamp(save_data.current_orb_charges, 0, save_data.max_melee_orbs)
-	player.MAX_MELEE_ORBS = save_data.max_melee_orbs
-	player.current_dash_slabs = clamp(save_data.current_dash_slabs, 0, save_data.max_dash_slabs)
-	player.MAX_DASH_SLABS = save_data.max_dash_slabs
-	player.current_weapon_index = save_data.current_weapon_index
-	player.unlocked_weapons = save_data.unlocked_weapons
-
-	if player.has_method("update_health_bar"):
-		player.update_health_bar()
-
-	player.switch_weapon(save_data.current_weapon_index)
-
-	print("Loaded player stats from save slot %d" % SaveManager.current_slot)
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(player):
