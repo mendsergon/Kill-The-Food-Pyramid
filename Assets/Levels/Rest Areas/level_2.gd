@@ -88,12 +88,12 @@ func _save_player_on_scene_start() -> void:
 
 	var save_res = load(path)
 	if save_res and save_res is PlayerSaveData:
-		save_res.save_name = " 1-2"
+		save_res.save_name = " 0-2"
 		var err = ResourceSaver.save(save_res, path)
 		if err != OK:
 			printerr("Failed to rewrite save with new name:", error_string(err))
 		else:
-			print("Save renamed to 1-3 at %s" % path)
+			print("Save renamed to 0-2 at %s" % path)
 	else:
 		printerr("Save resource corrupted or missing")
 
