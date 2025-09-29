@@ -11,6 +11,7 @@ extends Node2D
 @onready var cyber_cat_close_up: AnimatedSprite2D = $"Player/Camera2D/Dialoge Bar/CyberCatCloseUp"
 @onready var dialoge: Label = $"Player/Camera2D/Dialoge Bar/Dialoge"
 @onready var interaction_area_4: Area2D = $"Cyber Cat/InteractionArea4"
+@onready var shop: Label = $Player/Camera2D/Shop
 
 var save_timer: float = 0.0
 var current_tween: Tween = null
@@ -47,6 +48,10 @@ func _ready() -> void:
 	
 	save.modulate.a = 0.0  # Start fully transparent
 	save.visible = false
+	
+	# Initialize shop label
+	shop.modulate.a = 0.0  # Start fully transparent
+	shop.visible = false
 	
 	# Check if player already has full health and disable area 4 if true
 	if is_instance_valid(player) and player.health >= 4:
@@ -148,7 +153,31 @@ func _rename_save_to_0_2() -> void:
 		printerr("Save resource corrupted or missing")
 
 func _on_interaction_area_1_interacted() -> void:
-	fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
+	# Check player health to determine behavior
+	if is_instance_valid(player) and player.health >= 4:
+		# Health is 4 or above - transition to next level
+		fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
+	else:
+		# Health is less than 4 - show shop message and fade out
+		_show_shop_message()
+
+func _show_shop_message() -> void:
+	# Make sure shop label is visible and set up
+	shop.visible = true
+	
+	# Create fade in and out animation for shop label
+	var tween = create_tween()
+	tween.set_parallel(true)  # Allow multiple properties to tween at once
+	
+	# Fade in quickly
+	tween.tween_property(shop, "modulate:a", 1.0, 0.3).from(0.0)
+	
+	# Wait for 2 seconds then fade out
+	tween.tween_callback(func(): 
+		var fade_out_tween = create_tween()
+		fade_out_tween.tween_property(shop, "modulate:a", 0.0, 0.5).set_delay(2.0)
+		fade_out_tween.tween_callback(func(): shop.visible = false)
+	)
 
 func _on_interaction_area_2_interacted() -> void:
 	if is_instance_valid(player) and is_instance_valid(interaction_area_3):
