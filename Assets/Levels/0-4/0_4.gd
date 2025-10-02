@@ -18,59 +18,71 @@ var baguette_scene: PackedScene = preload("res://Assets/Enemies/Baguette/baguett
 var potato_scene: PackedScene = preload("res://Assets/Enemies/Potato/potato.tscn")
 var sweet_potato_scene: PackedScene = preload("res://Assets/Enemies/Sweet Potato/sweet_potato.tscn")
 var spaghetti_scene: PackedScene = preload("res://Assets/Enemies/Spaghetti/spaghetti.tscn")
-var spaghetti_mini_scene: PackedScene = preload("res://Assets/Enemies/Spaghetti/spaghetti_mini.tscn")
+var big_bread_scene: PackedScene = preload("res://Assets/Enemies/Bread/big_bread.tscn") 
+var big_black_bread_scene: PackedScene = preload("res://Assets/Enemies/Bread/big_black_bread.tscn")
 
 	### --- WAVE SETTINGS --- ###
 var waves := [
 	{
-		"enemy_type": "spaghetti",  # Only enemy type for this wave
-		"total": 10,                # Total enemies to spawn
+		"enemy_type": "mixed_first_wave",  # Only enemy type for this wave
+		"total": 100,                # Total enemies to spawn
 		"batch_size": 2,            # Number of enemies to spawn per batch
-		"spawn_rate": 1.0           # Seconds between each batch
-	},
-	{
-		"enemy_type": "mixed_second_wave",
-		"total": 60,
-		"batch_size": 2,
-		"spawn_rate": 1.0,
-		"composition": {
-			"potato": 10,
-			"bread": 20,      
-			"black_bread": 15,
-			"baguette": 5,
-			"spaghetti": 10
-	}
-	},
-	{
-		"enemy_type": "mixed_third_wave",
-		"total": 75,
-		"batch_size": 2,
-		"spawn_rate": 1.0,
-		"composition": {
-			"potato": 20,
-			"bread": 20,      
-			"black_bread": 20,
-			"baguette": 10,
-			"sweet_potato": 5
-		}
-	},
-	{
-		"enemy_type": "mixed_fourth_wave",
-		"total": 100,
-		"batch_size": 2,
-		"spawn_rate": 1.0,
+		"spawn_rate": 2.0,           # Seconds between each batch
 		"composition": {
 			"potato": 20,
 			"bread": 25,      
 			"black_bread": 25,
-			"sweet_potato": 30
+			"baguette": 10,
+			"spaghetti": 10,
+			"sweet_potato": 10
+	}
+	},
+	{
+		"enemy_type": "mixed_second_wave",
+		"total": 120,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 20,
+			"bread": 60,      
+			"black_bread": 40
+	}
+	},
+	{
+		"enemy_type": "mixed_third_wave",
+		"total": 150,
+		"batch_size": 2,
+		"spawn_rate": 1.0,
+		"composition": {
+			"potato": 30,
+			"bread": 30,      
+			"black_bread": 30,
+			"baguette": 20,
+			"sweet_potato": 20,
+			"spaghetti": 20
 		}
 	},
 	{
-		"enemy_type": "spaghetti_mini",
-		"total": 100,
+		"enemy_type": "mixed_fourth_wave",
+		"total": 70,
 		"batch_size": 2,
-		"spawn_rate": 0.75,
+		"spawn_rate": 1.0,
+		"composition": {
+			"baguette": 35,
+			"spaghetti": 35
+		}
+	},
+	{
+		"enemy_type": "mixed_fifth_wave",
+		"total": 94,
+		"batch_size": 2,
+		"spawn_rate": 1,
+		"composition": {
+			"bread": 45,
+			"black_bread": 45,
+			"big_bread": 2,
+			"big_black_bread": 2
+	}
 	}
 ]
 
@@ -271,7 +283,8 @@ func _spawn_wave_batch() -> void:
 			"potato": enemy_scene = potato_scene
 			"sweet_potato": enemy_scene = sweet_potato_scene
 			"spaghetti": enemy_scene = spaghetti_scene  
-			"spaghetti_mini": enemy_scene = spaghetti_mini_scene
+			"big_bread": enemy_scene = big_bread_scene
+			"big_black_bread": enemy_scene = big_black_bread_scene
 			_: enemy_scene = bread_scene
 
 		var enemy = enemy_scene.instantiate()

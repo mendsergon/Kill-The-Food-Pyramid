@@ -4162,6 +4162,16 @@ scale = Vector2(0.799551, 0.689251)
 theme_override_fonts/font = ExtResource("29_3q0w4")
 theme_override_font_sizes/font_size = 9
 
+[node name="Shop" type="Label" parent="Player/Camera2D"]
+visible = false
+offset_left = -141.0
+offset_top = 66.0
+offset_right = 76.0
+offset_bottom = 157.928
+theme_override_fonts/font = ExtResource("29_3q0w4")
+theme_override_font_sizes/font_size = 9
+text = "Might  as  well check  the  shop  before  entering"
+
 [node name="InteractionArea1" parent="." instance=ExtResource("27_2t681")]
 position = Vector2(56, -55)
 scale = Vector2(0.5, 0.446)
