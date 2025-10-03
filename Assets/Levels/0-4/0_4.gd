@@ -143,6 +143,8 @@ func _load_player_stats() -> void:
 
 	if player.has_method("update_health_bar"):
 		player.update_health_bar()
+	if player.has_method("update_melee_orb_bar"):
+		player.update_melee_orb_bar()
 
 	player.switch_weapon(save_data.current_weapon_index)
 

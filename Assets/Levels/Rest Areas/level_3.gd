@@ -261,8 +261,8 @@ func end_dialogue() -> void:
 	if dialogue_source == "cyber_cat" and is_instance_valid(player):
 		player.MAX_MELEE_ORBS = 4
 		player.current_orb_charges = 4
-		if player.has_method("update_dash_slab_bar"):
-			player.update_dash_slab_bar()
+		if player.has_method("update_melee_orb_bar"):   
+			player.update_melee_orb_bar()
 		if SaveManager and SaveManager.current_slot != -1:
 			var ok := SaveManager.save_player()
 			if not ok:
@@ -278,34 +278,27 @@ func end_dialogue() -> void:
 
 	dialogue_source = ""
 
-# Check if player has full health and disable area 4 if true
+# Check if player has full current_orb_charges and disable area 4 if true
 func _check_and_disable_area_4() -> void:
-	if is_instance_valid(player) and player.health >= 4:
+	if is_instance_valid(player) and player.current_orb_charges >= 4:
 		if is_instance_valid(interaction_area_4):
 			interaction_area_4.queue_free()
 
 func _on_interaction_area_4_interacted() -> void:
 	dialogue_source = "cyber_cat"
 	
-	# Check player health to determine which dialogue to play
-	if is_instance_valid(player) and player.health >= 4:
-		# Player already has full health - play simple greeting
+	# Check player current_orb_charges to determine which dialogue to play
+	if is_instance_valid(player) and player.current_orb_charges >= 4:
+		# Player already has full current_orb_charges - play simple greeting
 		start_dialogue([
 			"Had  a  good  nap???"
 		], "Idle")
 	else:
-		# Player doesn't have full health - play original dialogue
+		# Player doesn't have full current_orb_charges - play original dialogue
 		start_dialogue([
-			"Hello...",
-			"Exploring  the  food  pyramid  \ntoo?",
-			"Or  are  you  simply  an ..........\nexterminator????",
-			"Well ... doesn't  really  matter  \n.........",
-			"I  myself  am  looking  for  \nsomething....",
-			"A  GREEN  SHARD,  held  \nby  the  FOOD  LORDS!!!",
-			"It  is  of  outmost  importance  \nthat  I  get  that  SHARD",
-			"Will  you  help  me ????????",
-			"You  will  be  rewarded ...",
-			"NICE !!!",
-			"Take  this  blessing  and  start \n.............",
-			"KILLING !!!!!!!!"
+			"Cleared  up  another  huh ???",
+			"Keep  this  up  and  you \nmight  end  up  wiping\nevery  food...",
+			"From  the  base  of  the\nFOOD  PYRAMID !!!",
+			"KEEP  UP  THE  GOOD  WORK !!!  \n.........",
+			"Here  take  this !!!"
 		], "Idle")
