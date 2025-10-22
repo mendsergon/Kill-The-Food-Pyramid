@@ -87,6 +87,9 @@ func _load_player_stats() -> void:
 
 	if player.has_method("update_health_bar"):
 		player.update_health_bar()
+		
+	if player.has_method("update_melee_orb_bar"):
+		player.update_melee_orb_bar()
 
 	player.switch_weapon(save_data.current_weapon_index)
 
@@ -297,7 +300,8 @@ func _on_interaction_area_4_interacted() -> void:
 		# Player doesn't have full current_orb_charges - play original dialogue
 		start_dialogue([
 			"Cleared  up  another  huh ???",
-			"Keep  this  up  and  you \nmight  end  up  wiping\nevery  food...",
+			"Keep  this  up  and  you \nmight  end  up  wiping",
+			"every  food...",
 			"From  the  base  of  the\nFOOD  PYRAMID !!!",
 			"KEEP  UP  THE  GOOD  WORK !!!  \n.........",
 			"Here  take  this !!!"
