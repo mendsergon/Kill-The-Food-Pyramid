@@ -307,5 +307,6 @@ func _on_interaction_area_4_interacted() -> void:
 			"You  will  be  rewarded ...",
 			"NICE !!!",
 			"Take  this  blessing  and  start \n.............",
-			"KILLING !!!!!!!!"
+			"KILLING !!!!!!!!",
+			"*max  health  raised*"
 		], "Idle")
