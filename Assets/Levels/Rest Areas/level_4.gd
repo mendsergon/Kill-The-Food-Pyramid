@@ -147,7 +147,7 @@ func _rename_save_to_0_3() -> void:
 
 func _on_interaction_area_1_interacted() -> void:
 	# Check player health to determine behavior
-	if is_instance_valid(player) and player.health >= 4:
+	if is_instance_valid(player) and player.health >= 5:
 		# Health is 4 or above - transition to next level
 		fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
 	else:
@@ -236,8 +236,8 @@ func end_dialogue() -> void:
 		player.set_physics_process(true)
 
 	if dialogue_source == "cyber_cat" and is_instance_valid(player):
-		player.MAX_MELEE_ORBS = 4
-		player.current_orb_charges = 4
+		player.max_health = 5
+		player.health = 5
 		if player.has_method("update_melee_orb_bar"):   
 			player.update_melee_orb_bar()
 		if SaveManager and SaveManager.current_slot != -1:
@@ -255,9 +255,9 @@ func end_dialogue() -> void:
 
 	dialogue_source = ""
 
-# Check if player has full current_orb_charges and disable area 4 if true
+# Check if player has full health and disable area 4 if true
 func _check_and_disable_area_4() -> void:
-	if is_instance_valid(player) and player.current_orb_charges >= 4:
+	if is_instance_valid(player) and player.health >= 5:
 		if is_instance_valid(interaction_area_4):
 			interaction_area_4.queue_free()
 
@@ -273,10 +273,11 @@ func _on_interaction_area_4_interacted() -> void:
 	else:
 		# Player doesn't have full MAX_MELEE_ORBS - play original dialogue
 		start_dialogue([
-			"Cleared  up  another  huh ???",
-			"Keep  this  up  and  you \nmight  end  up  wiping",
-			"every  food...",
-			"From  the  base  of  the\nFOOD  PYRAMID !!!",
-			"KEEP  UP  THE  GOOD  WORK !!!  \n.........",
-			"Here  take  this !!!"
+			"This  is  it...",
+			"Beyond  this  door...",
+			"stands  the  BREAD  KING",
+			"You  have  to  defeat him...",
+			"and  claim  his  SHARD!!",
+			"Here  take  this !!!",
+			"*max  health  raised*"
 		], "Idle")
