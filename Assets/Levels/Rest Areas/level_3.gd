@@ -304,5 +304,6 @@ func _on_interaction_area_4_interacted() -> void:
 			"every  food...",
 			"From  the  base  of  the\nFOOD  PYRAMID !!!",
 			"KEEP  UP  THE  GOOD  WORK !!!  \n.........",
-			"Here  take  this !!!"
+			"Here  take  this !!!",
+			"*max  mellee  orbs  raised*"
 		], "Idle")
