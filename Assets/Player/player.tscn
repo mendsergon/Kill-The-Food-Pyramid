@@ -360,6 +360,7 @@ position = Vector2(16, -8)
 shape = SubResource("RectangleShape2D_38rej")
 
 [node name="HealthBar" type="CanvasLayer" parent="."]
+visible = false
 scale = Vector2(2, 2)
 transform = Transform2D(2, 0, 0, 2, 0, 0)
 
@@ -404,6 +405,7 @@ layout_mode = 2
 position = Vector2(17, -8)
 
 [node name="MeleeOrbBar" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MeleeOrbBar"]
 offset_right = 40.0
@@ -452,6 +454,7 @@ position = Vector2(54, 17)
 scale = Vector2(2, 1.925)
 
 [node name="DashSlabBar" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="HBoxContainer" type="HBoxContainer" parent="DashSlabBar"]
 offset_right = 40.0

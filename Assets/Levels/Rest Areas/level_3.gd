@@ -159,7 +159,7 @@ func _on_interaction_area_1_interacted() -> void:
 	# Check player health to determine behavior
 	if is_instance_valid(player) and player.health >= 4:
 		# Health is 4 or above - transition to next level
-		fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
+		fade_layer.start_fade("res://Assets/Levels/0-4/0_4.tscn")
 	else:
 		# Health is less than 4 - show shop message and fade out
 		_show_shop_message()

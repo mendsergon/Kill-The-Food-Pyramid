@@ -2,8 +2,6 @@ extends Node2D
 
 @onready var player: CharacterBody2D = $Player
 @onready var interaction_area_1: Area2D = $InteractionArea1  
-@onready var interaction_area_2: Area2D = $InteractionArea2
-@onready var interaction_area_3: Area2D = $InteractionArea3
 @onready var fade_layer: CanvasLayer = $FadeLayer  
 @onready var save: Label = $Player/Camera2D/Save
 @onready var cyber_cat: CharacterBody2D = $"Cyber Cat"
@@ -30,14 +28,6 @@ func _ready() -> void:
 	# Connect interaction area 1 (floor transition)
 	if not interaction_area_1.is_connected("interacted", Callable(self, "_on_interaction_area_1_interacted")):
 		interaction_area_1.connect("interacted", Callable(self, "_on_interaction_area_1_interacted"))
-	
-	# Connect interaction area 2 (teleport to 3)
-	if not interaction_area_2.is_connected("interacted", Callable(self, "_on_interaction_area_2_interacted")):
-		interaction_area_2.connect("interacted", Callable(self, "_on_interaction_area_2_interacted"))
-
-	# Connect interaction area 3 (teleport to 2)
-	if not interaction_area_3.is_connected("interacted", Callable(self, "_on_interaction_area_3_interacted")):
-		interaction_area_3.connect("interacted", Callable(self, "_on_interaction_area_3_interacted"))
 	
 	# Connect interaction area 4
 	if not interaction_area_4.is_connected("interacted", Callable(self, "_on_interaction_area_4_interacted")):
@@ -181,22 +171,6 @@ func _show_shop_message() -> void:
 		fade_out_tween.tween_property(shop, "modulate:a", 0.0, 0.5).set_delay(2.0)
 		fade_out_tween.tween_callback(func(): shop.visible = false)
 	)
-
-func _on_interaction_area_2_interacted() -> void:
-	if is_instance_valid(player) and is_instance_valid(interaction_area_3):
-		player.global_position = interaction_area_3.global_position
-		interaction_area_3.set_deferred("monitoring", false)
-		await get_tree().create_timer(2.0).timeout
-		if is_instance_valid(interaction_area_3):
-			interaction_area_3.monitoring = true
-
-func _on_interaction_area_3_interacted() -> void:
-	if is_instance_valid(player) and is_instance_valid(interaction_area_2):
-		player.global_position = interaction_area_2.global_position
-		interaction_area_2.set_deferred("monitoring", false)
-		await get_tree().create_timer(2.0).timeout
-		if is_instance_valid(interaction_area_2):
-			interaction_area_2.monitoring = true
 
 func _input(event: InputEvent) -> void:
 	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
