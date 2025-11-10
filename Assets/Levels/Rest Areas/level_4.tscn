@@ -4256,7 +4256,6 @@ position = Vector2(-1, -507)
 scale = Vector2(0.5, 0.446)
 
 [node name="FadeLayer" parent="." instance=ExtResource("32_dcdol")]
-visible = false
 
 [connection signal="interacted" from="Cyber Cat/InteractionArea4" to="." method="_on_interaction_area_4_interacted"]
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]

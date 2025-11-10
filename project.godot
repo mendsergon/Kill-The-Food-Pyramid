@@ -21,6 +21,7 @@ SaveManager="*res://Assets/Save Manager/SaveManager.gd"
 
 [display]
 
+window/size/mode=3
 window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
 mouse_cursor/custom_image="uid://n3xj0f2npsf3"

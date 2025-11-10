@@ -264,14 +264,14 @@ func _check_and_disable_area_4() -> void:
 func _on_interaction_area_4_interacted() -> void:
 	dialogue_source = "cyber_cat"
 	
-	# Check player MAX_MELEE_ORBS to determine which dialogue to play
-	if is_instance_valid(player) and player.MAX_MELEE_ORBS >= 4:
-		# Player already has full MAX_MELEE_ORBS - play simple greeting
+	# Check player player health to determine which dialogue to play
+	if is_instance_valid(player) and player.health >= 5:
+		# Player already has full player health - play simple greeting
 		start_dialogue([
 			"Had  a  good  nap???"
 		], "Idle")
 	else:
-		# Player doesn't have full MAX_MELEE_ORBS - play original dialogue
+		# Player doesn't have full player health - play original dialogue
 		start_dialogue([
 			"This  is  it...",
 			"Beyond  this  door...",
