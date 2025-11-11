@@ -375,10 +375,15 @@ func _enter_dash_state() -> void:
 	# Lock direction
 	locked_aim_direction = aim_direction
 	is_direction_locked = true
+	
+	# Make player intensely golden while dashing
+	animated_sprite_2d.modulate = Color(1.5, 1.2, 0.3, 1.0)  # More intense golden color
 
 func _exit_dash_state() -> void:
 	dash_cooldown_timer = DASH_COOLDOWN
 	is_direction_locked = false
+	# Reset color after dash
+	animated_sprite_2d.modulate = Color(1.0, 1.0, 1.0, 1.0)  # Back to normal white
 
 func _enter_attack_state() -> void:
 	attack_timer = ATTACK_DURATION
