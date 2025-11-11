@@ -141,7 +141,7 @@ func _rename_save_to_0_3() -> void:
 		if err != OK:
 			printerr("Failed to rewrite save with new name:", error_string(err))
 		else:
-			print("Save renamed to 0-3 at %s" % path)
+			print("Save renamed to 0-4 at %s" % path)
 	else:
 		printerr("Save resource corrupted or missing")
 
