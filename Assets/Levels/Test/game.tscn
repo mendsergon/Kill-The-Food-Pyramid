@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cnim03an8koje" path="res://Assets/Levels/Test/game.gd" id="1_lipum"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/NPCs/Cyber Cat/cyber_cat.tscn" id="2_crewr"]
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Player/player.tscn" id="3_p4fur"]
-[ext_resource type="PackedScene" uid="uid://b1wygwftmhfsp" path="res://Assets/Enemies/Spaghetti/spaghetti.tscn" id="4_lipum"]
+[ext_resource type="PackedScene" uid="uid://boyh42ns72r74" path="res://Assets/Enemies/King Bread/king_bread.tscn" id="4_lipum"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_lipum")
@@ -18,5 +18,5 @@ position = Vector2(14, -15)
 position = Vector2(0, 7)
 zoom = Vector2(4, 4)
 
-[node name="Spaghetti" parent="." instance=ExtResource("4_lipum")]
-position = Vector2(-48, -57)
+[node name="King Bread" parent="." instance=ExtResource("4_lipum")]
+position = Vector2(-51, -52)
