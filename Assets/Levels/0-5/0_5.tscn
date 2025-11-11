@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://bsmif84i3rsoq"]
+[gd_scene load_steps=70 format=3 uid="uid://bsmif84i3rsoq"]
 
 [ext_resource type="Script" uid="uid://dgepj5wluxhmx" path="res://Assets/Levels/0-5/0_5.gd" id="1_7nqve"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_ylnyf"]
@@ -33,6 +33,7 @@
 [ext_resource type="Texture2D" uid="uid://cmj45bgnhev8y" path="res://Assets/Enemies/King Bread/KIngBreadClose-sheet.png" id="30_86gfh"]
 [ext_resource type="Texture2D" uid="uid://s5vvxnhm744q" path="res://Assets/Enemies/King Bread/KingBread.png" id="31_86gfh"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="32_4xeig"]
+[ext_resource type="PackedScene" uid="uid://qialsg1tuoxg" path="res://Assets/Elements/Flash Layer/flash_layer.tscn" id="34_udxw5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g1jfx"]
 texture = ExtResource("1_ylnyf")
@@ -4276,10 +4277,17 @@ scale = Vector2(0.799551, 0.689251)
 theme_override_fonts/font = ExtResource("27_xnwbh")
 theme_override_font_sizes/font_size = 9
 
+[node name="Camera2D2" type="Camera2D" parent="Player"]
+visible = false
+zoom = Vector2(3, 3)
+
 [node name="FadeLayer" parent="." instance=ExtResource("30_3n4dq")]
 visible = false
 
 [node name="InteractionArea" parent="." instance=ExtResource("32_4xeig")]
 position = Vector2(4, -314)
+
+[node name="FlashLayer" parent="." instance=ExtResource("34_udxw5")]
+visible = false
 
 [connection signal="interacted" from="InteractionArea" to="." method="_on_interaction_area_interacted"]

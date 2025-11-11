@@ -136,7 +136,7 @@ func _rename_save_to_0_3() -> void:
 
 	var save_res = load(path)
 	if save_res and save_res is PlayerSaveData:
-		save_res.save_name = " 0-3"
+		save_res.save_name = " 0-4"
 		var err = ResourceSaver.save(save_res, path)
 		if err != OK:
 			printerr("Failed to rewrite save with new name:", error_string(err))
@@ -149,7 +149,7 @@ func _on_interaction_area_1_interacted() -> void:
 	# Check player health to determine behavior
 	if is_instance_valid(player) and player.health >= 5:
 		# Health is 4 or above - transition to next level
-		fade_layer.start_fade("res://Assets/Levels/0-3/0_3.tscn")
+		fade_layer.start_fade("res://Assets/Levels/0-5/0_5.tscn")
 	else:
 		# Health is less than 4 - show shop message and fade out
 		_show_shop_message()

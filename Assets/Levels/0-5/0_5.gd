@@ -5,6 +5,9 @@ extends Node2D
 @onready var dialoge: Label = $"Player/Camera2D/Dialoge Bar/Dialoge"
 @onready var interaction_area: Area2D = $InteractionArea
 @onready var king_bread_c_lose: AnimatedSprite2D = $"Player/Camera2D/Dialoge Bar/KingBreadCLose"
+@onready var flash_layer: CanvasLayer = $FlashLayer 
+@onready var camera_2d: Camera2D = $Player/Camera2D
+@onready var camera_2d_2: Camera2D = $Player/Camera2D2
 
 var dialogue_state: int = 0  # 0 = not in dialogue, 1 = typing, 2 = waiting for input
 var current_message: int = 0
@@ -120,3 +123,15 @@ func end_dialogue() -> void:
 	# Kill the interaction area after dialogue
 	if is_instance_valid(interaction_area):
 		interaction_area.queue_free()
+	
+	# Trigger flash effect and camera switch
+	trigger_flash_and_switch_camera()
+
+func trigger_flash_and_switch_camera() -> void:
+	# Switch cameras
+	camera_2d.enabled = false
+	camera_2d_2.enabled = true
+	
+	# Trigger the flash effect
+	if flash_layer and flash_layer.has_method("trigger_flash"):
+		flash_layer.trigger_flash()
