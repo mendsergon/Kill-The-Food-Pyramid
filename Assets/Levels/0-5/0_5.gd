@@ -8,6 +8,10 @@ extends Node2D
 @onready var flash_layer: CanvasLayer = $FlashLayer 
 @onready var camera_2d: Camera2D = $Player/Camera2D
 @onready var camera_2d_2: Camera2D = $Player/Camera2D2
+@onready var spawn_area: Area2D = $SpawnArea
+@onready var label: Label = $Player/Camera2D2/Label
+@onready var pin: Node2D = $Pin
+@onready var king_bread: CharacterBody2D = $"King Bread"
 
 var dialogue_state: int = 0  # 0 = not in dialogue, 1 = typing, 2 = waiting for input
 var current_message: int = 0
@@ -20,8 +24,14 @@ func _ready() -> void:
 	if not interaction_area.is_connected("interacted", Callable(self, "_on_interaction_area_interacted")):
 		interaction_area.connect("interacted", Callable(self, "_on_interaction_area_interacted"))
 	
-	# Hide dialogue bar at start
+	# Hide dialogue bar and label at start
 	dialoge_bar.visible = false
+	label.visible = false
+	
+	# Completely disable King Bread at start
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_DISABLED
+		king_bread.visible = false
 
 func _input(event: InputEvent) -> void:
 	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
@@ -128,10 +138,66 @@ func end_dialogue() -> void:
 	trigger_flash_and_switch_camera()
 
 func trigger_flash_and_switch_camera() -> void:
+	# Teleport the player immediately (before the flash)
+	_teleport_player_to_pin()
+	
 	# Switch cameras
 	camera_2d.enabled = false
 	camera_2d_2.enabled = true
 	
+	# Enable King Bread now
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
+		king_bread.visible = true
+		king_bread.set_player_reference(player)
+	
 	# Trigger the flash effect
 	if flash_layer and flash_layer.has_method("trigger_flash"):
 		flash_layer.trigger_flash()
+		
+		# Wait for flash to complete then show King Bread text
+		await get_tree().create_timer(2.0).timeout  # Wait for flash duration
+		show_king_bread_text()
+
+func _teleport_player_to_pin() -> void:
+	# Teleport the player to the pin position
+	if player and pin:
+		player.global_position = pin.global_position
+		print("Player teleported to pin position")
+	else:
+		print("Error: Player or pin not found for teleportation")
+
+func show_king_bread_text() -> void:
+	# Show the label and set up the text
+	label.visible = true
+	label.text = ""
+	label.modulate = Color(1, 1, 1, 1)  # Ensure it's fully visible
+	
+	# Text to display with two spaces between words
+	var king_text = "KING  BREAD"
+	
+	# Create typewriter effect for the text
+	var tween = create_tween()
+	var text_length = king_text.length()
+	
+	# Typewriter effect
+	tween.tween_method(Callable(self, "_update_king_text").bind(king_text), 0, text_length, text_length * 0.1)
+	
+	# After typewriter completes, wait a moment then fade out
+	tween.tween_callback(Callable(self, "_start_fade_out"))
+	
+func _update_king_text(letter_index: int, full_text: String) -> void:
+	label.text = full_text.substr(0, letter_index)
+
+func _start_fade_out() -> void:
+	# Wait a moment before starting the fade out
+	await get_tree().create_timer(1.0).timeout
+	
+	# Create fade out tween
+	var fade_tween = create_tween()
+	fade_tween.tween_property(label, "modulate", Color(1, 1, 1, 0), 2.0)
+	fade_tween.tween_callback(Callable(self, "_on_text_fade_complete"))
+
+func _on_text_fade_complete() -> void:
+	# Hide the label after fade out
+	label.visible = false
