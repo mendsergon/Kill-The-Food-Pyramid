@@ -26,12 +26,13 @@ var is_dying := false                    # Whether potato is in death state
 
 ### --- EXTRA CONSTANTS FOR ATTACK --- ###
 const ATTACK_TRIGGER_DISTANCE = 75.0     # Distance to trigger spin attack
-const ATTACK_PREP_DURATION = 0.25        # Time to idle + rotate before charge
+const ATTACK_PREP_DURATION = 0.5         # Increased prep time for windup indication
 const ATTACK_CHARGE_DURATION = 1.0       # Total spin & dash time
 const ATTACK_SPEED = 200.0               # Charge movement speed
 const ATTACK_ROTATION_SPEED = 720.0      # Degrees per second when spinning
 const ATTACK_COOLDOWN = 3.0              # Time before potato can attack again
 const ATTACK_REPEAT = 2                  # Number of back-to-back attacks
+const ATTACK_WINDUP_ROTATION = 15.0      # How much to rotate back during windup
 
 ### --- EXTRA STATE --- ###
 var is_attacking := false
@@ -40,6 +41,8 @@ var attack_timer := 0.0
 var attack_direction := Vector2.ZERO
 var attack_cooldown_timer := 0.0         # Tracks time until next allowed attack
 var attack_count := 0                    # Tracks remaining attacks in sequence
+var original_rotation := 0.0             # Store original rotation for windup
+var normal_color := Color(1, 1, 1)       # Store normal color for reset
 
 ### --- PUBLIC SETUP --- ###
 func set_player_reference(player_ref: CharacterBody2D) -> void:
@@ -48,6 +51,7 @@ func set_player_reference(player_ref: CharacterBody2D) -> void:
 func _ready() -> void:
 	animated_sprite_2d.play("Run")        # Start moving immediately
 	health = max_health                   # Set starting HP
+	normal_color = animated_sprite_2d.modulate  # Store the initial normal color
 
 func _physics_process(delta: float) -> void:
 	### --- DEATH TIMER --- ###
@@ -108,18 +112,33 @@ func _physics_process(delta: float) -> void:
 				# Knockback direction points from potato to player
 				other.apply_damage(1, (player.global_position - global_position).normalized())  # Deal 1 damage + knockback
 
-	### --- RED FLASH ON DAMAGE (ALWAYS RUNS) --- ###
+	### --- RED FLASH ON DAMAGE (ALWAYS RUNS, BUT RESPECTS ATTACK INDICATOR) --- ###
 	if flash_timer > 0.0:
 		flash_timer -= delta
 		if flash_timer <= 0.0:
-			animated_sprite_2d.modulate = Color(1, 1, 1)  # Reset color to normal
+			# Only reset to normal color if we're not in attack prep phase
+			if not (is_attacking and attack_phase == "prep"):
+				animated_sprite_2d.modulate = normal_color
 
 ### --- DAMAGE & DEATH --- ###
 func apply_damage(amount: int) -> void:
 	health -= amount
 	print("Potato took %d damage, %d HP remaining" % [amount, health])
-	animated_sprite_2d.modulate = Color(1, 0, 0)    # Tint red
-	flash_timer = FLASH_DURATION
+	
+	# Apply red flash, but store the current attack color if in prep phase
+	if is_attacking and attack_phase == "prep":
+		# Store the current attack color to restore it after flash
+		var current_attack_color = animated_sprite_2d.modulate
+		animated_sprite_2d.modulate = Color(1, 0, 0)
+		flash_timer = FLASH_DURATION
+		# After flash, restore the attack color
+		await get_tree().create_timer(FLASH_DURATION).timeout
+		if is_attacking and attack_phase == "prep":
+			animated_sprite_2d.modulate = current_attack_color
+	else:
+		animated_sprite_2d.modulate = Color(1, 0, 0)
+		flash_timer = FLASH_DURATION
+	
 	stagger_timer = STAGGER_DURATION
 
 	if health <= 0:
@@ -144,17 +163,29 @@ func start_attack() -> void:
 	animated_sprite_2d.play("Idle")
 	attack_direction = (player.global_position - global_position).normalized()
 	attack_count = ATTACK_REPEAT
+	
+	# Store original rotation for windup effect
+	original_rotation = rotation_degrees
+	
+	# Change color to indicate windup (orange/yellow tint)
+	animated_sprite_2d.modulate = Color(1, 0.8, 0.3)
 
 func handle_attack(delta: float) -> void:
 	attack_timer -= delta
 
 	if attack_phase == "prep":
-		# Slowly rotate forward during prep
-		rotation_degrees = lerp(rotation_degrees, rotation_degrees + 45, delta * 2)
+		# Windup effect: rotate back and forth to indicate charging
+		var windup_progress = 1.0 - (attack_timer / ATTACK_PREP_DURATION)
+		var windup_rotation = sin(windup_progress * PI * 4) * ATTACK_WINDUP_ROTATION
+		rotation_degrees = original_rotation + windup_rotation
+		
 		if attack_timer <= 0.0:
 			attack_phase = "charge"
 			attack_timer = ATTACK_CHARGE_DURATION / ATTACK_REPEAT   # Split duration between repeats
 			animated_sprite_2d.play("Run")
+			
+			# Reset color for the actual dash
+			animated_sprite_2d.modulate = normal_color
 
 	elif attack_phase == "charge":
 		# Spin backwards while charging
@@ -178,6 +209,9 @@ func handle_attack(delta: float) -> void:
 				attack_direction = (player.global_position - global_position).normalized()
 				velocity = Vector2.ZERO
 				animated_sprite_2d.play("Idle")
+				
+				# Restore windup color for the next attack in sequence
+				animated_sprite_2d.modulate = Color(1, 0.8, 0.3)
 			else:
 				# Sequence complete
 				is_attacking = false
