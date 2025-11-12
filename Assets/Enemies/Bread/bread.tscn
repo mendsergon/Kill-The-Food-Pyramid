@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bph66ic70jhpq"]
+[gd_scene load_steps=12 format=3 uid="uid://bph66ic70jhpq"]
 
 [ext_resource type="Script" uid="uid://c7rdbtvexgv5c" path="res://Assets/Enemies/Bread/bread.gd" id="1_hrixj"]
 [ext_resource type="Texture2D" uid="uid://dhvf8f3jf5ode" path="res://Assets/Enemies/Bread/bread.png" id="2_rccyi"]
@@ -68,9 +68,6 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_j7te5"]
 size = Vector2(19, 18)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_8xb4t"]
-radius = 150.12
-
 [node name="Bread" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 4
 collision_mask = 131
@@ -84,10 +81,3 @@ autoplay = "Idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, 5)
 shape = SubResource("RectangleShape2D_j7te5")
-
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("CircleShape2D_8xb4t")
-
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
