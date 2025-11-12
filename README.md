@@ -1,61 +1,88 @@
-KILL THE FOOD PYRAMID: A 2D pixel wave-based shooter made with Godot.
+# **KILL THE FOOD PYRAMID**
 
-A 2D pixel wave-based shooter made in Godot.
-You are an orange, slightly odd robot with one purpose: destroy the Food Pyramid.
-Blast through endless waves of angry foods, collect ridiculous weapons, upgrade your gear, and fight the mighty Kings of Food
+*A 2D pixel wave-based shooter made in Godot.*
 
-Table of Contents
-1) About
-2) Features
-3) How to play
-4) Controls
-5) Requirements
-6) Roadmap
+You are an orange, slightly odd robot with one purpose: **destroy the Food Pyramid.**
+Blast through relentless waves of furious food, survive each floor, and face the mighty Kings of Food in chaotic boss battles.
 
-About:
-- KILL THE FOOD PYRAMID is a chaotic wave-based shooter where every floor of the Food Pyramid challenges you with new enemies and bosses. Survive the swarms, stack upgrades, and climb higher until you face the Kings of Foods themselves.
+---
 
-- The game is built in Godot 4.4.1+, using a mix of self-made and CC0 pixel assets. Right now it’s a prototype, but the vision is:
-  1) Fast, crunchy combat
-  2) Lots of silly weapons and upgrades
-  3) Replayability with endless waves and co-op support
+## **Table of Contents**
 
-Features:
-- Wave-based enemy spawning — each wave gets tougher and wilder
-- Multiple weapon types — from classic guns to goofy food-themed firepower
-- Kings of Foods (Boss fights) — each pyramid level ends with a ruler of a food group
-- Upgrade system — stack modifiers and items to shape your build
-- Save & checkpoint system — carry progress between runs
-- Pixel art style — CC0 + original assets
-- Planned Infinite Wave Mode — survive forever if you dare
+1. About
+2. Features
+3. How to Play
+4. Controls
+5. Requirements
+6. Roadmap
 
-How to play:
-- Survive waves of food enemies that spawn from every side.
-- Shoot or melee:
-  1) Guns are safe but consume ammo/cooldowns.
-  2) Melee attacks do big damage — but consume charges and you risk getting close.
-- Earn currency/loot by defeating enemies.
-- Visit the store between floors to buy items, upgrades, and new weapons.
-- Climb the Food Pyramid floor by floor, until you face the Kings.
+---
 
-Controls:
-- W/A/S/D or ARROW KEYS: move
-- SHIFT: dash
-- Mouse: aim & shoot
-- E: melee
-- X: interact
+## **About**
 
-Requirements: 
-- Godot 4.4.1 or newer (to build from source)
-- Should run on almost anything that isn’t actually a potato
+**KILL THE FOOD PYRAMID** is a fast-paced, wave-based 2D shooter built with **Godot 4.4.1+**.
+Each floor of the Food Pyramid challenges you with new enemies and ends in a showdown against a food boss.
 
-Roadmap 
-- More weapons (lasers, goofy food guns, melee weapons)
-- Additional levels 
-- Expanded upgrade system with synergies
-- UI/UX polish + better menus
-- Infinite wave survival mode
-- Local co-op mode (grab a friend and wreck food together)
-- Steam release planning
+The current version is in **very early alpha**, featuring:
 
-KILL THE FOOD PYRAMID is still in early development. Follow the repo, open issues, or share upgrade/weapon ideas — the sillier, the better.
+* **5 levels total** — 4 wave-based and 1 boss level
+* A single playable weapon (**the pistol**)
+* Early enemy and level designs
+* Basic systems for progression and combat
+
+The long-term goal is to turn this into a wild, upgrade-filled arcade shooter full of goofy weapons, chaotic enemies, and over-the-top food fights.
+
+---
+
+## **Features (Current Alpha)**
+
+* **5 Levels Total** – 4 wave-based + 1 boss level
+* **Wave-based combat** – survive against endless swarms of food
+* **Single weapon: the pistol** – the starting tool of food destruction
+* **Boss fight** – face off against the ruler of the first floor
+* **Original + CC0 pixel art** style
+* **Fast, crunchy combat** loop
+
+---
+
+## **How to Play**
+
+1. **Survive each wave** of food-themed enemies attacking from all sides.
+2. **Shoot** with your pistol to clear enemies before they swarm you.
+3. **Progress through 4 waves**, then **defeat the boss** to finish the first floor.
+4. That’s all for now — but the pyramid goes much higher…
+
+---
+
+## **Controls**
+
+| Action          | Key                                 |
+| --------------- | ----------------------------------- |
+| Move            | **W / A / S / D** or **Arrow Keys** |
+| Dash            | **Shift**                           |
+| Aim & Shoot     | **Mouse**                           |
+| Melee (planned) | **E**                               |
+| Interact        | **X**                               |
+
+---
+
+## **Requirements**
+
+* **Godot 4.4.1 or newer** (to build from source)
+* Runs on most systems — if it’s not a potato, it should work fine
+
+---
+
+## **Roadmap**
+
+The game is still in **early alpha**. Future updates will include:
+
+* **More levels and bosses**
+* **More weapons and upgrades**
+* **Expanded enemy variety**
+* **General polish, effects, and quality-of-life improvements**
+
+---
+
+**KILL THE FOOD PYRAMID** is early in development — follow along, report bugs, or suggest your most ridiculous weapon ideas.
+The sillier, the better.
