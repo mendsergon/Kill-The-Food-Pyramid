@@ -25,13 +25,29 @@ extends Node2D
 @onready var bread_9: CharacterBody2D = $Enemywave1/Bread9
 @onready var bread_10: CharacterBody2D = $Enemywave1/Bread10
 
+@onready var enemywave_2: Node2D = $Enemywave2
+@onready var baguette_1: CharacterBody2D = $Enemywave2/Baguette1
+@onready var baguette_2: CharacterBody2D = $Enemywave2/Baguette2
+@onready var baguette_3: CharacterBody2D = $Enemywave2/Baguette3
+@onready var baguette_4: CharacterBody2D = $Enemywave2/Baguette4
+@onready var baguette_5: CharacterBody2D = $Enemywave2/Baguette5
+@onready var baguette_6: CharacterBody2D = $Enemywave2/Baguette6
+
+@onready var enemywave_3: Node2D = $Enemywave3
+@onready var big_bread: CharacterBody2D = $"Enemywave3/Big Bread"
+@onready var big_black_bread: CharacterBody2D = $"Enemywave3/Big Black Bread"
+
 var dialogue_state: int = 0  # 0 = not in dialogue, 1 = typing, 2 = waiting for input
 var current_message: int = 0
 var messages: Array = []
 var typewriter_tween: Tween
 var player_was_movable: bool = true  # Track player's movement state before dialogue
-var king_health_threshold_reached: bool = false
-var enemy_wave_active: bool = false
+var king_health_threshold_75_reached: bool = false
+var king_health_threshold_50_reached: bool = false
+var king_health_threshold_25_reached: bool = false
+var enemy_wave_1_active: bool = false
+var enemy_wave_2_active: bool = false
+var enemy_wave_3_active: bool = false
 var king_initial_health: int = 0
 
 func _ready() -> void:
@@ -52,37 +68,52 @@ func _ready() -> void:
 	if enemywave_1:
 		enemywave_1.process_mode = Node.PROCESS_MODE_DISABLED
 		enemywave_1.visible = false
+	
+	# Completely disable Enemy Wave 2 at start
+	if enemywave_2:
+		enemywave_2.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_2.visible = false
+	
+	# Completely disable Enemy Wave 3 at start
+	if enemywave_3:
+		enemywave_3.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_3.visible = false
 
 func _process(_delta: float) -> void:
-	# Check King Bread's health if he's active and we haven't triggered the threshold yet
-	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED and not king_health_threshold_reached:
-		check_king_health()
+	# Check King Bread's health if he's active and we haven't triggered the thresholds yet
+	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED:
+		if not king_health_threshold_75_reached or not king_health_threshold_50_reached or not king_health_threshold_25_reached:
+			check_king_health()
 
 func check_king_health() -> void:
 	# Access King Bread's health directly from the script
+	var health_percentage = 100.0
+	
 	if king_bread.has_method("get_health_percentage"):
-		var health_percentage = king_bread.get_health_percentage()
-		if health_percentage <= 75 and not king_health_threshold_reached:
-			king_health_threshold_reached = true
-			trigger_king_to_wave_transition()
+		health_percentage = king_bread.get_health_percentage()
 	elif king_bread.has_method("get_health") and king_bread.has_method("get_max_health"):
 		var current_health = king_bread.get_health()
 		var max_health = king_bread.get_max_health()
-		var health_percentage = (float(current_health) / float(max_health)) * 100
-		if health_percentage <= 75 and not king_health_threshold_reached:
-			king_health_threshold_reached = true
-			trigger_king_to_wave_transition()
-	else:
-		# Fallback: check the health variable directly if accessible
-		if king_bread.get("health") and king_bread.get("max_health"):
-			var current_health = king_bread.health
-			var max_health = king_bread.max_health
-			var health_percentage = (float(current_health) / float(max_health)) * 100
-			if health_percentage <= 75 and not king_health_threshold_reached:
-				king_health_threshold_reached = true
-				trigger_king_to_wave_transition()
+		health_percentage = (float(current_health) / float(max_health)) * 100
+	elif king_bread.get("health") and king_bread.get("max_health"):
+		var current_health = king_bread.health
+		var max_health = king_bread.max_health
+		health_percentage = (float(current_health) / float(max_health)) * 100
+	
+	# Check for 75% threshold
+	if health_percentage <= 75 and not king_health_threshold_75_reached:
+		king_health_threshold_75_reached = true
+		trigger_king_to_wave_1_transition()
+	# Check for 50% threshold
+	elif health_percentage <= 50 and not king_health_threshold_50_reached:
+		king_health_threshold_50_reached = true
+		trigger_king_to_wave_2_transition()
+	# Check for 25% threshold
+	elif health_percentage <= 25 and not king_health_threshold_25_reached:
+		king_health_threshold_25_reached = true
+		trigger_king_to_wave_3_transition()
 
-func trigger_king_to_wave_transition() -> void:
+func trigger_king_to_wave_1_transition() -> void:
 	# Store King's current health for later restoration
 	if king_bread:
 		if king_bread.has_method("get_health"):
@@ -106,13 +137,77 @@ func trigger_king_to_wave_transition() -> void:
 	if enemywave_1:
 		enemywave_1.process_mode = Node.PROCESS_MODE_INHERIT
 		enemywave_1.visible = true
-		enemy_wave_active = true
+		enemy_wave_1_active = true
 		
 		# Pass player position to all bread enemies
 		set_bread_targets_to_player()
 		
-		# Start checking if wave is cleared
-		start_wave_clear_check()
+		# Start checking if wave 1 is cleared
+		start_wave_1_clear_check()
+
+func trigger_king_to_wave_2_transition() -> void:
+	# Store King's current health for later restoration
+	if king_bread:
+		if king_bread.has_method("get_health"):
+			king_initial_health = king_bread.get_health()
+		elif king_bread.get("health"):
+			king_initial_health = king_bread.health
+	
+	# Disable King Bread
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_DISABLED
+		king_bread.visible = false
+	
+	# Teleport player to pin
+	_teleport_player_to_pin()
+	
+	# Trigger flash effect
+	if flash_layer and flash_layer.has_method("trigger_flash"):
+		flash_layer.trigger_flash()
+	
+	# Enable enemy wave 2
+	if enemywave_2:
+		enemywave_2.process_mode = Node.PROCESS_MODE_INHERIT
+		enemywave_2.visible = true
+		enemy_wave_2_active = true
+		
+		# Pass player position to all baguette enemies
+		set_baguette_targets_to_player()
+		
+		# Start checking if wave 2 is cleared
+		start_wave_2_clear_check()
+
+func trigger_king_to_wave_3_transition() -> void:
+	# Store King's current health for later restoration
+	if king_bread:
+		if king_bread.has_method("get_health"):
+			king_initial_health = king_bread.get_health()
+		elif king_bread.get("health"):
+			king_initial_health = king_bread.health
+	
+	# Disable King Bread
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_DISABLED
+		king_bread.visible = false
+	
+	# Teleport player to pin
+	_teleport_player_to_pin()
+	
+	# Trigger flash effect
+	if flash_layer and flash_layer.has_method("trigger_flash"):
+		flash_layer.trigger_flash()
+	
+	# Enable enemy wave 3
+	if enemywave_3:
+		enemywave_3.process_mode = Node.PROCESS_MODE_INHERIT
+		enemywave_3.visible = true
+		enemy_wave_3_active = true
+		
+		# Pass player position to all big bread enemies
+		set_big_bread_targets_to_player()
+		
+		# Start checking if wave 3 is cleared
+		start_wave_3_clear_check()
 
 func set_bread_targets_to_player() -> void:
 	var bread_enemies = [
@@ -124,16 +219,50 @@ func set_bread_targets_to_player() -> void:
 		if bread and bread.has_method("set_player_reference"):
 			bread.set_player_reference(player)
 
-func start_wave_clear_check() -> void:
-	# Start a timer to periodically check if the wave is cleared
+func set_baguette_targets_to_player() -> void:
+	var baguette_enemies = [
+		baguette_1, baguette_2, baguette_3, baguette_4, baguette_5, baguette_6
+	]
+	
+	for baguette in baguette_enemies:
+		if baguette and baguette.has_method("set_player_reference"):
+			baguette.set_player_reference(player)
+
+func set_big_bread_targets_to_player() -> void:
+	var big_bread_enemies = [
+		big_bread, big_black_bread
+	]
+	
+	for big_bread_enemy in big_bread_enemies:
+		if big_bread_enemy and big_bread_enemy.has_method("set_player_reference"):
+			big_bread_enemy.set_player_reference(player)
+
+func start_wave_1_clear_check() -> void:
+	# Start a timer to periodically check if wave 1 is cleared
 	var timer = Timer.new()
 	timer.wait_time = 0.5  # Check every half second
-	timer.timeout.connect(_check_wave_clear)
+	timer.timeout.connect(_check_wave_1_clear)
 	add_child(timer)
 	timer.start()
 
-func _check_wave_clear() -> void:
-	if not enemy_wave_active:
+func start_wave_2_clear_check() -> void:
+	# Start a timer to periodically check if wave 2 is cleared
+	var timer = Timer.new()
+	timer.wait_time = 0.5  # Check every half second
+	timer.timeout.connect(_check_wave_2_clear)
+	add_child(timer)
+	timer.start()
+
+func start_wave_3_clear_check() -> void:
+	# Start a timer to periodically check if wave 3 is cleared
+	var timer = Timer.new()
+	timer.wait_time = 0.5  # Check every half second
+	timer.timeout.connect(_check_wave_3_clear)
+	add_child(timer)
+	timer.start()
+
+func _check_wave_1_clear() -> void:
+	if not enemy_wave_1_active:
 		return
 	
 	var alive_enemies = 0
@@ -160,16 +289,86 @@ func _check_wave_clear() -> void:
 	
 	# If all enemies are defeated, trigger the transition back to King Bread
 	if alive_enemies == 0:
-		enemy_wave_active = false
+		enemy_wave_1_active = false
 		# Stop the timer
 		for child in get_children():
-			if child is Timer and child.timeout.is_connected(_check_wave_clear):
+			if child is Timer and child.timeout.is_connected(_check_wave_1_clear):
 				child.stop()
 				child.queue_free()
-		trigger_wave_to_king_transition()
+		trigger_wave_1_to_king_transition()
 
-func trigger_wave_to_king_transition() -> void:
-	# Disable enemy wave
+func _check_wave_2_clear() -> void:
+	if not enemy_wave_2_active:
+		return
+	
+	var alive_enemies = 0
+	var baguette_enemies = [
+		baguette_1, baguette_2, baguette_3, baguette_4, baguette_5, baguette_6
+	]
+	
+	for baguette in baguette_enemies:
+		if baguette and is_instance_valid(baguette) and baguette.process_mode != Node.PROCESS_MODE_DISABLED:
+			# Check if the baguette is alive (has health and not dying)
+			if baguette.has_method("is_dying"):
+				if not baguette.is_dying:
+					alive_enemies += 1
+			elif baguette.has_method("get_health"):
+				if baguette.get_health() > 0:
+					alive_enemies += 1
+			elif baguette.get("health"):
+				if baguette.health > 0:
+					alive_enemies += 1
+			else:
+				# If we can't check health, assume it's alive if process mode is enabled
+				alive_enemies += 1
+	
+	# If all enemies are defeated, trigger the transition back to King Bread
+	if alive_enemies == 0:
+		enemy_wave_2_active = false
+		# Stop the timer
+		for child in get_children():
+			if child is Timer and child.timeout.is_connected(_check_wave_2_clear):
+				child.stop()
+				child.queue_free()
+		trigger_wave_2_to_king_transition()
+
+func _check_wave_3_clear() -> void:
+	if not enemy_wave_3_active:
+		return
+	
+	var alive_enemies = 0
+	var big_bread_enemies = [
+		big_bread, big_black_bread
+	]
+	
+	for big_bread_enemy in big_bread_enemies:
+		if big_bread_enemy and is_instance_valid(big_bread_enemy) and big_bread_enemy.process_mode != Node.PROCESS_MODE_DISABLED:
+			# Check if the big bread is alive (has health and not dying)
+			if big_bread_enemy.has_method("is_dying"):
+				if not big_bread_enemy.is_dying:
+					alive_enemies += 1
+			elif big_bread_enemy.has_method("get_health"):
+				if big_bread_enemy.get_health() > 0:
+					alive_enemies += 1
+			elif big_bread_enemy.get("health"):
+				if big_bread_enemy.health > 0:
+					alive_enemies += 1
+			else:
+				# If we can't check health, assume it's alive if process mode is enabled
+				alive_enemies += 1
+	
+	# If all enemies are defeated, trigger the transition back to King Bread
+	if alive_enemies == 0:
+		enemy_wave_3_active = false
+		# Stop the timer
+		for child in get_children():
+			if child is Timer and child.timeout.is_connected(_check_wave_3_clear):
+				child.stop()
+				child.queue_free()
+		trigger_wave_3_to_king_transition()
+
+func trigger_wave_1_to_king_transition() -> void:
+	# Disable enemy wave 1
 	if enemywave_1:
 		enemywave_1.process_mode = Node.PROCESS_MODE_DISABLED
 		enemywave_1.visible = false
@@ -196,6 +395,64 @@ func trigger_wave_to_king_transition() -> void:
 		elif king_bread.get("max_health"):
 			var max_health = king_bread.max_health
 			king_bread.health = int(max_health * 0.75)
+
+func trigger_wave_2_to_king_transition() -> void:
+	# Disable enemy wave 2
+	if enemywave_2:
+		enemywave_2.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_2.visible = false
+	
+	# Teleport player to pin
+	_teleport_player_to_pin()
+	
+	# Trigger flash effect
+	if flash_layer and flash_layer.has_method("trigger_flash"):
+		flash_layer.trigger_flash()
+	
+	# Re-enable King Bread with 50% health
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
+		king_bread.visible = true
+		
+		# Set King Bread's health to 50% of max health
+		if king_bread.has_method("set_health_percentage"):
+			king_bread.set_health_percentage(50)
+		elif king_bread.has_method("set_health"):
+			var max_health = king_bread.max_health
+			var new_health = max_health * 0.50
+			king_bread.set_health(int(new_health))
+		elif king_bread.get("max_health"):
+			var max_health = king_bread.max_health
+			king_bread.health = int(max_health * 0.50)
+
+func trigger_wave_3_to_king_transition() -> void:
+	# Disable enemy wave 3
+	if enemywave_3:
+		enemywave_3.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_3.visible = false
+	
+	# Teleport player to pin
+	_teleport_player_to_pin()
+	
+	# Trigger flash effect
+	if flash_layer and flash_layer.has_method("trigger_flash"):
+		flash_layer.trigger_flash()
+	
+	# Re-enable King Bread with 25% health
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
+		king_bread.visible = true
+		
+		# Set King Bread's health to 25% of max health
+		if king_bread.has_method("set_health_percentage"):
+			king_bread.set_health_percentage(25)
+		elif king_bread.has_method("set_health"):
+			var max_health = king_bread.max_health
+			var new_health = max_health * 0.25
+			king_bread.set_health(int(new_health))
+		elif king_bread.get("max_health"):
+			var max_health = king_bread.max_health
+			king_bread.health = int(max_health * 0.25)
 
 func _input(event: InputEvent) -> void:
 	if dialogue_state > 0 and event.is_action_pressed("Interact"): 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=73 format=3 uid="uid://bsmif84i3rsoq"]
+[gd_scene load_steps=76 format=3 uid="uid://bsmif84i3rsoq"]
 
 [ext_resource type="Script" uid="uid://dgepj5wluxhmx" path="res://Assets/Levels/0-5/0_5.gd" id="1_7nqve"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_ylnyf"]
@@ -36,6 +36,9 @@
 [ext_resource type="PackedScene" uid="uid://qialsg1tuoxg" path="res://Assets/Elements/Flash Layer/flash_layer.tscn" id="34_udxw5"]
 [ext_resource type="PackedScene" uid="uid://boyh42ns72r74" path="res://Assets/Enemies/King Bread/king_bread.tscn" id="35_3b2dg"]
 [ext_resource type="PackedScene" uid="uid://bph66ic70jhpq" path="res://Assets/Enemies/Bread/bread.tscn" id="36_efx8s"]
+[ext_resource type="PackedScene" uid="uid://dx6xvy3qsu862" path="res://Assets/Enemies/Baguette/baguette.tscn" id="37_s1pbh"]
+[ext_resource type="PackedScene" uid="uid://bycr0rinrb14j" path="res://Assets/Enemies/Bread/big_bread.tscn" id="38_fdwqx"]
+[ext_resource type="PackedScene" uid="uid://bfv31ghjmrpc2" path="res://Assets/Enemies/Bread/big_black_bread.tscn" id="39_vje43"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g1jfx"]
 texture = ExtResource("1_ylnyf")
@@ -4354,5 +4357,36 @@ position = Vector2(-100, 174)
 
 [node name="Bread10" parent="Enemywave1" instance=ExtResource("36_efx8s")]
 position = Vector2(-275, -6)
+
+[node name="Enemywave2" type="Node2D" parent="."]
+visible = false
+
+[node name="Baguette1" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(-289, -997)
+
+[node name="Baguette2" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(-302, -693)
+
+[node name="Baguette3" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(326, -680)
+
+[node name="Baguette4" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(333, -1008)
+
+[node name="Baguette5" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(-3, -1015)
+
+[node name="Baguette6" parent="Enemywave2" instance=ExtResource("37_s1pbh")]
+position = Vector2(-2, -678)
+
+[node name="Enemywave3" type="Node2D" parent="."]
+visible = false
+position = Vector2(-2, -678)
+
+[node name="Big Bread" parent="Enemywave3" instance=ExtResource("38_fdwqx")]
+position = Vector2(-290, -190)
+
+[node name="Big Black Bread" parent="Enemywave3" instance=ExtResource("39_vje43")]
+position = Vector2(310, -182)
 
 [connection signal="interacted" from="InteractionArea" to="." method="_on_interaction_area_interacted"]
