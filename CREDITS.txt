@@ -1,0 +1,17 @@
+# CREDITS
+
+## Project
+KILL THE FOOD PYRAMID
+© 2025 [YOUR NAME]
+
+A 2D pixel wave-based shooter made in Godot.
+Developed using Godot Engine 4.4.1+
+
+## CC0 Assets
+- "Ninja Adventure Asset Pack" by Pixel-Boy and AAA  
+  https://pixel-boy.itch.io/ninja-adventure-asset-pack  
+  Licensed under CC0 (Public Domain)
+
+## Notes
+Some assets included in this project are public domain (CC0) and may be freely reused by anyone.
+All other code, artwork, design, and content are © Kaloumenos Stavros under the project's custom license (see LICENSE).
