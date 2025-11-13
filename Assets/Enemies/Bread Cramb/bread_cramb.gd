@@ -20,6 +20,7 @@ var flash_timer := 0.0                   # Timer for red flash effect
 var death_timer := 0.0                   # Timer before removing dead crumb
 var is_dying := false                    # Whether crumb is in death state
 var player: CharacterBody2D = null       # Reference to player node
+var has_hit_player := false              # Track if this breadcrumb has already hit the player
 
 ### --- PUBLIC SETUP --- ###
 func set_direction(dir: Vector2) -> void:
@@ -67,7 +68,7 @@ func _physics_process(delta: float) -> void:
 	global_position += direction * MOVE_SPEED * delta
 
 	### --- RELIABLE OVERLAP CHECK FOR PLAYER DAMAGE --- ###
-	if player:
+	if player and not has_hit_player:  # Only check if we haven't hit the player yet
 		var space = get_world_2d().direct_space_state
 
 		# Create a small circle for hit detection
@@ -82,20 +83,24 @@ func _physics_process(delta: float) -> void:
 		params.exclude = [self]
 
 		var results = space.intersect_shape(params, 4)
-		if results.size() > 0:
-			print("Breadcrumb overlap check found ", results.size(), " collisions")
 
 		for res in results:
 			var collider = res.get("collider", null)
 			if collider == null:
 				continue
 
-			# Damage player on contact (but don't die)
+			# Damage player on contact and then die
 			if collider == player and player.has_method("apply_damage"):
 				print("Breadcrumb hit player! Applying damage.")
 				var knockback_dir = (player.global_position - global_position).normalized()
-				player.apply_damage(1, knockback_dir)
-				# Don't call die() here - only die when explicitly called through code
+				
+				# Check if player can actually take damage
+				if not player.is_invulnerable and player.current_state != player.PlayerState.DEAD and player.dash_invuln_timer <= 0.0:
+					player.apply_damage(1, knockback_dir)
+					has_hit_player = true  # Mark that we've hit the player
+					die()  # Die after successfully applying damage
+				else:
+					print("Player is invulnerable, breadcrumb passes through")
 				return
 
 	### --- AUTO-DESPAWN WHEN TOO FAR FROM PLAYER --- ###
@@ -118,7 +123,7 @@ func apply_damage(_amount: int) -> void:
 
 ### --- DEATH HANDLING --- ###
 func die() -> void:
-	# Only die when this function is explicitly called through code
+	# Only die when this function is explicitly called through code OR after hitting player
 	is_dying = true
 	death_timer = DEATH_DURATION
 	velocity = Vector2.ZERO
