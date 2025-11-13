@@ -1,15 +1,48 @@
-Custom License – View, Learn, No Redistribution
-Copyright © 2025 Kaloumenos Stavros
+# **LICENSE**
 
-This project, titled "KILL THE FOOD PYRAMID", is provided for educational and reference purposes.
-You may view, learn from, and adapt portions of the code for your own work, as long as you:
+**Custom License – No Direct Copying of the Game / Commercial Asset Use Requires Credit**
+**Copyright © 2025 Kaloumenos Stavros**
 
-1. Do not redistribute, sell, or re-release this game or its assets (including title, characters, story, art, or branding) without permission.
-2. Do not claim ownership of this project, its name, or its intellectual property.
-3. Provide credit to the author if you use substantial portions of the code.
+This repository contains the project **“KILL THE FOOD PYRAMID.”**
 
-All rights not expressly granted are reserved by the author.
+## **Allowed**
 
-Some third-party assets used in this project are licensed under CC0 (Public Domain)
-and remain free for anyone to use under their original license terms.
-See CREDITS.txt for details.
+You may:
+
+* View and learn from the code.
+
+* Take inspiration from the game’s ideas, mechanics, structure, art style, or design.
+
+* Use individual assets (characters, sprites, audio, etc.) in your own personal or commercial projects **as long as proper credit is given**.
+
+  * *Credit must state:* **“Includes assets from ‘KILL THE FOOD PYRAMID’ by Kaloumenos Stavros.”**
+
+* Create your own original work influenced by this project.
+
+## **Not Allowed**
+
+You may **NOT**:
+
+1. Copy, clone, reproduce, or re-release this game in whole or in part in a way that is a **direct or near-direct copy**.
+   This includes copying:
+
+   * the complete game,
+   * story or dialogue,
+   * level design,
+   * gameplay progression,
+   * or other substantial creative elements.
+
+2. Redistribute, sell, or publish the full game (modified or unmodified) without explicit permission.
+
+3. Use the project’s **title**, **branding**, or anything that could cause confusion with the original game.
+
+## **Third-Party Assets**
+
+Some assets included in this project are licensed under **CC0 (Public Domain)**.
+These remain free to use under their own original terms.
+See **CREDITS.txt** for details.
+
+## **Rights Reserved**
+
+All rights not explicitly granted above are reserved by the author.
+
