@@ -35,6 +35,12 @@ func set_player_reference(player_ref: CharacterBody2D) -> void:
 func _ready() -> void:
 	# Reset sprite color to normal at spawn
 	sprite_2d.modulate = Color(1, 1, 1)
+	add_to_group("bread_crumbs") 
+	
+	# Make invincible and immune to pushback
+	collision_layer = 0
+	collision_mask = 0
+	
 	print("Breadcrumb spawned at ", global_position)
 
 func _physics_process(delta: float) -> void:
@@ -57,9 +63,8 @@ func _physics_process(delta: float) -> void:
 	sprite_2d.rotation = -rotation + SPRITE_ORIENTATION_OFFSET
 
 	### --- MOVE IN LOCKED DIRECTION --- ###
-	var collision = move_and_collide(direction * MOVE_SPEED * delta)
-	if collision:
-		print("Breadcrumb collided with: ", collision.get_collider())
+	# Move directly without collision response
+	global_position += direction * MOVE_SPEED * delta
 
 	### --- RELIABLE OVERLAP CHECK FOR PLAYER DAMAGE --- ###
 	if player:
@@ -85,12 +90,12 @@ func _physics_process(delta: float) -> void:
 			if collider == null:
 				continue
 
-			# Damage player on contact
+			# Damage player on contact (but don't die)
 			if collider == player and player.has_method("apply_damage"):
 				print("Breadcrumb hit player! Applying damage.")
 				var knockback_dir = (player.global_position - global_position).normalized()
 				player.apply_damage(1, knockback_dir)
-				die()
+				# Don't call die() here - only die when explicitly called through code
 				return
 
 	### --- AUTO-DESPAWN WHEN TOO FAR FROM PLAYER --- ###
@@ -107,23 +112,14 @@ func _physics_process(delta: float) -> void:
 			sprite_2d.modulate = Color(1, 1, 1)
 
 ### --- DAMAGE HANDLING --- ###
-func apply_damage(amount: int) -> void:
-	# Subtract incoming damage
-	health -= amount
-	print("Breadcrumb took %d damage, %d HP remaining" % [amount, health])
-
-	# Start red flash effect
-	sprite_2d.modulate = Color(1, 0, 0)
-	flash_timer = FLASH_DURATION
-
-	# Destroy crumb if HP depleted
-	if health <= 0:
-		die()
+func apply_damage(_amount: int) -> void:
+	# Breadcrumb is invincible - ignore all damage
+	print("Breadcrumb is invincible - damage ignored")
 
 ### --- DEATH HANDLING --- ###
 func die() -> void:
+	# Only die when this function is explicitly called through code
 	is_dying = true
 	death_timer = DEATH_DURATION
 	velocity = Vector2.ZERO
-	collision_layer = 0  # Disable collisions while dying
 	print("Breadcrumb is dying.")

@@ -11,7 +11,12 @@ extends Node2D
 @onready var spawn_area: Area2D = $SpawnArea
 @onready var label: Label = $Player/Camera2D2/Label
 @onready var pin: Node2D = $Pin
+@onready var pin_2: Node2D = $Pin2
 @onready var king_bread: CharacterBody2D = $"King Bread"
+@onready var camera_2d_death: Camera2D = $"Camera2D Death"
+@onready var death_label: Label = $"Camera2D Death/DeathLabel"
+@onready var death_label_2: Label = $"Camera2D Death/DeathLabel2"
+@onready var fade_layer: CanvasLayer = $FadeLayer
 
 @onready var enemywave_1: Node2D = $Enemywave1
 @onready var bread_1: CharacterBody2D = $Enemywave1/Bread1
@@ -49,6 +54,11 @@ var enemy_wave_1_active: bool = false
 var enemy_wave_2_active: bool = false
 var enemy_wave_3_active: bool = false
 var king_initial_health: int = 0
+var is_king_defeated: bool = false
+
+### --- DEATH STATE --- ###
+var is_player_dead := false
+var death_overlay: ColorRect = null
 
 func _ready() -> void:
 	# Connect interaction area
@@ -58,6 +68,14 @@ func _ready() -> void:
 	# Hide dialogue bar and label at start
 	dialoge_bar.visible = false
 	label.visible = false
+	
+	# Setup death camera and labels
+	if is_instance_valid(camera_2d_death):
+		camera_2d_death.enabled = false
+	if is_instance_valid(death_label):
+		death_label.visible = false
+	if is_instance_valid(death_label_2):
+		death_label_2.visible = false
 	
 	# Completely disable King Bread at start
 	if king_bread:
@@ -113,12 +131,198 @@ func _load_player_stats() -> void:
 
 	print("Loaded player stats from save slot %d" % SaveManager.current_slot)
 
-
 func _process(_delta: float) -> void:
+	# Check if player is dead
+	if not is_player_dead and not is_instance_valid(player):
+		_on_player_died()
+		return
+	
 	# Check King Bread's health if he's active and we haven't triggered the thresholds yet
-	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED:
+	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED and not is_player_dead and not is_king_defeated:
 		if not king_health_threshold_75_reached or not king_health_threshold_50_reached or not king_health_threshold_25_reached:
 			check_king_health()
+		
+		# Check if King Bread is defeated
+		if not is_king_defeated and is_king_dead():
+			_on_king_defeated()
+
+func is_king_dead() -> bool:
+	if not king_bread:
+		return false
+	
+	# Check if King Bread is dead using various possible methods
+	if king_bread.has_method("is_dying"):
+		return king_bread.is_dying()
+	elif king_bread.has_method("get_health"):
+		return king_bread.get_health() <= 0
+	elif king_bread.get("health"):
+		return king_bread.health <= 0
+	else:
+		# If we can't check health, assume he's alive
+		return false
+
+func _on_king_defeated() -> void:
+	if is_king_defeated:
+		return
+	
+	is_king_defeated = true
+	print("King Bread defeated! Transitioning to next level...")
+	
+	# Kill all bread crumbs
+	kill_all_bread_crumbs()
+	
+	# Remove all enemies
+	_remove_all_enemies()
+	
+	# Stop any wave timers
+	_stop_all_wave_timers()
+	
+	# Wait a moment then trigger fade out
+	await get_tree().create_timer(2.0).timeout
+	
+	# Trigger fade out and load next level
+	if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
+		fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_4.tscn")
+	else:
+		printerr("FadeLayer not found or missing start_fade method")
+		# Fallback: change scene directly
+		get_tree().change_scene_to_file("res://Assets/Levels/Rest Areas/level_4.tscn")
+
+func _input(event: InputEvent) -> void:
+	if is_player_dead:
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == KEY_E:
+				get_tree().reload_current_scene()
+			elif event.keycode == KEY_F:
+				# Force cleanup of all enemies and breadcrumbs before scene change
+				_force_cleanup_scene()
+				
+				# Load last active slot via SaveManager
+				if SaveManager.has_method("get_active_slot") and SaveManager.get_active_slot() != -1:
+					var ok = SaveManager.continue_game()  # uses current_slot automatically
+					if not ok:
+						printerr("Failed to continue game from active save slot")
+				else:
+					print("No active save slot set — cannot load")
+		return
+	
+	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
+		if dialogue_state == 1:
+			# Skip typewriter effect
+			if typewriter_tween:
+				typewriter_tween.kill()
+				typewriter_tween = null
+			dialoge.text = messages[current_message]
+			dialogue_state = 2
+			king_bread_c_lose.play("Idle")
+		elif dialogue_state == 2:
+			# Go to next message
+			next_message()
+
+func _on_player_died() -> void:
+	if is_player_dead:
+		return
+		
+	is_player_dead = true
+
+	# Stop any ongoing dialogue
+	if dialogue_state > 0:
+		end_dialogue()
+
+	# Remove all enemies when player dies
+	_remove_all_enemies()
+
+	# Stop any wave timers
+	_stop_all_wave_timers()
+
+	# Switch to death camera
+	if is_instance_valid(camera_2d_death):
+		camera_2d_death.enabled = true
+		camera_2d_death.make_current()
+
+	# Show death labels
+	if is_instance_valid(death_label):
+		death_label.visible = true
+	if is_instance_valid(death_label_2):
+		death_label_2.visible = true
+
+	# Create death overlay
+	if death_overlay == null and is_instance_valid(camera_2d_death):
+		death_overlay = ColorRect.new()
+		death_overlay.name = "DeathOverlay"
+		death_overlay.color = Color(0, 0, 0, 0.75)
+		death_overlay.anchor_left = 0.0
+		death_overlay.anchor_top = 0.0
+		death_overlay.anchor_right = 1.0
+		death_overlay.anchor_bottom = 1.0
+		death_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		death_overlay.z_index = -1
+		camera_2d_death.add_child(death_overlay)
+
+	print("Player died. Press E to restart, or F to go to rest area.")
+
+func _remove_all_enemies() -> void:
+	# Disable King Bread
+	if king_bread:
+		king_bread.process_mode = Node.PROCESS_MODE_DISABLED
+		king_bread.visible = false
+	
+	# Disable all enemy waves
+	if enemywave_1:
+		enemywave_1.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_1.visible = false
+		enemy_wave_1_active = false
+	
+	if enemywave_2:
+		enemywave_2.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_2.visible = false
+		enemy_wave_2_active = false
+	
+	if enemywave_3:
+		enemywave_3.process_mode = Node.PROCESS_MODE_DISABLED
+		enemywave_3.visible = false
+		enemy_wave_3_active = false
+	
+	# Remove any individual enemies that might still be active
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+	
+	# Kill all bread crumbs
+	kill_all_bread_crumbs()
+
+func _stop_all_wave_timers() -> void:
+	# Stop any timers checking for wave completion
+	for child in get_children():
+		if child is Timer:
+			if child.timeout.is_connected(_check_wave_1_clear) or \
+			   child.timeout.is_connected(_check_wave_2_clear) or \
+			   child.timeout.is_connected(_check_wave_3_clear):
+				child.stop()
+				child.queue_free()
+
+func _force_cleanup_scene() -> void:
+	# Kill all bread crumbs immediately
+	var bread_crumbs = get_tree().get_nodes_in_group("bread_crumbs")
+	for crumb in bread_crumbs:
+		if is_instance_valid(crumb):
+			crumb.queue_free()
+	
+	# Remove all enemies
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+
+func kill_all_bread_crumbs() -> void:
+	# Get all bread crumbs in the scene
+	var bread_crumbs = get_tree().get_nodes_in_group("bread_crumbs")
+	
+	# Kill each bread crumb
+	for crumb in bread_crumbs:
+		if is_instance_valid(crumb) and crumb.has_method("die"):
+			crumb.die()
+			print("Killed bread crumb during flash transition")
 
 func check_king_health() -> void:
 	# Access King Bread's health directly from the script
@@ -149,6 +353,12 @@ func check_king_health() -> void:
 		trigger_king_to_wave_3_transition()
 
 func trigger_king_to_wave_1_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Store King's current health for later restoration
 	if king_bread:
 		if king_bread.has_method("get_health"):
@@ -181,6 +391,12 @@ func trigger_king_to_wave_1_transition() -> void:
 		start_wave_1_clear_check()
 
 func trigger_king_to_wave_2_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Store King's current health for later restoration
 	if king_bread:
 		if king_bread.has_method("get_health"):
@@ -213,6 +429,12 @@ func trigger_king_to_wave_2_transition() -> void:
 		start_wave_2_clear_check()
 
 func trigger_king_to_wave_3_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Store King's current health for later restoration
 	if king_bread:
 		if king_bread.has_method("get_health"):
@@ -297,7 +519,7 @@ func start_wave_3_clear_check() -> void:
 	timer.start()
 
 func _check_wave_1_clear() -> void:
-	if not enemy_wave_1_active:
+	if not enemy_wave_1_active or is_player_dead or is_king_defeated:
 		return
 	
 	var alive_enemies = 0
@@ -333,7 +555,7 @@ func _check_wave_1_clear() -> void:
 		trigger_wave_1_to_king_transition()
 
 func _check_wave_2_clear() -> void:
-	if not enemy_wave_2_active:
+	if not enemy_wave_2_active or is_player_dead or is_king_defeated:
 		return
 	
 	var alive_enemies = 0
@@ -368,7 +590,7 @@ func _check_wave_2_clear() -> void:
 		trigger_wave_2_to_king_transition()
 
 func _check_wave_3_clear() -> void:
-	if not enemy_wave_3_active:
+	if not enemy_wave_3_active or is_player_dead or is_king_defeated:
 		return
 	
 	var alive_enemies = 0
@@ -403,6 +625,12 @@ func _check_wave_3_clear() -> void:
 		trigger_wave_3_to_king_transition()
 
 func trigger_wave_1_to_king_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Disable enemy wave 1
 	if enemywave_1:
 		enemywave_1.process_mode = Node.PROCESS_MODE_DISABLED
@@ -415,10 +643,14 @@ func trigger_wave_1_to_king_transition() -> void:
 	if flash_layer and flash_layer.has_method("trigger_flash"):
 		flash_layer.trigger_flash()
 	
-	# Re-enable King Bread with 75% health
+	# Re-enable King Bread with 75% health at pin2
 	if king_bread:
 		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
 		king_bread.visible = true
+		
+		# Teleport King Bread to pin2
+		if pin_2:
+			king_bread.global_position = pin_2.global_position
 		
 		# Set King Bread's health to 75% of max health
 		if king_bread.has_method("set_health_percentage"):
@@ -432,6 +664,12 @@ func trigger_wave_1_to_king_transition() -> void:
 			king_bread.health = int(max_health * 0.75)
 
 func trigger_wave_2_to_king_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Disable enemy wave 2
 	if enemywave_2:
 		enemywave_2.process_mode = Node.PROCESS_MODE_DISABLED
@@ -444,10 +682,14 @@ func trigger_wave_2_to_king_transition() -> void:
 	if flash_layer and flash_layer.has_method("trigger_flash"):
 		flash_layer.trigger_flash()
 	
-	# Re-enable King Bread with 50% health
+	# Re-enable King Bread with 50% health at pin2
 	if king_bread:
 		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
 		king_bread.visible = true
+		
+		# Teleport King Bread to pin2
+		if pin_2:
+			king_bread.global_position = pin_2.global_position
 		
 		# Set King Bread's health to 50% of max health
 		if king_bread.has_method("set_health_percentage"):
@@ -461,6 +703,12 @@ func trigger_wave_2_to_king_transition() -> void:
 			king_bread.health = int(max_health * 0.50)
 
 func trigger_wave_3_to_king_transition() -> void:
+	if is_player_dead or is_king_defeated:
+		return
+	
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Disable enemy wave 3
 	if enemywave_3:
 		enemywave_3.process_mode = Node.PROCESS_MODE_DISABLED
@@ -473,10 +721,14 @@ func trigger_wave_3_to_king_transition() -> void:
 	if flash_layer and flash_layer.has_method("trigger_flash"):
 		flash_layer.trigger_flash()
 	
-	# Re-enable King Bread with 25% health
+	# Re-enable King Bread with 25% health at pin2
 	if king_bread:
 		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
 		king_bread.visible = true
+		
+		# Teleport King Bread to pin2
+		if pin_2:
+			king_bread.global_position = pin_2.global_position
 		
 		# Set King Bread's health to 25% of max health
 		if king_bread.has_method("set_health_percentage"):
@@ -488,20 +740,6 @@ func trigger_wave_3_to_king_transition() -> void:
 		elif king_bread.get("max_health"):
 			var max_health = king_bread.max_health
 			king_bread.health = int(max_health * 0.25)
-
-func _input(event: InputEvent) -> void:
-	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
-		if dialogue_state == 1:
-			# Skip typewriter effect
-			if typewriter_tween:
-				typewriter_tween.kill()
-				typewriter_tween = null
-			dialoge.text = messages[current_message]
-			dialogue_state = 2
-			king_bread_c_lose.play("Idle")
-		elif dialogue_state == 2:
-			# Go to next message
-			next_message()
 
 func _on_interaction_area_interacted() -> void:
 	# Start dialogue with KingBread
@@ -528,7 +766,7 @@ func _on_interaction_area_interacted() -> void:
 	], "Idle")
 
 func start_dialogue(dialogue_messages: Array, Idle: String = "Idle") -> void:
-	if dialogue_state > 0:
+	if dialogue_state > 0 or is_player_dead:
 		return
 	
 	# Disable player movement
@@ -594,6 +832,9 @@ func end_dialogue() -> void:
 	trigger_flash_and_switch_camera()
 
 func trigger_flash_and_switch_camera() -> void:
+	# Kill all bread crumbs before the flash
+	kill_all_bread_crumbs()
+	
 	# Teleport the player immediately (before the flash)
 	_teleport_player_to_pin()
 	
@@ -601,10 +842,15 @@ func trigger_flash_and_switch_camera() -> void:
 	camera_2d.enabled = false
 	camera_2d_2.enabled = true
 	
-	# Enable King Bread now
+	# Enable King Bread now at pin2
 	if king_bread:
 		king_bread.process_mode = Node.PROCESS_MODE_INHERIT
 		king_bread.visible = true
+		
+		# Teleport King Bread to pin2
+		if pin_2:
+			king_bread.global_position = pin_2.global_position
+		
 		king_bread.set_player_reference(player)
 	
 	# Trigger the flash effect

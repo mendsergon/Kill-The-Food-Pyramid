@@ -4224,6 +4224,8 @@ layer_6/name = "Layer6"
 layer_7/name = "Layer7"
 
 [node name="KingDum" type="CharacterBody2D" parent="."]
+collision_layer = 128
+collision_mask = 0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="KingDum"]
 position = Vector2(0, -317)
@@ -4321,6 +4323,9 @@ shape = SubResource("RectangleShape2D_udxw5")
 [node name="Pin" type="Node2D" parent="."]
 position = Vector2(1, -847)
 
+[node name="Pin2" type="Node2D" parent="."]
+position = Vector2(327, -841)
+
 [node name="King Bread" parent="." instance=ExtResource("35_3b2dg")]
 position = Vector2(328, -857)
 
@@ -4388,5 +4393,34 @@ position = Vector2(-290, -190)
 
 [node name="Big Black Bread" parent="Enemywave3" instance=ExtResource("39_vje43")]
 position = Vector2(310, -182)
+
+[node name="Camera2D Death" type="Camera2D" parent="."]
+position = Vector2(4, -840)
+zoom = Vector2(2, 2)
+
+[node name="DeathLabel" type="Label" parent="Camera2D Death"]
+offset_left = -113.0
+offset_top = -87.0
+offset_right = 113.0
+offset_bottom = 24.0
+theme_override_fonts/font = ExtResource("27_xnwbh")
+theme_override_font_sizes/font_size = 40
+text = "
+YOU  DIED
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DeathLabel2" type="Label" parent="Camera2D Death"]
+offset_left = -105.0
+offset_top = 38.0
+offset_right = 121.0
+offset_bottom = 206.0
+theme_override_fonts/font = ExtResource("27_xnwbh")
+theme_override_font_sizes/font_size = 20
+text = "[E] to  restart
+[F] to  leave         "
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="interacted" from="InteractionArea" to="." method="_on_interaction_area_interacted"]
