@@ -65,6 +65,14 @@ func _ready() -> void:
 	if not interaction_area.is_connected("interacted", Callable(self, "_on_interaction_area_interacted")):
 		interaction_area.connect("interacted", Callable(self, "_on_interaction_area_interacted"))
 	
+	# Connect to King Bread's death signal if it exists
+	if king_bread and king_bread.has_signal("died"):
+		king_bread.connect("died", Callable(self, "_on_king_died"))
+	
+	# Also connect to tree_exited as a fallback
+	if king_bread:
+		king_bread.tree_exited.connect(Callable(self, "_on_king_tree_exited"))
+	
 	# Hide dialogue bar and label at start
 	dialoge_bar.visible = false
 	label.visible = false
@@ -139,27 +147,44 @@ func _process(_delta: float) -> void:
 	
 	# Check King Bread's health if he's active and we haven't triggered the thresholds yet
 	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED and not is_player_dead and not is_king_defeated:
+		# Check health thresholds
 		if not king_health_threshold_75_reached or not king_health_threshold_50_reached or not king_health_threshold_25_reached:
 			check_king_health()
 		
-		# Check if King Bread is defeated
-		if not is_king_defeated and is_king_dead():
+		# Simple check: if King Bread exists and is dead according to his own state
+		if is_king_dead_simple():
+			print("King Bread detected as dead in _process")
 			_on_king_defeated()
 
-func is_king_dead() -> bool:
-	if not king_bread:
-		return false
+# Simple and reliable king death check
+func is_king_dead_simple() -> bool:
+	if not king_bread or not is_instance_valid(king_bread):
+		return true
 	
-	# Check if King Bread is dead using various possible methods
-	if king_bread.has_method("is_dying"):
-		return king_bread.is_dying()
-	elif king_bread.has_method("get_health"):
+	# Check if king has been freed
+	if king_bread.is_queued_for_deletion():
+		return true
+	
+	# Try a simple health check if available
+	if king_bread.has_method("get_health"):
 		return king_bread.get_health() <= 0
 	elif king_bread.get("health"):
 		return king_bread.health <= 0
-	else:
-		# If we can't check health, assume he's alive
-		return false
+	
+	# If we can't check health, rely on other signals
+	return false
+
+# Simple, reliable detection when King Bread is freed/removed
+func _on_king_tree_exited() -> void:
+	if not is_king_defeated and not is_player_dead:
+		print("King Bread was removed from scene tree - triggering defeat")
+		_on_king_defeated()
+
+# If King Bread has a custom death signal
+func _on_king_died() -> void:
+	if not is_king_defeated and not is_player_dead:
+		print("King Bread death signal received - triggering defeat")
+		_on_king_defeated()
 
 func _on_king_defeated() -> void:
 	if is_king_defeated:
@@ -182,11 +207,12 @@ func _on_king_defeated() -> void:
 	
 	# Trigger fade out and load next level
 	if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
-		fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_4.tscn")
+		print("Starting fade to next level...")
+		fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_5.tscn")
 	else:
 		printerr("FadeLayer not found or missing start_fade method")
 		# Fallback: change scene directly
-		get_tree().change_scene_to_file("res://Assets/Levels/Rest Areas/level_4.tscn")
+		get_tree().change_scene_to_file("res://Assets/Levels/Rest Areas/level_5.tscn")
 
 func _input(event: InputEvent) -> void:
 	if is_player_dead:
@@ -205,6 +231,11 @@ func _input(event: InputEvent) -> void:
 				else:
 					print("No active save slot set — cannot load")
 		return
+	
+	# Debug: Press K to simulate king defeat
+	if event is InputEventKey and event.pressed and event.keycode == KEY_K and not event.echo:
+		print("DEBUG: Forcing king defeat")
+		_on_king_defeated()
 	
 	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
 		if dialogue_state == 1:
@@ -333,11 +364,15 @@ func check_king_health() -> void:
 	elif king_bread.has_method("get_health") and king_bread.has_method("get_max_health"):
 		var current_health = king_bread.get_health()
 		var max_health = king_bread.get_max_health()
-		health_percentage = (float(current_health) / float(max_health)) * 100
+		if max_health > 0:
+			health_percentage = (float(current_health) / float(max_health)) * 100
 	elif king_bread.get("health") and king_bread.get("max_health"):
 		var current_health = king_bread.health
 		var max_health = king_bread.max_health
-		health_percentage = (float(current_health) / float(max_health)) * 100
+		if max_health > 0:
+			health_percentage = (float(current_health) / float(max_health)) * 100
+	
+	print("King Bread health percentage: ", health_percentage, "%")
 	
 	# Check for 75% threshold
 	if health_percentage <= 75 and not king_health_threshold_75_reached:

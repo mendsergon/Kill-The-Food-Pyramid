@@ -15,7 +15,6 @@ var player_was_movable: bool = true  # Track player's movement state before dial
 var dialogue_source: String = ""  # Tracks which NPC/dialogue started
 
 func _ready() -> void:
-
 	# Connect interaction area 1 (floor transition)
 	if not interaction_area_1.is_connected("interacted", Callable(self, "_on_interaction_area_1_interacted")):
 		interaction_area_1.connect("interacted", Callable(self, "_on_interaction_area_1_interacted"))
@@ -86,7 +85,9 @@ func _save_player_on_scene_start() -> void:
 		printerr("Save failed: no active slot or other error.")
 		return
 
-	_rename_save_to_0_3()
+	# Wait until next frame to ensure save is complete
+	await get_tree().process_frame
+	_rename_save_to_0_5()
 
 	# Show save UI
 	if current_tween:
@@ -96,29 +97,51 @@ func _save_player_on_scene_start() -> void:
 	current_tween = create_tween()
 	current_tween.tween_property(save, "modulate:a", 1.0, 0.2).from(0.0)
 
-# Function to rename the save file to " 0-2"
-func _rename_save_to_0_3() -> void:
+func _rename_save_to_0_5() -> void:
 	var current_slot := SaveManager.current_slot
+	print("=== DEBUG RENAME START ===")
+	print("Current slot: ", current_slot)
+	
 	var path := ""
 	if SaveManager.has_method("_get_slot_path"):
 		path = SaveManager._get_slot_path(current_slot)
+		print("Using _get_slot_path: ", path)
 	else:
 		path = "user://player_slot_%d.tres" % current_slot
+		print("Using fallback path: ", path)
 
 	if path == "":
 		printerr("Invalid path for current slot")
 		return
 
+	# Check if file exists
+	if not FileAccess.file_exists(path):
+		printerr("SAVE FILE DOESN'T EXIST AT PATH: ", path)
+		print("=== DEBUG RENAME END ===")
+		return
+
 	var save_res = load(path)
 	if save_res and save_res is PlayerSaveData:
+		print("BEFORE - Save name was: '", save_res.save_name, "'")
 		save_res.save_name = " 0-5"
+		print("AFTER - Save name set to: '", save_res.save_name, "'")
+		
 		var err = ResourceSaver.save(save_res, path)
 		if err != OK:
-			printerr("Failed to rewrite save with new name:", error_string(err))
+			printerr("Failed to rewrite save with new name: ", error_string(err))
 		else:
-			print("Save renamed to 0-5 at %s" % path)
+			print("SUCCESS: Save renamed to ' 0-5'")
+			
+			# Verify the change
+			var verify_res = load(path)
+			if verify_res and verify_res is PlayerSaveData:
+				print("VERIFICATION - Save name is now: '", verify_res.save_name, "'")
+			else:
+				printerr("VERIFICATION FAILED: Could not reload save file")
 	else:
-		printerr("Save resource corrupted or missing")
+		printerr("Save resource corrupted or missing - loaded: ", save_res)
+
+	print("=== DEBUG RENAME END ===")
 
 func _on_interaction_area_1_interacted() -> void:
 	# Check player health to determine behavior
