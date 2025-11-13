@@ -1,36 +1,49 @@
-# CREDITS
+# **CREDITS**
 
-## Project  
-KILL THE FOOD PYRAMID  
+## **Project**
+
+**KILL THE FOOD PYRAMID**
 © 2025 Kaloumenos Stavros
 
-A 2D pixel wave-based shooter made in Godot.  
-Developed using Godot Engine 4.4.1+
+A 2D pixel wave-based shooter made in Godot.
+Developed using **Godot Engine 4.4.1+**.
 
-## CC0 Assets  
-- "Ninja Adventure Asset Pack" by Pixel-Boy and AAA  
-  https://pixel-boy.itch.io/ninja-adventure-asset-pack  
-  Licensed under CC0 (Public Domain)
+---
 
-- "Bread – Pixel Art Asset" by Caz Creates Games  
-  https://caz-creates-games.itch.io/bread  
-  Provided under a license permitting free use, modification, and commercial use.  
-  Credit not required but appreciated.
+## **CC0 Assets (Public Domain)**
 
-- Music: “Beyond Cosmos” by Centurion_of_war — CC0  
-  https://www.youtube.com/watch?v=ew_031ZLfQ8
+These assets are CC0, meaning they are free to use, modify, and redistribute without attribution (though credit is appreciated).
 
-- Music: “Sewerstrubstill” by Tozan — CC0  
-  https://www.youtube.com/watch?v=b_Bdm80qyqw
+* **“Ninja Adventure Asset Pack”** by *Pixel-Boy and AAA*
+  [https://pixel-boy.itch.io/ninja-adventure-asset-pack](https://pixel-boy.itch.io/ninja-adventure-asset-pack)
 
-- Music: “Boss Battle #3 V1” by nene — CC0  
-  https://www.youtube.com/watch?v=7w5On_wp0Kw
+* **“Bread – Pixel Art Asset”** by *Caz Creates Games*
+  [https://caz-creates-games.itch.io/bread](https://caz-creates-games.itch.io/bread)
+  Free for personal & commercial use. Attribution optional.
 
-## Additional Music (Used with Permission)
-- “Greenpath Ahh” by Pitt  
-  Not publicly released. Used with explicit permission.  
-  Artist profile: https://open.spotify.com/artist/5yQjv8Ct3IUJ91Hjph7JlD
+* **Music: “Beyond Cosmos”** by *Centurion_of_war* — CC0
+  [https://www.youtube.com/watch?v=ew_031ZLfQ8](https://www.youtube.com/watch?v=ew_031ZLfQ8)
 
-## Notes  
-Some assets included in this project are public domain (CC0) or otherwise freely reusable.  
-All other code, artwork, design, and content are © Kaloumenos Stavros under the project’s custom license (see LICENSE).
+* **Music: “Sewerstrubstill”** by *Tozan* — CC0
+  [https://www.youtube.com/watch?v=b_Bdm80qyqw](https://www.youtube.com/watch?v=b_Bdm80qyqw)
+
+* **Music: “Boss Battle #3 V1”** by *nene* — CC0
+  [https://www.youtube.com/watch?v=7w5On_wp0Kw](https://www.youtube.com/watch?v=7w5On_wp0Kw)
+
+---
+
+## **Additional Music (Used With Permission)**
+
+These tracks are **not public domain** and are included with explicit permission from the creators.
+
+* **“Greenpath Ahh”** by *Pitt*
+  Not publicly released. Used with permission.
+  Artist: [https://open.spotify.com/artist/5yQjv8Ct3IUJ91Hjph7JlD](https://open.spotify.com/artist/5yQjv8Ct3IUJ91Hjph7JlD)
+
+---
+
+## **Notes**
+
+Some assets in this project are public domain (CC0) or otherwise freely reusable.
+All original code, artwork, design, and other content are © Kaloumenos Stavros and covered by the project’s **custom license** (see `LICENSE`).
+
