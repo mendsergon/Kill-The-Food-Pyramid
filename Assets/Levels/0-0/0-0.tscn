@@ -1,4 +1,4 @@
-[gd_scene load_steps=56 format=3 uid="uid://c1ppbw0tdgfeh"]
+[gd_scene load_steps=57 format=3 uid="uid://c1ppbw0tdgfeh"]
 
 [ext_resource type="Script" uid="uid://c6niq3vyfsuyf" path="res://Assets/Levels/0-0/0-0.gd" id="1_86pk6"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_dleyb"]
@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Player/player.tscn" id="27_0aumf"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="28_tfqxh"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="29_wyto1"]
+[ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="30_a3u8b"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xjd3k"]
 texture = ExtResource("2_dleyb")
@@ -3927,3 +3928,8 @@ position = Vector2(-40, -67)
 scale = Vector2(0.5, 0.446)
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_wyto1")]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("30_a3u8b")
+autoplay = true
+parameters/looping = true

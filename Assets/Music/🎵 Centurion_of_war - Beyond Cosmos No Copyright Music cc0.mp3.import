@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ojslak0ir3k0"
+path="res://.godot/imported/🎵 Centurion_of_war - Beyond Cosmos No Copyright Music cc0.mp3-5d62e25727f3979bef9fe49415a78ef3.mp3str"
+
+[deps]
+
+source_file="res://Assets/Music/🎵 Centurion_of_war - Beyond Cosmos No Copyright Music cc0.mp3"
+dest_files=["res://.godot/imported/🎵 Centurion_of_war - Beyond Cosmos No Copyright Music cc0.mp3-5d62e25727f3979bef9fe49415a78ef3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

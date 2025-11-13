@@ -9,7 +9,7 @@ const STAGGER_DURATION = 0.05             # Time frozen after taking hit
 const DEATH_DURATION = 0.5                # Time before removing dead bread
 
 ### --- HEALTH & STATE MACHINE --- ###
-@export var max_health: int = 4        # King Bread has 400 HP
+@export var max_health: int = 400        # King Bread has 400 HP
 var health: int                          # Current HP
 enum HealthState { HEALTH_100, HEALTH_75, HEALTH_50, HEALTH_25 }
 var current_health_state: HealthState = HealthState.HEALTH_100

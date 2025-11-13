@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://bsmif84i3rsoq"]
+[gd_scene load_steps=78 format=3 uid="uid://bsmif84i3rsoq"]
 
 [ext_resource type="Script" uid="uid://dgepj5wluxhmx" path="res://Assets/Levels/0-5/0_5.gd" id="1_7nqve"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_ylnyf"]
@@ -39,6 +39,8 @@
 [ext_resource type="PackedScene" uid="uid://dx6xvy3qsu862" path="res://Assets/Enemies/Baguette/baguette.tscn" id="37_s1pbh"]
 [ext_resource type="PackedScene" uid="uid://bycr0rinrb14j" path="res://Assets/Enemies/Bread/big_bread.tscn" id="38_fdwqx"]
 [ext_resource type="PackedScene" uid="uid://bfv31ghjmrpc2" path="res://Assets/Enemies/Bread/big_black_bread.tscn" id="39_vje43"]
+[ext_resource type="AudioStream" uid="uid://d1ci8bx865snb" path="res://Assets/Music/🎵 Tozan - Sewerstrubstill No Copyright Music cc0.mp3" id="40_vje43"]
+[ext_resource type="AudioStream" uid="uid://qs11dfr85vgr" path="res://Assets/Music/🎵 nene - Boss Battle #3 V1 No Copyright Music.mp3" id="41_opjbo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g1jfx"]
 texture = ExtResource("1_ylnyf")
@@ -4421,5 +4423,14 @@ text = "[E] to  restart
 [F] to  leave         "
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("40_vje43")
+autoplay = true
+parameters/looping = true
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("41_opjbo")
+parameters/looping = true
 
 [connection signal="interacted" from="InteractionArea" to="." method="_on_interaction_area_interacted"]

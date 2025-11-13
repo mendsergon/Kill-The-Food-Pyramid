@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://4hw4nftb5fkb"]
+[gd_scene load_steps=58 format=3 uid="uid://4hw4nftb5fkb"]
 
 [ext_resource type="Script" uid="uid://jhyvglvyp6w6" path="res://Assets/Levels/Rest Areas/level_1.gd" id="1_ve6kg"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_ve6kg"]
@@ -30,6 +30,7 @@
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="28_cr40h"]
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="28_i6cym"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="29_i6cym"]
+[ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="31_kevjq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_i6cym"]
 texture = ExtResource("2_ve6kg")
@@ -4015,6 +4016,10 @@ theme_override_font_sizes/font_size = 9
 text = "*locked*"
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_i6cym")]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("31_kevjq")
+autoplay = true
 
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
 [connection signal="interacted" from="InteractionArea2" to="." method="_on_interaction_area_2_interacted"]

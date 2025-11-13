@@ -1,4 +1,4 @@
-[gd_scene load_steps=64 format=3 uid="uid://c7hicbjfxqu8b"]
+[gd_scene load_steps=65 format=3 uid="uid://c7hicbjfxqu8b"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_p44pf"]
 [ext_resource type="Script" uid="uid://bsciip666pl65" path="res://Assets/Levels/Rest Areas/level_3.gd" id="1_vkclp"]
@@ -33,6 +33,7 @@
 [ext_resource type="Texture2D" uid="uid://ciee6ahdomu7l" path="res://Assets/UI/Text Bar/Text Bar.png" id="30_7m0p4"]
 [ext_resource type="Texture2D" uid="uid://cnrs4v80iis4p" path="res://Assets/UI/CyberCat Close Up/CyberCat closeup.png" id="31_ibebc"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="32_bbtm2"]
+[ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="34_5hd43"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vkclp"]
 texture = ExtResource("1_p44pf")
@@ -4185,6 +4186,10 @@ scale = Vector2(0.5, 0.446)
 [node name="InteractionArea3" parent="." instance=ExtResource("27_2t681")]
 position = Vector2(-536, 57)
 scale = Vector2(0.5, 0.398)
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("34_5hd43")
+autoplay = true
 
 [connection signal="interacted" from="Cyber Cat/InteractionArea4" to="." method="_on_interaction_area_4_interacted"]
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]

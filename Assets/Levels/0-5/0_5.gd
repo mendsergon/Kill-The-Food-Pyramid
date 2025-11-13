@@ -17,6 +17,8 @@ extends Node2D
 @onready var death_label: Label = $"Camera2D Death/DeathLabel"
 @onready var death_label_2: Label = $"Camera2D Death/DeathLabel2"
 @onready var fade_layer: CanvasLayer = $FadeLayer
+@onready var audio_stream_player: AudioStreamPlayer = $AudioStreamPlayer
+@onready var audio_stream_player_2: AudioStreamPlayer = $AudioStreamPlayer2
 
 @onready var enemywave_1: Node2D = $Enemywave1
 @onready var bread_1: CharacterBody2D = $Enemywave1/Bread1
@@ -231,11 +233,6 @@ func _input(event: InputEvent) -> void:
 				else:
 					print("No active save slot set — cannot load")
 		return
-	
-	# Debug: Press K to simulate king defeat
-	if event is InputEventKey and event.pressed and event.keycode == KEY_K and not event.echo:
-		print("DEBUG: Forcing king defeat")
-		_on_king_defeated()
 	
 	if dialogue_state > 0 and event.is_action_pressed("Interact"): 
 		if dialogue_state == 1:
@@ -858,6 +855,12 @@ func end_dialogue() -> void:
 		player.set_movement_enabled(player_was_movable)
 	elif player.has_method("set_physics_process"):
 		player.set_physics_process(true)
+	
+	# Switch audio streams - stop the first one and start the second one
+	if is_instance_valid(audio_stream_player) and audio_stream_player.playing:
+		audio_stream_player.stop()
+	if is_instance_valid(audio_stream_player_2) and not audio_stream_player_2.playing:
+		audio_stream_player_2.play()
 	
 	# Kill the interaction area after dialogue
 	if is_instance_valid(interaction_area):

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://qs11dfr85vgr"
+path="res://.godot/imported/🎵 nene - Boss Battle #3 V1 No Copyright Music.mp3-b4d75716f2d05e471d8ad5284bf07372.mp3str"
+
+[deps]
+
+source_file="res://Assets/Music/🎵 nene - Boss Battle #3 V1 No Copyright Music.mp3"
+dest_files=["res://.godot/imported/🎵 nene - Boss Battle #3 V1 No Copyright Music.mp3-b4d75716f2d05e471d8ad5284bf07372.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
