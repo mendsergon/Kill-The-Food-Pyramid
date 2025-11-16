@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://qfrabc4wvkt3"]
+[gd_scene load_steps=5 format=3 uid="uid://qfrabc4wvkt3"]
 
 [ext_resource type="Script" uid="uid://dvo5ged0w22h" path="res://Assets/Enemies/Bread Cramb/bread_cramb.gd" id="1_doeli"]
 [ext_resource type="Texture2D" uid="uid://dhd3utrbh7nir" path="res://Assets/Enemies/Bread Cramb/Bread Crumb.png" id="1_jji7y"]
+[ext_resource type="AudioStream" uid="uid://g60tt13t1qdl" path="res://Assets/Sounds/Pew Sound Effect.mp3" id="3_yutxy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dn5y4"]
 radius = 11.0
@@ -16,3 +17,7 @@ texture = ExtResource("1_jji7y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_dn5y4")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_yutxy")
+pitch_scale = 0.9

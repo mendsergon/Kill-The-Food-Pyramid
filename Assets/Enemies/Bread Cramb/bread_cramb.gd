@@ -13,6 +13,7 @@ var health: int = 1                      # Breadcrumb HP (only 1 hit to destroy)
 
 ### --- NODE REFERENCES --- ###
 @onready var sprite_2d: Sprite2D = $Sprite2D  # Reference to crumb's sprite
+@onready var audio_stream_player: AudioStreamPlayer = $AudioStreamPlayer  # Audio player for breadcrumb sounds
 
 ### --- STATE --- ###
 var direction := Vector2.ZERO            # Locked movement direction at spawn
@@ -41,6 +42,17 @@ func _ready() -> void:
 	# Make invincible and immune to pushback
 	collision_layer = 0
 	collision_mask = 0
+	
+	# Play audio once when the breadcrumb is spawned, starting from 0.2 seconds
+	if audio_stream_player and audio_stream_player.stream:
+		# Set volume to 75% (-2.5 dB)
+		audio_stream_player.volume_db = linear_to_db(0.75)
+		audio_stream_player.play(0.2)
+		
+		# Start fading out immediately over the entire duration of the audio
+		var audio_length = audio_stream_player.stream.get_length() - 0.2  # Remaining length after start offset
+		var tween = create_tween()
+		tween.tween_property(audio_stream_player, "volume_db", -80.0, audio_length)
 	
 	print("Breadcrumb spawned at ", global_position)
 
