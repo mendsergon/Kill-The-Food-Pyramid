@@ -144,5 +144,4 @@ func _rename_save_to_0_5() -> void:
 	print("=== DEBUG RENAME END ===")
 
 func _on_interaction_area_1_interacted() -> void:
-	# Check player health to determine behavior
-	return
+	fade_layer.start_fade("res://Assets/Final/Final.tscn")

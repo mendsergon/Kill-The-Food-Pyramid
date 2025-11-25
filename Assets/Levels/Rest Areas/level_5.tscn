@@ -4194,6 +4194,5 @@ position = Vector2(-5, 3.0517578e-05)
 scale = Vector2(1, 0.892)
 
 [node name="FadeLayer" parent="." instance=ExtResource("29_0rvd5")]
-visible = false
 
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
