@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://c6ehqcwg7di6e"]
+[gd_scene load_steps=13 format=4 uid="uid://c6ehqcwg7di6e"]
 
 [ext_resource type="Script" uid="uid://543llhtcnc82" path="res://Assets/Levels/0-1/0-1.gd" id="1_w0v3a"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_44kc5"]
@@ -7,6 +7,7 @@
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="5_rklss"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="6_025sh"]
 [ext_resource type="AudioStream" uid="uid://ojslak0ir3k0" path="res://Assets/Music/🎵 Centurion_of_war - Beyond Cosmos No Copyright Music cc0.mp3" id="7_44kc5"]
+[ext_resource type="PackedScene" uid="uid://cg435jxha0vf3" path="res://Assets/Menus/Pause Menu/Pause_menu.tscn" id="8_kor4r"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nv73i"]
 texture = ExtResource("2_44kc5")
@@ -554,6 +555,13 @@ theme_override_fonts/font = ExtResource("5_rklss")
 theme_override_font_sizes/font_size = 9
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="pause_menu" parent="Player/Camera2D" instance=ExtResource("8_kor4r")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="SpawnArea" type="Area2D" parent="."]
 

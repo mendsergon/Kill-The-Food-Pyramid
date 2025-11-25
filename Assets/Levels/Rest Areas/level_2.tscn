@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=3 uid="uid://uo0cspm4ncv0"]
+[gd_scene load_steps=66 format=3 uid="uid://uo0cspm4ncv0"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_a6f8o"]
 [ext_resource type="Script" uid="uid://tbota4nb3qnr" path="res://Assets/Levels/Rest Areas/level_2.gd" id="1_unl7x"]
@@ -33,6 +33,7 @@
 [ext_resource type="Texture2D" uid="uid://ciee6ahdomu7l" path="res://Assets/UI/Text Bar/Text Bar.png" id="31_i2lfb"]
 [ext_resource type="PackedScene" uid="uid://cblsyvnaj77bb" path="res://Assets/NPCs/Cyber Cat/cyber_cat.tscn" id="31_mvklg"]
 [ext_resource type="Texture2D" uid="uid://cnrs4v80iis4p" path="res://Assets/UI/CyberCat Close Up/CyberCat closeup.png" id="32_cqdt7"]
+[ext_resource type="PackedScene" uid="uid://cg435jxha0vf3" path="res://Assets/Menus/Pause Menu/Pause_menu.tscn" id="33_n71w8"]
 [ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="34_uiprv"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_csq2o"]
@@ -4172,6 +4173,13 @@ offset_bottom = 157.928
 theme_override_fonts/font = ExtResource("27_8dwdt")
 theme_override_font_sizes/font_size = 9
 text = "Might  as  well check  the  shop  before  entering"
+
+[node name="pause_menu" parent="Player/Camera2D" instance=ExtResource("33_n71w8")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="InteractionArea1" parent="." instance=ExtResource("28_tkxoa")]
 position = Vector2(56, -55)

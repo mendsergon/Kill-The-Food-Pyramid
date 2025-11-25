@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://suhl3a2cwfet"]
+[gd_scene load_steps=58 format=3 uid="uid://suhl3a2cwfet"]
 
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="1_doo70"]
 [ext_resource type="Script" uid="uid://ds7inv1ltylo6" path="res://Assets/Levels/Rest Areas/level_5.gd" id="1_ep60m"]
@@ -30,6 +30,7 @@
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="27_wosij"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="28_w0qh8"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="29_0rvd5"]
+[ext_resource type="PackedScene" uid="uid://cg435jxha0vf3" path="res://Assets/Menus/Pause Menu/Pause_menu.tscn" id="29_ffrhc"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vkh02"]
 texture = ExtResource("1_doo70")
@@ -4180,6 +4181,13 @@ offset_bottom = 157.928
 theme_override_fonts/font = ExtResource("27_wosij")
 theme_override_font_sizes/font_size = 9
 text = "Might  as  well check  the  shop  before  entering"
+
+[node name="pause_menu" parent="Player/Camera2D" instance=ExtResource("29_ffrhc")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="InteractionArea1" parent="." instance=ExtResource("28_w0qh8")]
 position = Vector2(-5, 3.0517578e-05)

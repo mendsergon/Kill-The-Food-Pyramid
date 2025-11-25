@@ -44,6 +44,8 @@ extends Node2D
 @onready var big_bread: CharacterBody2D = $"Enemywave3/Big Bread"
 @onready var big_black_bread: CharacterBody2D = $"Enemywave3/Big Black Bread"
 
+@onready var pause_menu: Control = $Player/Camera2D2/pause_menu
+
 var dialogue_state: int = 0  # 0 = not in dialogue, 1 = typing, 2 = waiting for input
 var current_message: int = 0
 var messages: Array = []
@@ -147,6 +149,13 @@ func _process(_delta: float) -> void:
 		_on_player_died()
 		return
 	
+	# Disable pause menu when player is dead
+	if is_player_dead and pause_menu and pause_menu.visible:
+		pause_menu.visible = false
+		# Also make sure the game is not paused
+		if get_tree().paused:
+			get_tree().paused = false
+	
 	# Check King Bread's health if he's active and we haven't triggered the thresholds yet
 	if king_bread and king_bread.process_mode != Node.PROCESS_MODE_DISABLED and not is_player_dead and not is_king_defeated:
 		# Check health thresholds
@@ -178,6 +187,9 @@ func is_king_dead_simple() -> bool:
 
 # Simple, reliable detection when King Bread is freed/removed
 func _on_king_tree_exited() -> void:
+	if not is_inside_tree() or is_queued_for_deletion():
+		return
+		
 	if not is_king_defeated and not is_player_dead:
 		print("King Bread was removed from scene tree - triggering defeat")
 		_on_king_defeated()
@@ -189,7 +201,7 @@ func _on_king_died() -> void:
 		_on_king_defeated()
 
 func _on_king_defeated() -> void:
-	if is_king_defeated:
+	if is_king_defeated or not is_inside_tree() or is_queued_for_deletion():
 		return
 	
 	is_king_defeated = true
@@ -206,6 +218,10 @@ func _on_king_defeated() -> void:
 	
 	# Wait a moment then trigger fade out
 	await get_tree().create_timer(2.0).timeout
+	
+	# Only proceed if we're still in the tree
+	if not is_inside_tree() or is_queued_for_deletion():
+		return
 	
 	# Trigger fade out and load next level
 	if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
@@ -252,6 +268,14 @@ func _on_player_died() -> void:
 		return
 		
 	is_player_dead = true
+
+	# Disable pause menu when player dies
+	if pause_menu:
+		pause_menu.visible = false
+		pause_menu.process_mode = Node.PROCESS_MODE_DISABLED
+		# Ensure game is not paused
+		if get_tree().paused:
+			get_tree().paused = false
 
 	# Stop any ongoing dialogue
 	if dialogue_state > 0:
@@ -343,8 +367,13 @@ func _force_cleanup_scene() -> void:
 			enemy.queue_free()
 
 func kill_all_bread_crumbs() -> void:
+	# Check if we're still in a valid scene tree
+	var scene_tree = get_tree()
+	if not scene_tree or not is_inside_tree():
+		return
+	
 	# Get all bread crumbs in the scene
-	var bread_crumbs = get_tree().get_nodes_in_group("bread_crumbs")
+	var bread_crumbs = scene_tree.get_nodes_in_group("bread_crumbs")
 	
 	# Kill each bread crumb
 	for crumb in bread_crumbs:

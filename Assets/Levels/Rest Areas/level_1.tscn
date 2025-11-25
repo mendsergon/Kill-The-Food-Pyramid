@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://4hw4nftb5fkb"]
+[gd_scene load_steps=59 format=3 uid="uid://4hw4nftb5fkb"]
 
 [ext_resource type="Script" uid="uid://jhyvglvyp6w6" path="res://Assets/Levels/Rest Areas/level_1.gd" id="1_ve6kg"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_ve6kg"]
@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://dr0o1vrv8l7kq" path="res://Assets/Player/player.tscn" id="27_o3kt4"]
 [ext_resource type="PackedScene" uid="uid://84xmxo3fupiq" path="res://Assets/Elements/Interaction Area/interaction_area.tscn" id="28_cr40h"]
 [ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="28_i6cym"]
+[ext_resource type="PackedScene" uid="uid://cg435jxha0vf3" path="res://Assets/Menus/Pause Menu/Pause_menu.tscn" id="29_d1gx0"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="29_i6cym"]
 [ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="31_kevjq"]
 
@@ -3996,6 +3997,13 @@ scale = Vector2(0.5, 0.5)
 theme_override_fonts/font = ExtResource("28_i6cym")
 theme_override_font_sizes/font_size = 9
 text = "Game  Saved"
+
+[node name="pause_menu" parent="Player/Camera2D" instance=ExtResource("29_d1gx0")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [node name="InteractionArea1" parent="." instance=ExtResource("28_cr40h")]
 position = Vector2(56, -55)

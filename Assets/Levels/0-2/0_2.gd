@@ -10,6 +10,7 @@ extends Node2D
 @onready var camera_2d_death: Camera2D = $"Camera2D Death"
 @onready var death_label: Label = $"Camera2D Death/DeathLabel"
 @onready var death_label_2: Label = $"Camera2D Death/DeathLabel2"
+@onready var pause_menu: Control = $Player/Camera2D/pause_menu
 
 ### --- ENEMY SCENES --- ###
 var bread_scene: PackedScene = preload("res://Assets/Enemies/Bread/bread.tscn")
@@ -119,6 +120,13 @@ func _process(delta: float) -> void:
 
 	if not is_player_dead and not is_instance_valid(player):
 		_on_player_died()
+	
+	# Disable pause menu when player is dead
+	if is_player_dead and pause_menu and pause_menu.visible:
+		pause_menu.visible = false
+		# Also make sure the game is not paused
+		if get_tree().paused:
+			get_tree().paused = false
 
 func _input(event: InputEvent) -> void:
 	if not is_player_dead:
@@ -138,6 +146,14 @@ func _input(event: InputEvent) -> void:
 
 func _on_player_died() -> void:
 	is_player_dead = true
+
+	# Disable pause menu when player dies
+	if pause_menu:
+		pause_menu.visible = false
+		pause_menu.process_mode = Node.PROCESS_MODE_DISABLED
+		# Ensure game is not paused
+		if get_tree().paused:
+			get_tree().paused = false
 
 	# Remove all enemies when player dies
 	for enemy in get_tree().get_nodes_in_group("enemies"):
