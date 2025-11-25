@@ -56,13 +56,13 @@ The long-term goal is to turn this into a wild, upgrade-filled arcade shooter fu
 
 ## **Controls**
 
-| Action          | Key                                 |
-| --------------- | ----------------------------------- |
-| Move            | **W / A / S / D** or **Arrow Keys** |
-| Dash            | **Shift**                           |
-| Aim & Shoot     | **Mouse**                           |
-| Melee (planned) | **E**                               |
-| Interact        | **X**                               |
+| Action         | Key                                 |
+| -------------- | ----------------------------------- |
+| Move           | **W / A / S / D** or **Arrow Keys** |
+| Dash           | **Shift**                           |
+| Aim & Shoot    | **Mouse**                           |
+| Charged Attack | **E**                               |
+| Interact       | **X**                               |
 
 ---
 
