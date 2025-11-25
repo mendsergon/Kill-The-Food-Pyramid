@@ -1,4 +1,4 @@
-extends WeaponBase  # Changed from Node2D to WeaponBase
+extends WeaponBase
 
 ### --- CONSTANTS --- ###
 const BULLET = preload("res://Assets/Weapons/Bullet 1/bullet_1.tscn") # Bullet scene reference
@@ -20,7 +20,7 @@ func _process(delta: float) -> void:
 	# Rotate to face the global mouse position
 	look_at(get_global_mouse_position())
 	
-	# Wrap rotation to keep within 0–360 degrees
+	# Wrap rotation to keep within 0-360 degrees
 	rotation_degrees = wrap(rotation_degrees, 0, 360)
 	
 	# Flip vertically when facing left (between 90° and 270°)

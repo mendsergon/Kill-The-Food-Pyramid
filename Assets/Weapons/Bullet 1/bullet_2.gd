@@ -20,8 +20,8 @@ func _ready() -> void:
 	# Play audio once when the bullet is spawned, starting from 0.2 seconds
 	audio_stream_player.play(0.2)
 	
-	# Start fading out immediately over the entire duration of the audio
-	var audio_length = audio_stream_player.stream.get_length() - 0.2  # Remaining length after start offset
+	# Start fading out immediately over the remaining duration of the audio
+	var audio_length = audio_stream_player.stream.get_length() - 0.4
 	var tween = create_tween()
 	tween.tween_property(audio_stream_player, "volume_db", -80.0, audio_length)
 

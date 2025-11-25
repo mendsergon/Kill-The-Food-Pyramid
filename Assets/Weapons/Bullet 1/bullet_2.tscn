@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://1n88d05wp3nr"]
 
-[ext_resource type="Script" uid="uid://ol5ag6rw6hw0" path="res://bullet_2.gd" id="1_655ag"]
+[ext_resource type="Script" uid="uid://ol5ag6rw6hw0" path="res://Assets/Weapons/Bullet 1/bullet_2.gd" id="1_655ag"]
 [ext_resource type="Texture2D" uid="uid://blpid62b5v4lo" path="res://Assets/Weapons/Bullet 1/Bullet 1.png" id="2_1sh2k"]
-[ext_resource type="AudioStream" uid="uid://g60tt13t1qdl" path="res://Assets/Sounds/Pew Sound Effect.mp3" id="3_t6jnr"]
+[ext_resource type="AudioStream" uid="uid://b5b3noxnmbu13" path="res://Assets/Sounds/Pew Sound Effect.wav" id="3_655ag"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_cgxvw"]
 radius = 3.16228
@@ -31,7 +31,7 @@ target_position = Vector2(3, 0)
 collision_mask = 4
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("3_t6jnr")
+stream = ExtResource("3_655ag")
 pitch_scale = 0.9
 
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
