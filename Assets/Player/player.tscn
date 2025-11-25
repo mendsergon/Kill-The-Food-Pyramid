@@ -2,9 +2,9 @@
 
 [ext_resource type="Texture2D" uid="uid://c56ca1gj6bgt" path="res://Assets/Player/Player.png" id="1_6cd4h"]
 [ext_resource type="Script" uid="uid://bj0l1ulpnxuq8" path="res://Assets/Player/player.gd" id="1_7dd06"]
-[ext_resource type="PackedScene" path="res://Assets/Weapons/Pistol 1/weapon_1.tscn" id="3_38rej"]
+[ext_resource type="PackedScene" uid="uid://dg740w223g62i" path="res://Assets/Weapons/Pistol 1/weapon_1.tscn" id="3_38rej"]
 [ext_resource type="PackedScene" path="res://Assets/UI/Heart/heart.tscn" id="4_22rpc"]
-[ext_resource type="PackedScene" path="res://Assets/Weapons/Shotgun/weapon_2.tscn" id="4_c3tg1"]
+[ext_resource type="PackedScene" uid="uid://bgc3wolcm6f6y" path="res://Assets/Weapons/Shotgun/weapon_2.tscn" id="4_c3tg1"]
 [ext_resource type="PackedScene" path="res://Assets/UI/MeleeOrb/melee_orb.tscn" id="5_2pvs1"]
 [ext_resource type="PackedScene" path="res://Assets/UI/DashSlab/dash_slab.tscn" id="6_w3t24"]
 

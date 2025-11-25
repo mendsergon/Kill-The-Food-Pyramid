@@ -1,9 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://cxq1b4vcrpqnj"]
+[gd_scene load_steps=3 format=3 uid="uid://bgc3wolcm6f6y"]
 
-[ext_resource type="Script" uid="uid://dkwhmvndmvdfc" path="res://Assets/Scripts/weapon_2.gd" id="1_jr1ma"]
-[ext_resource type="Texture2D" uid="uid://c3kjp6kp414ee" path="res://Assets/Sprites/Weapons/shotgun.png" id="2_bxd1b"]
+[ext_resource type="Script" uid="uid://dkwhmvndmvdfc" path="res://Assets/Weapons/Shotgun/weapon_2.gd" id="1_jr1ma"]
+[ext_resource type="Texture2D" uid="uid://c3kjp6kp414ee" path="res://Assets/Weapons/Shotgun/shotgun.png" id="2_bxd1b"]
 
 [node name="Weapon_2" type="Node2D"]
+visible = false
 scale = Vector2(0.75, 0.75)
 script = ExtResource("1_jr1ma")
 

@@ -63,6 +63,9 @@ var is_invulnerable := false            # True while invulnerable
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D # Character sprite
 @onready var melee_area: Area2D = $MeleeArea2D # Melee hit area
 
+### --- BULLET SYSTEM --- ###
+const BULLET_SCENE = preload("res://Assets/Weapons/Bullet 1/bullet_2.tscn")
+
 ### --- STATE TIMERS --- ###
 var dash_timer := 0.0                   # Counts down dash duration
 var dash_cooldown_timer := 0.0          # Time until next dash
@@ -389,10 +392,8 @@ func _enter_attack_state() -> void:
 	attack_timer = ATTACK_DURATION
 	velocity = Vector2.ZERO
 	
-	# Enable melee area
-	melee_area.position = aim_direction * 20
-	melee_area.monitoring = true
-	melee_area.visible = true
+	# Spawn bullet from pistol's Marker2D
+	spawn_melee_bullet()
 	
 	# Lock direction
 	locked_aim_direction = aim_direction
@@ -401,10 +402,33 @@ func _enter_attack_state() -> void:
 	# Start orb reset timer
 	orb_reset_timer = ORB_RESET_DELAY
 
+func spawn_melee_bullet() -> void:
+	var bullet = BULLET_SCENE.instantiate()
+	
+	# Get the current weapon's muzzle Marker2D
+	var current_weapon = get_current_weapon()
+	if current_weapon and current_weapon.has_node("Marker2D"):
+		var muzzle = current_weapon.get_node("Marker2D")
+		# Set bullet position to muzzle's global position
+		bullet.position = muzzle.global_position
+		# Set bullet rotation to match weapon's aim direction
+		bullet.rotation = current_weapon.global_rotation
+	else:
+		# Fallback: use player's position and aim direction
+		bullet.position = global_position
+		bullet.rotation = locked_aim_direction.angle()
+	
+	# Set bullet damage based on current orb charges
+	if bullet.has_method("set_damage"):
+		bullet.set_damage(2 + current_orb_charges)
+	
+	# Add bullet to the scene
+	get_parent().add_child(bullet)
+	
+	# Note: We don't connect the hit_target signal for melee bullets
+	# so they don't recharge melee orbs
+
 func _exit_attack_state() -> void:
-	# Disable melee area
-	melee_area.monitoring = false
-	melee_area.visible = false
 	is_direction_locked = false
 	current_attack_animation = ""
 

@@ -73,6 +73,9 @@ var edge_offset := 16 # pixels outside camera view
 var big_bread_ref: Node = null
 var big_black_bread_spawned := false
 
+# Track if we're exiting the game
+var is_exiting_game := false
+
 func _ready() -> void:
 	randomize()
 	set_process(true) # ensure _process runs for boss health polling
@@ -127,28 +130,32 @@ func _process(delta: float) -> void:
 			get_tree().paused = false
 
 func _input(event: InputEvent) -> void:
-	if not is_player_dead:
+	if is_player_dead:
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == KEY_E:
+				get_tree().reload_current_scene()
+			elif event.keycode == KEY_F:
+				# Force cleanup of all enemies and breadcrumbs before scene change
+				_force_cleanup_scene()
+				
+				# Load last active slot via SaveManager
+				if SaveManager.has_method("get_active_slot") and SaveManager.get_active_slot() != -1:
+					var ok = SaveManager.continue_game()  # uses current_slot automatically
+					if not ok:
+						printerr("Failed to continue game from active save slot")
+				else:
+					print("No active save slot set — cannot load")
 		return
 
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_E:
-			get_tree().reload_current_scene()
-		elif event.keycode == KEY_F:
-			# Load last active slot via SaveManager
-			if SaveManager.has_method("get_active_slot") and SaveManager.get_active_slot() != -1:
-				var ok = SaveManager.continue_game()  # uses current_slot automatically
-				if not ok:
-					printerr("Failed to continue game from active save slot")
-			else:
-				print("No active save slot set — cannot load")
-
 func _on_player_died() -> void:
+	if is_player_dead:
+		return
+		
 	is_player_dead = true
 
 	# Disable pause menu when player dies
-	if pause_menu:
+	if pause_menu and is_instance_valid(pause_menu):
 		pause_menu.visible = false
-		pause_menu.process_mode = Node.PROCESS_MODE_DISABLED
 		# Ensure game is not paused
 		if get_tree().paused:
 			get_tree().paused = false
@@ -158,7 +165,7 @@ func _on_player_died() -> void:
 		if is_instance_valid(enemy):
 			enemy.queue_free()
 
-	if spawn_timer:
+	if spawn_timer and is_instance_valid(spawn_timer):
 		spawn_timer.stop()
 		spawn_timer.queue_free()
 
@@ -170,7 +177,7 @@ func _on_player_died() -> void:
 	if is_instance_valid(death_label_2):
 		death_label_2.visible = true
 
-	if death_overlay == null:
+	if death_overlay == null and is_instance_valid(camera_2d_death):
 		death_overlay = ColorRect.new()
 		death_overlay.name = "DeathOverlay"
 		death_overlay.color = Color(0, 0, 0, 0.75)
@@ -180,10 +187,22 @@ func _on_player_died() -> void:
 		death_overlay.anchor_bottom = 1.0
 		death_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		death_overlay.z_index = -1
-		if is_instance_valid(camera_2d_death):
-			camera_2d_death.add_child(death_overlay)
+		camera_2d_death.add_child(death_overlay)
 
 	print("Player died. Press E to restart, or F to go to rest area.")
+
+func _force_cleanup_scene() -> void:
+	# Kill all bread crumbs immediately
+	var bread_crumbs = get_tree().get_nodes_in_group("bread_crumbs")
+	for crumb in bread_crumbs:
+		if is_instance_valid(crumb):
+			crumb.queue_free()
+	
+	# Remove all enemies
+	var enemies = get_tree().get_nodes_in_group("enemies")
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			enemy.queue_free()
 
 func _start_wave(wave_index: int) -> void:
 	if wave_index >= waves.size():
@@ -217,8 +236,8 @@ func _start_wave(wave_index: int) -> void:
 	spawn_timer.start()
 
 func _spawn_wave_batch() -> void:
-	if is_player_dead or not is_instance_valid(player):
-		if spawn_timer:
+	if is_player_dead or not is_instance_valid(player) or is_exiting_game:
+		if spawn_timer and is_instance_valid(spawn_timer):
 			spawn_timer.stop()
 			spawn_timer.queue_free()
 		return
@@ -228,8 +247,9 @@ func _spawn_wave_batch() -> void:
 	var batch_size = wave["batch_size"]
 
 	if spawned_count >= total_to_spawn:
-		spawn_timer.stop()
-		spawn_timer.queue_free()
+		if spawn_timer and is_instance_valid(spawn_timer):
+			spawn_timer.stop()
+			spawn_timer.queue_free()
 		return # Wait for alive_enemies to reach 0 before starting next wave
 
 	for i in range(batch_size):
@@ -313,17 +333,37 @@ func _spawn_big_black_bread() -> void:
 	print("Big Black Bread spawned!")
 
 func _on_enemy_died() -> void:
+	# Check if we're exiting the game or if the scene tree is invalid
+	if is_exiting_game or not is_inside_tree() or is_queued_for_deletion():
+		return
+	
 	alive_enemies -= 1
 	if alive_enemies <= 0 and spawned_count >= waves[current_wave]["total"]:
 		if current_wave + 1 >= waves.size():
 			# All waves complete, wait 5 seconds, then fade
-			await get_tree().create_timer(5.0).timeout
-			if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
-				fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_1.tscn")
+			var timer = get_tree().create_timer(5.0)
+			if timer and is_instance_valid(timer):
+				timer.timeout.connect(_on_all_waves_complete, CONNECT_ONE_SHOT)
 		else:
 			# Wave is truly complete (all spawned enemies are dead), start next wave after 3 seconds
-			await get_tree().create_timer(3.0).timeout
-			_start_wave(current_wave + 1)
+			var timer = get_tree().create_timer(3.0)
+			if timer and is_instance_valid(timer):
+				timer.timeout.connect(_start_next_wave, CONNECT_ONE_SHOT)
+
+func _on_all_waves_complete() -> void:
+	# Check if we're still in a valid state before proceeding
+	if not is_inside_tree() or is_queued_for_deletion() or is_exiting_game:
+		return
+		
+	if is_instance_valid(fade_layer) and fade_layer.has_method("start_fade"):
+		fade_layer.start_fade("res://Assets/Levels/Rest Areas/level_1.tscn")
+
+func _start_next_wave() -> void:
+	# Check if we're still in a valid state before proceeding
+	if not is_inside_tree() or is_queued_for_deletion() or is_exiting_game:
+		return
+		
+	_start_wave(current_wave + 1)
 
 func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 	if not is_instance_valid(spawn_shape) or not is_instance_valid(camera_2d):
@@ -374,3 +414,21 @@ func _get_spawn_position_near_camera_edge_in_area() -> Vector2:
 		return spawn_shape.global_position
 
 	return spawn_shape.global_position
+
+# Add this function to handle game exit properly
+func _exit_game() -> void:
+	is_exiting_game = true
+	
+	# Clean up all enemies
+	for enemy in get_tree().get_nodes_in_group("enemies"):
+		if is_instance_valid(enemy):
+			enemy.queue_free()
+	
+	# Stop any active timers
+	if spawn_timer and is_instance_valid(spawn_timer):
+		spawn_timer.stop()
+		spawn_timer.queue_free()
+	
+	# Kill any active tweens
+	if current_tween:
+		current_tween.kill()
