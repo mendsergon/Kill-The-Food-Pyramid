@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://c1ppbw0tdgfeh"]
+[gd_scene load_steps=59 format=3 uid="uid://c1ppbw0tdgfeh"]
 
 [ext_resource type="Script" uid="uid://c6niq3vyfsuyf" path="res://Assets/Levels/0-0/0-0.gd" id="1_86pk6"]
 [ext_resource type="Texture2D" uid="uid://ba54qbpc6eb70" path="res://Assets/Tiles/Outside/TilesetFloor.png" id="2_dleyb"]
@@ -31,6 +31,7 @@
 [ext_resource type="PackedScene" uid="uid://cg435jxha0vf3" path="res://Assets/Menus/Pause Menu/Pause_menu.tscn" id="28_ynluw"]
 [ext_resource type="PackedScene" uid="uid://brk1qau4vj756" path="res://Assets/Elements/Fade Layer/fade_layer.tscn" id="29_wyto1"]
 [ext_resource type="AudioStream" uid="uid://otaxdxte2r15" path="res://Assets/Music/greenpath ahh music.mp3" id="30_a3u8b"]
+[ext_resource type="FontFile" uid="uid://d3pduwwgusfuc" path="res://Assets/Fonts/NormalFont.ttf" id="32_q22rr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xjd3k"]
 texture = ExtResource("2_dleyb")
@@ -3918,7 +3919,7 @@ layer_2/name = "Layer2"
 layer_2/tile_data = PackedInt32Array(262139, 1048578, 11, 262138, 1114114, 11, 2, 1245186, 11, 65530, 720898, 11, 65529, 655362, 11, -6, 720898, 10, -7, 655362, 10, -262143, 458761, 19, -196607, 458761, 20, 262146, 1245195, 17, -196610, 327689, 9, -262146, 327689, 8, -262147, 262153, 8, -262148, 196617, 8, -196612, 196617, 9, -196611, 262153, 9, 458746, 21, 0, 524282, 21, 1, 458747, 65557, 0, 458748, 131093, 0, 524283, 65557, 1, 524284, 131093, 1, 524285, 196629, 1, 458749, 196629, 0, 458750, 262165, 0, 524286, 262165, 1, 131062, 1310731, 16, 131061, 1245195, 16, 131060, 1179659, 16, 131059, 1114123, 16, 65523, 1114123, 15, -13, 1114123, 14, -12, 1179659, 14, 65524, 1179659, 15, -11, 1245195, 14, 65525, 1245195, 15, 65526, 1310731, 15, -65532, 1376267, 16, -131068, 1376267, 15, -196604, 1376267, 14, -196603, 1441803, 14, -131067, 1441803, 15, -65531, 1441803, 16, 327670, 1179659, 17, -393222, 1048587, 15, -393223, 983051, 15, -458759, 983051, 14, -458758, 1048587, 14, -720895, 1048587, 16, -720896, 983051, 16, -655360, 983051, 17, -655359, 1048587, 17, 393222, 1114123, 17, -2, 327691, 10, -327684, 851975, 0)
 
 [node name="Player" parent="." instance=ExtResource("27_0aumf")]
-position = Vector2(-33, 36)
+position = Vector2(-37, 80)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2(0, 7)
@@ -3941,3 +3942,15 @@ scale = Vector2(0.5, 0.446)
 stream = ExtResource("30_a3u8b")
 autoplay = true
 parameters/looping = true
+
+[node name="Label" type="Label" parent="."]
+offset_left = -135.0
+offset_top = -50.0
+offset_right = -30.0
+offset_bottom = -8.0
+scale = Vector2(0.5, 0.5)
+theme_override_fonts/font = ExtResource("32_q22rr")
+theme_override_font_sizes/font_size = 9
+text = "LEFT  CLICK:  SHOOT
+E:  CHARGED  SHOOT
+SHIFT:  DASH"
