@@ -4028,6 +4028,7 @@ text = "*locked*"
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("31_kevjq")
 autoplay = true
+parameters/looping = true
 
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
 [connection signal="interacted" from="InteractionArea2" to="." method="_on_interaction_area_2_interacted"]

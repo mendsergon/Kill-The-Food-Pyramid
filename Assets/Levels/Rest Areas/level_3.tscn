@@ -4198,6 +4198,7 @@ scale = Vector2(0.5, 0.398)
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("34_5hd43")
 autoplay = true
+parameters/looping = true
 
 [connection signal="interacted" from="Cyber Cat/InteractionArea4" to="." method="_on_interaction_area_4_interacted"]
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]

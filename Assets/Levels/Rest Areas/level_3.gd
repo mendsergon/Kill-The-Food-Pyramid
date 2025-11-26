@@ -157,7 +157,7 @@ func _rename_save_to_0_3() -> void:
 
 func _on_interaction_area_1_interacted() -> void:
 	# Check player health to determine behavior
-	if is_instance_valid(player) and player.health >= 4:
+	if is_instance_valid(player) and player.MAX_MELEE_ORBS >= 4:
 		# Health is 4 or above - transition to next level
 		fade_layer.start_fade("res://Assets/Levels/0-4/0_4.tscn")
 	else:

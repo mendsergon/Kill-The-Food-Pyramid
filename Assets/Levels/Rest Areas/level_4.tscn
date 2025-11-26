@@ -4251,7 +4251,7 @@ offset_right = 76.0
 offset_bottom = 157.928
 theme_override_fonts/font = ExtResource("29_pyo2s")
 theme_override_font_sizes/font_size = 9
-text = "Might  as  well check  the  shop  before  entering"
+text = "Might  as  well check  the  dude  before  entering"
 
 [node name="pause_menu" parent="Player/Camera2D" instance=ExtResource("33_kxsnb")]
 anchors_preset = 8
@@ -4269,6 +4269,7 @@ scale = Vector2(0.5, 0.446)
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("34_ltetl")
 autoplay = true
+parameters/looping = true
 
 [connection signal="interacted" from="Cyber Cat/InteractionArea4" to="." method="_on_interaction_area_4_interacted"]
 [connection signal="interacted" from="InteractionArea1" to="." method="_on_interaction_area_1_interacted"]
