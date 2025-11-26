@@ -44,6 +44,17 @@ theme_override_fonts/font = ExtResource("2_fsbqx")
 text = "SETTINGS
 "
 
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Settings"]
+visible = false
+layout_mode = 0
+offset_left = 113.0
+offset_top = 18.5
+offset_right = 174.0
+offset_bottom = 50.5
+theme_override_fonts/font = ExtResource("2_fsbqx")
+theme_override_font_sizes/font_size = 9
+text = "NOPE"
+
 [node name="Exit" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_fsbqx")

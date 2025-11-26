@@ -9,10 +9,6 @@ func _ready() -> void:
 
 ### --- UI BUTTON HANDLERS --- ###
 
-# Test area button pressed handler
-func _on_test_area_pressed() -> void:
-	_queue_scene_change("res://Assets/Levels/Test/game.tscn")
-
 # New game button pressed handler  
 func _on_new_game_pressed() -> void:
 	_queue_scene_change("res://Assets/Menus/New Game Menu/new_game_menu.tscn")

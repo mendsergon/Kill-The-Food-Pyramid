@@ -31,13 +31,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="Test Area" type="Button" parent="MarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_fonts/font = ExtResource("1_m71ff")
-text = "TEST  AREA
-"
-
 [node name="NEW GAME" type="Button" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_m71ff")
@@ -56,7 +49,6 @@ theme_override_fonts/font = ExtResource("1_m71ff")
 text = "BACK
 "
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Test Area" to="." method="_on_test_area_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/NEW GAME" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/LOAD GAME" to="." method="_on_load_game_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/BACK" to="." method="_on_back_pressed"]
