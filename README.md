@@ -1,9 +1,11 @@
-# **KILL THE FOOD PYRAMID v0.0.0**
+# **KILL THE FOOD PYRAMID v0.0.1**
 
 *A 2D pixel wave-based shooter made in Godot.*
 
 You are an orange, slightly odd robot with one purpose: **destroy the Food Pyramid.**
 Blast through relentless waves of furious food, survive each floor, and face the mighty Kings of Food in chaotic boss battles. Along the way, you’ll help **Cyber Cat** find fragments of the mysterious **Green Shard**—one of which is hidden in the final level.
+
+**Note:** Minor placeholder content and the HTML5 version were removed in this update.
 
 ---
 
@@ -24,7 +26,7 @@ Blast through relentless waves of furious food, survive each floor, and face the
 **KILL THE FOOD PYRAMID** is a fast-paced, wave-based 2D shooter built with **Godot 4.4.1+**.
 Each floor of the Food Pyramid challenges you with new enemies and ends in a showdown against a food boss.
 
-The current version **v0.0.0** is in **very early alpha**, featuring:
+The current version **v0.0.1** is in **early alpha**, featuring:
 
 * **5 levels total** — 4 wave-based levels + 1 boss level
 * A single playable weapon (**the pistol**)
@@ -37,7 +39,7 @@ The long-term goal is to turn this into a wild, upgrade-filled arcade shooter fu
 
 ---
 
-## **Features (v0.0.0 Alpha)**
+## **Features (v0.0.1 Alpha)**
 
 * **5 Levels Total** – 4 wave-based + 1 boss level
 * **Wave-based combat** – survive against endless swarms of food
@@ -80,12 +82,11 @@ The long-term goal is to turn this into a wild, upgrade-filled arcade shooter fu
 
 ## **Releases**
 
-The current **v0.0.0** release includes executables for multiple platforms:
+The current **v0.0.1** release includes executables for multiple platforms:
 
 * **Linux** – `kill-the-food-pyramid-linux`
 * **Windows** – `kill-the-food-pyramid-windows.exe`
 * **Mac (macOS)** – `KillTheFoodPyramid.app`
-* **Web (HTML5)** – `index.html`
 
 ---
 
@@ -100,5 +101,5 @@ The game is still in **early alpha**. Future updates will include:
 
 ---
 
-**KILL THE FOOD PYRAMID v0.0.0** is early in development — follow along, report bugs, or suggest your most ridiculous weapon ideas.
+**KILL THE FOOD PYRAMID v0.0.1** is early in development — follow along, report bugs, or suggest your most ridiculous weapon ideas.
 The sillier, the better.
